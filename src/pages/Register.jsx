@@ -14,6 +14,7 @@ export default function Register() {
     firstName: "",
     middleName: "",
     lastName: "",
+    nic: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -42,6 +43,13 @@ export default function Register() {
 
     if (form.password.length < 6) {
       toast.error("Password must be at least 6 characters long.");
+      return;
+    }
+
+    // Basic NIC validation: 13 digits (Pakistani CNIC format)
+    const nicRegex = /^\d{13}$/;
+    if (!nicRegex.test(form.nic.replace(/-/g, ""))) {
+      toast.error("Please enter a valid 13-digit National ID (NIC) without hyphens.");
       return;
     }
 
@@ -74,6 +82,7 @@ export default function Register() {
         email: form.email.trim().toLowerCase(),
         firstName: form.firstName,
         lastName: form.lastName,
+        nic: form.nic.replace(/-/g, ""), // Store cleaned 13-digit NIC
         role: form.role,
         dateOfBirth: form.dateOfBirth,
         gender: form.gender,
@@ -208,6 +217,22 @@ export default function Register() {
                   onChange={handleChange}
                   className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
                   placeholder="Last"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5 focus-within:z-10 transition-all">
+              <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                National ID (NIC)
+              </label>
+              <div className="relative group">
+                <input
+                  name="nic"
+                  value={form.nic}
+                  onChange={handleChange}
+                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
+                  placeholder="1234567890123 (13 digits)"
                   required
                 />
               </div>
