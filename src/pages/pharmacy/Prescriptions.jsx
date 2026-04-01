@@ -74,7 +74,12 @@ function ViewModal({ open, onClose, item }) {
           )}
           <p>
             <strong>Dispatch Status:</strong>{" "}
-            <span className="bg-green-500 px-2 py-1 rounded text-xs">{item.dispatchStatus}</span>
+            <span className="bg-green-500 px-2 py-1 rounded text-xs">
+              {item.dispatchStatus}
+            </span>
+            <span className="text-[10px] opacity-70 ml-2 italic">
+              (Last update: {item.updatedAt ? new Date(item.updatedAt).toLocaleString() : "—"})
+            </span>
           </p>
         </div>
       </div>
@@ -512,6 +517,9 @@ export default function PharmacyPrescriptions() {
                         >
                           {p.dispatchStatus}
                         </span>
+                        <div className="text-[9px] opacity-60 mt-1 font-bold">
+                          {p.updatedAt ? new Date(p.updatedAt).toLocaleString() : "—"}
+                        </div>
                       </td>
                       <td className="p-3">
                         <div className="flex items-center justify-center gap-2">

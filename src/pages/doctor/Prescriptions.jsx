@@ -149,7 +149,7 @@ export default function DoctorPrescriptions() {
             disabled={patients.length === 0}
             className="btn btn-primary"
           >
-            <FaPlus /> Authorize Script
+            <FaPlus /> Priscription
           </button>
         </div>
 
@@ -400,8 +400,7 @@ export default function DoctorPrescriptions() {
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary flex-[2]">
-                  Hi! I'm your health assistant. Tell me your symptoms and I'll help you find the
-                  right doctor.
+                  Confirm
                 </button>
               </div>
             </form>

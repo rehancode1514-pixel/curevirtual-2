@@ -149,7 +149,7 @@ export default function DoctorPrescriptions() {
             disabled={patients.length === 0}
             className="btn btn-primary"
           >
-            <FaPlus /> Authorize Script
+            <FaPlus /> Priscription
           </button>
         </div>
 
