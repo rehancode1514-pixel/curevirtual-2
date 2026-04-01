@@ -164,7 +164,11 @@ export default function PatientPrescriptions() {
                       key={p.id}
                       className="border-b border-[var(--border)] hover:bg-[var(--bg-glass)] transition"
                     >
-                      <td className="p-3">{p.doctor?.user?.name || "N/A"}</td>
+                      <td className="p-3">
+                        {[p.doctor?.user?.firstName, p.doctor?.user?.lastName]
+                          .filter(Boolean)
+                          .join(" ") || "N/A"}
+                      </td>
                       <td className="p-3">{p.medication}</td>
                       <td className="p-3">{p.dosage}</td>
                       <td className="p-3">{p.frequency}</td>
@@ -245,7 +249,12 @@ export default function PatientPrescriptions() {
                   <p className="text-sm">
                     Dr:{" "}
                     <span className="font-semibold">
-                      {selectedPrescription?.doctor?.user?.name || "N/A"}
+                      {[
+                        selectedPrescription?.doctor?.user?.firstName,
+                        selectedPrescription?.doctor?.user?.lastName,
+                      ]
+                        .filter(Boolean)
+                        .join(" ") || "N/A"}
                     </span>
                   </p>
                 </div>
@@ -254,7 +263,12 @@ export default function PatientPrescriptions() {
               <div className="grid grid-cols-1 gap-2">
                 <p>
                   <span className="font-semibold">Patient:</span>{" "}
-                  {selectedPrescription?.patient?.user?.name || "—"}
+                  {[
+                    selectedPrescription?.patient?.user?.firstName,
+                    selectedPrescription?.patient?.user?.lastName,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || "—"}
                 </p>
                 <p>
                   <span className="font-semibold">Patient ID:</span>{" "}
