@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "prisma:generate": "prisma generate",
-    "start": "prisma generate && node server.js"
+    "start": "npx prisma db push --accept-data-loss && prisma generate && node server.js"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.1.0",
@@ -71,6 +71,6 @@
     "prisma": "^6.3.0"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   }
 }
