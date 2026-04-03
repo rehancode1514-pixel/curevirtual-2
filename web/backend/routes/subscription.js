@@ -494,6 +494,95 @@ router.patch(
   },
 );
 
+/* ------------------------ STRIPE ELEMENTS FLOW ---------------------- */
+// POST /api/subscription/create  { userId, plan: "MONTHLY"|"YEARLY" }
+// Returns the subscription object containing clientSecret for Elements checkout
+router.post("/create", verifyToken, async (req, res) => {
+  try {
+    const { userId, plan } = req.body || {};
+    if (!userId) {
+      return res.status(400).json({ error: "userId is required" });
+    }
+    if (!stripe) {
+      return res.status(500).json({ error: "Stripe is not configured on the server" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, role: true },
+    });
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Ensure plan defaults to MONTHLY if not provided
+    const selectedPlan = plan || "MONTHLY";
+
+    const priceId = getRolePriceId(user.role, selectedPlan);
+    if (!priceId) {
+      return res.status(400).json({
+        error: `No Stripe Price configured for ${user.role} ${String(selectedPlan).toUpperCase()}`,
+      });
+    }
+
+    // 1) Find or create customer
+    let customer;
+    const existingSubs = await prisma.subscription.findFirst({
+      where: { userId, provider: "STRIPE" }
+    });
+    
+    // For simplicity, we just create a new customer if we don't have a reliable mapping
+    // A robust system should fetch the stored Stripe Customer ID. Here we'll create or search by email.
+    const customers = await stripe.customers.search({
+      query: `email:\'${user.email}\'`,
+    });
+
+    if (customers.data.length > 0) {
+      customer = customers.data[0];
+    } else {
+      customer = await stripe.customers.create({
+        email: user.email,
+        metadata: { userId },
+      });
+    }
+
+    // 2) Create the subscription with incomplete behavior
+    const subscription = await stripe.subscriptions.create({
+      customer: customer.id,
+      items: [{ price: priceId }],
+      payment_behavior: 'default_incomplete',
+      payment_settings: { save_default_payment_method: 'on_subscription' },
+      expand: ['latest_invoice.payment_intent'],
+      metadata: { userId, plan: selectedPlan },
+    });
+
+    // 3) Record pending row
+    await prisma.subscription.create({
+      data: {
+        userId,
+        plan: selectedPlan,
+        status: "PENDING",
+        provider: "STRIPE",
+        reference: subscription.id,
+        currency: "USD",
+      },
+    });
+
+    // Extract client secret
+    let clientSecret = null;
+    if (subscription.latest_invoice && subscription.latest_invoice.payment_intent) {
+      clientSecret = subscription.latest_invoice.payment_intent.client_secret;
+    }
+
+    return res.json({ 
+      subscriptionId: subscription.id, 
+      clientSecret, 
+      status: subscription.status 
+    });
+  } catch (err) {
+    console.error("❌ stripe subscription create error:", err);
+    return res.status(500).json({ error: err.message || "Failed to create subscription" });
+  }
+});
+
 /* ------------------------ STRIPE CHECKOUT FLOW ---------------------- */
 // POST /api/subscription/stripe/checkout  { userId, plan: "MONTHLY"|"YEARLY" }
 router.post("/stripe/checkout", verifyToken, async (req, res) => {

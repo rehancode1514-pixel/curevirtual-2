@@ -190,6 +190,10 @@ app.use("/api/support", supportRoutes);
 const paymentRoutes = require("./routes/payments");
 app.use("/api/payments", paymentRoutes);
 
+// ✅ SESSION (APPOINTMENT) PAYMENT SYSTEM (Stripe Elements)
+const sessionRoutes = require("./routes/session");
+app.use("/api/session", sessionRoutes);
+
 // Legacy Stripe webhook (existing logic)
 app.post(
   "/api/subscription/stripe/webhook",

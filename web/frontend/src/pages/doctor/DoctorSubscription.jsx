@@ -6,6 +6,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import CheckoutForm from "../../components/CheckoutForm";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "");
+
 const PLACEHOLDER_LOGO = "/images/logo/Asset3.png";
 
 const fmtUSD = (n) => (typeof n === "number" && !Number.isNaN(n) ? `$${n.toFixed(2)}` : "—");
@@ -26,6 +32,7 @@ export default function DoctorSubscription() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [plan, setPlan] = useState("MONTHLY"); // MONTHLY | YEARLY
+  const [clientSecret, setClientSecret] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -53,12 +60,36 @@ export default function DoctorSubscription() {
 
   useEffect(() => {
     load();
-    // Load Stripe Pricing Table Script
-    const script = document.createElement("script");
-    script.src = "https://js.stripe.com/v3/pricing-table.js";
-    script.async = true;
-    document.body.appendChild(script);
   }, [load]);
+
+  const handleSubscribe = async () => {
+    try {
+      if (!userId) {
+        toast.error("No user id found.");
+        return;
+      }
+
+      setProcessing(true);
+      const res = await api.post("/subscription/create", {
+        userId,
+        plan, // "MONTHLY" | "YEARLY"
+      });
+
+      const data = res?.data || {};
+
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+      } else if (data.mockSuccess) {
+        toast.success("Subscription updated successfully!");
+        load(); 
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.error || err?.message || "Failed to start checkout");
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   const handleSubscribeFallback = async () => {
     try {
@@ -143,13 +174,52 @@ export default function DoctorSubscription() {
               )}
             </div>
           </div>
-          <div className="mt-8 bg-white rounded-xl overflow-hidden min-h-[500px]">
-            <stripe-pricing-table 
-              pricing-table-id="prctbl_1TI7KdJRgbcTRwUOblURRAS8"
-              publishable-key="pk_test_51TI6ZfJRgbcTRwUOXq9EVTqvxQdDOp2Vw7hauCdWlFZyNNMCOFDPSXNHpRUBsFPSWrmBMBItvVPwsgalxQAji0R900uh9XFno4"
-              client-reference-id={userId}
-            >
-            </stripe-pricing-table>
+          <div className="mt-8 bg-white rounded-xl overflow-hidden min-h-[400px] p-6 shadow-md border border-[var(--border)]">
+            {clientSecret ? (
+              <div className="w-full max-w-md mx-auto">
+                <h3 className="text-xl font-bold mb-4">Complete Payment</h3>
+                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                  <CheckoutForm 
+                    clientSecret={clientSecret} 
+                    onSuccess={() => { setClientSecret(null); load(); }} 
+                    onCancel={() => setClientSecret(null)} 
+                  />
+                </Elements>
+              </div>
+            ) : (
+              <div className="w-full max-w-sm mx-auto flex flex-col items-center justify-center p-8 bg-[var(--bg-glass)] border border-[var(--border)] rounded-2xl shadow-lg">
+                <h2 className="text-2xl font-black text-[var(--text-main)] mb-2">Subscribe</h2>
+                <p className="text-[var(--text-soft)] text-center text-sm mb-6">Choose a plan to get unlimited access.</p>
+                
+                <div className="flex bg-[var(--bg-main)] p-1 rounded-full w-full mb-6 relative">
+                  <button 
+                    className={`flex-1 py-2 text-sm font-bold rounded-full transition-all ${plan === 'MONTHLY' ? 'bg-[var(--brand-blue)] text-white shadow-md' : 'text-[var(--text-soft)]'}`}
+                    onClick={() => setPlan('MONTHLY')}
+                  >
+                    Monthly
+                  </button>
+                  <button 
+                    className={`flex-1 py-2 text-sm font-bold rounded-full transition-all ${plan === 'YEARLY' ? 'bg-[var(--brand-blue)] text-white shadow-md' : 'text-[var(--text-soft)]'}`}
+                    onClick={() => setPlan('YEARLY')}
+                  >
+                    Yearly
+                  </button>
+                </div>
+                
+                <div className="text-4xl font-extrabold mb-8 text-[var(--text-main)]">
+                  {plan === 'MONTHLY' ? fmtUSD(prices.monthlyUsd || 25) : fmtUSD(prices.yearlyUsd || 250)}
+                  <span className="text-sm font-normal text-[var(--text-muted)]">/{plan === "MONTHLY" ? "mo" : "yr"}</span>
+                </div>
+
+                <button 
+                  disabled={processing || status.status === "ACTIVE"} 
+                  onClick={handleSubscribe} 
+                  className="w-full py-3 bg-[var(--brand-blue)] text-white hover:bg-blue-600 rounded-xl font-bold transition-all disabled:opacity-50 flex justify-center"
+                >
+                  {processing ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : status.status === "ACTIVE" ? "Current Plan" : "Subscribe Now"}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* History */}
