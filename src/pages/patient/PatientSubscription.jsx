@@ -5,6 +5,7 @@ import api from "../../Lib/api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import SubscriptionCheckout from "../../components/payments/SubscriptionCheckout";
 
 const PLACEHOLDER_LOGO = "/images/logo/Asset3.png";
 
@@ -26,6 +27,9 @@ export default function PatientSubscription() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [plan, setPlan] = useState("MONTHLY");
+  
+  // Custom Inline Subscription Checkout Workflow
+  const [showCheckout, setShowCheckout] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -55,45 +59,26 @@ export default function PatientSubscription() {
   }, [load]);
 
   const handleSubscribe = async () => {
-    try {
-      if (!userId) {
-        toast.error("No user id found.");
-        return;
-      }
-      if (plan === "MONTHLY" && !prices.monthlyUsd) {
-        toast.error("Monthly price is not configured.");
-        return;
-      }
-      if (plan === "YEARLY" && !prices.yearlyUsd) {
-        toast.error("Yearly price is not configured.");
-        return;
-      }
-
-      setProcessing(true);
-      const res = await api.post("/subscription/stripe/checkout", {
-        userId,
-        plan, // "MONTHLY" | "YEARLY"
-      });
-
-      const data = res?.data || {};
-      const url = data.url;
-
-      if (data.mockSuccess) {
-        toast.success("Subscription updated successfully!");
-        load(); // Refresh data in place
-        return;
-      }
-
-      if (!url) throw new Error("Checkout URL not returned from server");
-
-      window.location.href = url; // Stripe Checkout
-    } catch (err) {
-      console.error(err);
-      const msg = err?.response?.data?.error || err?.message || "Failed to start checkout";
-      toast.error(msg);
-    } finally {
-      setProcessing(false);
+    if (!userId) {
+      toast.error("No user id found.");
+      return;
     }
+    if (plan === "MONTHLY" && !prices.monthlyUsd) {
+      toast.error("Monthly price is not configured.");
+      return;
+    }
+    if (plan === "YEARLY" && !prices.yearlyUsd) {
+      toast.error("Yearly price is not configured.");
+      return;
+    }
+
+    // Show the inline checkout form instead of redirecting
+    setShowCheckout(true);
+  };
+
+  const handleCheckoutSuccess = () => {
+    setShowCheckout(false);
+    load(); // Refresh data locally
   };
 
   const statusColor =
@@ -155,21 +140,36 @@ export default function PatientSubscription() {
                       name="plan"
                       value="YEARLY"
                       checked={plan === "YEARLY"}
-                      onChange={() => setPlan("YEARLY")}
+                      onChange={() => { setPlan("YEARLY"); setShowCheckout(false); }}
                     />
                     <span>Yearly — {fmtUSD(Number(prices.yearlyUsd || 0))}</span>
                   </label>
                 </div>
 
-                <button
-                  onClick={handleSubscribe}
-                  disabled={processing}
-                  className="rounded bg-[#027906] hover:bg-[#190366] px-5 py-2 font-semibold disabled:opacity-60"
-                >
-                  {processing ? "Processing..." : "Subscribe / Renew"}
-                </button>
+                {!showCheckout && (
+                  <button
+                    onClick={handleSubscribe}
+                    disabled={processing}
+                    className="rounded bg-[#027906] hover:bg-[#190366] px-5 py-2 font-semibold disabled:opacity-60 text-white"
+                  >
+                    {processing ? "Processing..." : "Subscribe / Renew"}
+                  </button>
+                )}
               </div>
             </div>
+
+            {/* Inline Checkout Component */}
+            {showCheckout && (
+                <div className="mt-8 border-t border-[var(--border)] pt-8">
+                  <SubscriptionCheckout 
+                    planType={plan} 
+                    amount={plan === "MONTHLY" ? prices.monthlyUsd : prices.yearlyUsd}
+                    onSuccess={handleCheckoutSuccess}
+                    onCancel={() => setShowCheckout(false)}
+                  />
+                </div>
+            )}
+            
           </div>
 
           {/* History */}

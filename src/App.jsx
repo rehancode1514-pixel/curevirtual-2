@@ -12,6 +12,8 @@ import { UserProvider } from "./context/UserContext";
 import api from "./Lib/api";
 import "./App.css";
 
+import { StripeProvider } from "./context/StripeContext";
+
 /* ================================
    SUPERADMIN
 ================================ */
@@ -26,6 +28,7 @@ const SuperadminSubscribedPharmacy = lazy(() => import("./pages/superadmin/subsc
 const SuperadminInbox = lazy(() => import("./pages/superadmin/SuperadminInbox"));
 const SuperadminSendMessage = lazy(() => import("./pages/superadmin/SuperadminSendMessage"));
 const SuperadminActivityLogs = lazy(() => import("./pages/superadmin/ActivityLogs"));
+const SuperadminPaymentHistory = lazy(() => import("./pages/admin/PaymentHistory"));
 
 /* ================================
    ADMIN
@@ -145,9 +148,10 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <UserProvider>
-        <ToastContainer position="top-right" autoClose={3000} />
-        <Suspense fallback={<LoadingSpinner />}>
+      <StripeProvider>
+        <UserProvider>
+          <ToastContainer position="top-right" autoClose={3000} />
+          <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             {/* Public */}
             <Route path="/" element={<Home />} />
@@ -250,6 +254,15 @@ export default function App() {
               element={
                 <RequireRole role="SUPERADMIN">
                   <SuperadminActivityLogs />
+                </RequireRole>
+              }
+            />
+            
+            <Route
+              path="/superadmin/payments"
+              element={
+                <RequireRole role="SUPERADMIN">
+                  <SuperadminPaymentHistory />
                 </RequireRole>
               }
             />
@@ -742,6 +755,7 @@ export default function App() {
         </Suspense>
         <Chatbot />
       </UserProvider>
+      </StripeProvider>
     </BrowserRouter>
   );
 }

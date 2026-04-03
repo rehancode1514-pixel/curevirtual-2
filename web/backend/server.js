@@ -66,6 +66,10 @@ app.use(
   })
 );
 app.use(cookieParser());
+
+// ✅ STRIPE WEBHOOK (Must be BEFORE express.json() for raw body verification)
+app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
+
 app.use(express.json({ limit: "10mb" }));
 
 // ✅ Root Route
@@ -182,7 +186,11 @@ app.use("/api/pharmacy", pharmacyRoute);
 const supportRoutes = require("./routes/support");
 app.use("/api/support", supportRoutes);
 
-// Stripe webhook must use raw body
+// ✅ NEW PAYMENTS SYSTEM
+const paymentRoutes = require("./routes/payments");
+app.use("/api/payments", paymentRoutes);
+
+// Legacy Stripe webhook (existing logic)
 app.post(
   "/api/subscription/stripe/webhook",
   express.raw({ type: "application/json" }),

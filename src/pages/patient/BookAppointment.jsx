@@ -5,6 +5,7 @@ import Topbar from "../../components/Topbar";
 import { toast } from "react-toastify";
 
 import BookingSlots from "../../components/BookingSlots";
+import CheckoutForm from "../../components/payments/CheckoutForm";
 
 const BookAppointment = () => {
   const [doctors, setDoctors] = useState([]);
@@ -17,6 +18,11 @@ const BookAppointment = () => {
   });
   const [loading, setLoading] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
+  
+  // Payment workflow states
+  const [bookingStep, setBookingStep] = useState('select'); // 'select', 'payment', 'success'
+  const [checkoutData, setCheckoutData] = useState(null);
+
   const patientId = localStorage.getItem("userId");
   const userName = localStorage.getItem("userName");
 
@@ -72,21 +78,45 @@ const BookAppointment = () => {
 
     setLoading(true);
     try {
-      await api.post("/schedule/book", {
+      const res = await api.post("/schedule/book", {
         startTime: formData.selectedSlotId, // The ID is now the ISO startTime
         doctorId: formData.doctorId,
         patientId,
         reason: formData.reason,
       });
-      toast.success("Appointment booked successfully!");
-      setFormData({ doctorId: "", appointmentDate: "", selectedSlotId: "", reason: "" });
-      setSelectedDoctor(null);
+      
+      const appointmentId = res.data?.appointment?.id;
+      const fee = selectedDoctor?.consultationFee || 50; // Fallback to 50 if zero/undef
+
+      if (appointmentId) {
+        setCheckoutData({ appointmentId, doctorFee: fee });
+        setBookingStep('payment');
+        toast.info("Slot reserved. Please complete payment.");
+      } else {
+        throw new Error("Invalid booking response");
+      }
+      
     } catch (err) {
       console.error("Booking error:", err);
       toast.error(err.response?.data?.error || "Failed to book appointment");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = () => {
+    setBookingStep('success');
+    setFormData({ doctorId: "", appointmentDate: "", selectedSlotId: "", reason: "" });
+    setSelectedDoctor(null);
+    setCheckoutData(null);
+  };
+
+  const handlePaymentCancel = () => {
+    // In a real system, you might want an endpoint to free the slot if canceled,
+    // or just let it expire via a background cron job identifying pending payments.
+    setBookingStep('select');
+    setCheckoutData(null);
+    toast.warning("Payment cancelled. The reserved slot will expire.");
   };
 
   return (
@@ -101,106 +131,136 @@ const BookAppointment = () => {
           </h1>
 
           <div className="max-w-2xl mx-auto bg-[var(--bg-glass)] p-8 rounded-xl shadow-lg border border-[var(--border)]">
-            <form onSubmit={handleInitializeBooking} className="space-y-5">
-              {/* Doctor Selection */}
-              <div>
-                <label className="block font-medium mb-2 text-[var(--text-main)]">
-                  Select Doctor
-                </label>
-                <select
-                  value={formData.doctorId}
-                  onChange={(e) => handleDoctorChange(e.target.value)}
-                  className="w-full bg-transparent border border-[var(--border)] rounded-lg p-3 focus:ring-2 focus:ring-blue-500 text-[var(--text-main)]"
-                  required
-                  disabled={loadingDoctors}
-                >
-                  <option value="">
-                    {loadingDoctors ? "Loading doctors..." : "Select a doctor"}
-                  </option>
-                  {doctors.length > 0
-                    ? doctors.map((doc) => (
-                        <option
-                          key={doc.id}
-                          value={doc.id}
-                          className="bg-[var(--bg-card)] text-[var(--text-main)]"
-                        >
-                          {doc.user?.firstName} {doc.user?.lastName} —{" "}
-                          {doc.specialization || "General Medicine"}
-                        </option>
-                      ))
-                    : !loadingDoctors && <option disabled>No doctors available</option>}
-                </select>
-              </div>
-
-              {/* Reason */}
-              {formData.doctorId && (
+            
+            {bookingStep === 'select' && (
+              <form onSubmit={handleInitializeBooking} className="space-y-5">
+                {/* Doctor Selection */}
                 <div>
                   <label className="block font-medium mb-2 text-[var(--text-main)]">
-                    Reason for Visit
+                    Select Doctor
                   </label>
-                  <textarea
-                    value={formData.reason}
-                    onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                    rows="3"
-                    placeholder="Briefly describe your reason..."
-                    className="w-full bg-transparent border border-[var(--border)] rounded-lg p-3 text-[var(--text-main)] focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              )}
-
-              {/* Date Selection */}
-              {formData.doctorId && (
-                <div>
-                  <label className="block font-medium mb-2 text-[var(--text-main)]">
-                    Select Date
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.appointmentDate}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        appointmentDate: e.target.value,
-                        selectedSlotId: "",
-                      })
-                    }
-                    min={new Date().toISOString().split("T")[0]}
-                    className="w-full bg-transparent border border-[var(--border)] rounded-lg p-3 text-[var(--text-main)] focus:ring-2 focus:ring-blue-500"
+                  <select
+                    value={formData.doctorId}
+                    onChange={(e) => handleDoctorChange(e.target.value)}
+                    className="w-full bg-transparent border border-[var(--border)] rounded-lg p-3 focus:ring-2 focus:ring-blue-500 text-[var(--text-main)]"
                     required
-                  />
+                    disabled={loadingDoctors}
+                  >
+                    <option value="">
+                      {loadingDoctors ? "Loading doctors..." : "Select a doctor"}
+                    </option>
+                    {doctors.length > 0
+                      ? doctors.map((doc) => (
+                          <option
+                            key={doc.id}
+                            value={doc.id}
+                            className="bg-[var(--bg-card)] text-[var(--text-main)]"
+                          >
+                            {doc.user?.firstName} {doc.user?.lastName} —{" "}
+                            {doc.specialization || "General Medicine"}
+                          </option>
+                        ))
+                      : !loadingDoctors && <option disabled>No doctors available</option>}
+                  </select>
                 </div>
-              )}
 
-              {/* Available Time Slots via Component */}
-              {formData.appointmentDate && (
-                <div>
-                  <label className="block font-medium mb-2 text-[var(--text-main)]">
-                    Select Time Slot
-                  </label>
-                  <BookingSlots
-                    doctorId={formData.doctorId}
-                    date={formData.appointmentDate}
-                    onSlotSelect={handleSlotSelect}
-                  />
+                {/* Reason */}
+                {formData.doctorId && (
+                  <div>
+                    <label className="block font-medium mb-2 text-[var(--text-main)]">
+                      Reason for Visit
+                    </label>
+                    <textarea
+                      value={formData.reason}
+                      onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                      rows="3"
+                      placeholder="Briefly describe your reason..."
+                      className="w-full bg-transparent border border-[var(--border)] rounded-lg p-3 text-[var(--text-main)] focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                )}
+
+                {/* Date Selection */}
+                {formData.doctorId && (
+                  <div>
+                    <label className="block font-medium mb-2 text-[var(--text-main)]">
+                      Select Date
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.appointmentDate}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          appointmentDate: e.target.value,
+                          selectedSlotId: "",
+                        })
+                      }
+                      min={new Date().toISOString().split("T")[0]}
+                      className="w-full bg-transparent border border-[var(--border)] rounded-lg p-3 text-[var(--text-main)] focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                )}
+
+                {/* Available Time Slots via Component */}
+                {formData.appointmentDate && (
+                  <div>
+                    <label className="block font-medium mb-2 text-[var(--text-main)]">
+                      Select Time Slot
+                    </label>
+                    <BookingSlots
+                      doctorId={formData.doctorId}
+                      date={formData.appointmentDate}
+                      onSlotSelect={handleSlotSelect}
+                    />
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading || !formData.selectedSlotId}
+                  className={`w-full py-3 rounded-lg font-semibold transition ${
+                    loading || !formData.selectedSlotId
+                      ? "bg-gray-600 cursor-not-allowed"
+                      : "bg-blue-700 hover:bg-blue-800"
+                  } text-white`}
+                >
+                  {loading ? "Preparing..." : "Proceed to Payment"}
+                </button>
+              </form>
+            )}
+
+            {bookingStep === 'payment' && checkoutData && (
+              <CheckoutForm 
+                appointmentId={checkoutData.appointmentId}
+                doctorFee={checkoutData.doctorFee}
+                onSuccess={handlePaymentSuccess}
+                onCancel={handlePaymentCancel}
+              />
+            )}
+
+            {bookingStep === 'success' && (
+              <div className="text-center py-10">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-500 text-white mb-6">
+                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                 </div>
-              )}
+                <h2 className="text-2xl font-bold text-[var(--text-main)] mb-2">Booking Confirmed!</h2>
+                <p className="text-[var(--text-soft)] mb-6">Your appointment is scheduled and paid for. Check your dashboard for details.</p>
+                <button 
+                  onClick={() => setBookingStep('select')}
+                  className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition"
+                >
+                  Book Another Appointment
+                </button>
+              </div>
+            )}
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading || !formData.selectedSlotId}
-                className={`w-full py-3 rounded-lg font-semibold transition ${
-                  loading || !formData.selectedSlotId
-                    ? "bg-gray-600 cursor-not-allowed"
-                    : "bg-blue-700 hover:bg-blue-800"
-                } text-white`}
-              >
-                {loading ? "Booking..." : "Confirm"}
-              </button>
-            </form>
-
-            {/* Selected Doctor Info */}
-            {selectedDoctor && (
+            {/* Selected Doctor Info (Only show while selecting) */}
+            {selectedDoctor && bookingStep === 'select' && (
               <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                 <h3 className="font-semibold text-blue-400 mb-2">Selected Doctor</h3>
                 <p className="text-[var(--text-soft)]">

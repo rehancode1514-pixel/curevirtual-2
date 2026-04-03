@@ -1,12 +1,14 @@
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
+  
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  
 }
 
 // =========================================================
@@ -20,6 +22,7 @@ enum UserRole {
   SUPERADMIN
   ADMIN
   SUPPORT
+
 }
 
 enum Gender {
@@ -27,6 +30,7 @@ enum Gender {
   FEMALE
   OTHER
   PREFER_NOT_TO_SAY
+
 }
 
 enum BloodGroup {
@@ -39,6 +43,7 @@ enum BloodGroup {
   O_POSITIVE  @map("O+")
   O_NEGATIVE  @map("O-")
   UNKNOWN     @map("UNKNOWN")
+
 }
 
 enum TicketStatus {
@@ -46,12 +51,14 @@ enum TicketStatus {
   IN_PROGRESS
   RESOLVED
   CLOSED
+
 }
 
 enum Priority {
   LOW
   MEDIUM
   HIGH
+
 }
 
 enum ConsultationStatus {
@@ -66,10 +73,13 @@ enum ConsultationStatus {
   ACCEPTED
   REJECTED
   MISSED
+
 }
 
 enum AppointmentStatus {
   PENDING
+  PENDING_PAYMENT
+  PAYMENT_FAILED
   APPROVED
   CHECKED_IN
   WAITING
@@ -78,11 +88,13 @@ enum AppointmentStatus {
   CANCELLED
   SCHEDULED
   NO_SHOW
+
 }
 
 enum Plan {
   MONTHLY
   YEARLY
+
 }
 
 enum SubStatus {
@@ -92,6 +104,7 @@ enum SubStatus {
   EXPIRED
   DEACTIVATED
   FAILED
+
 }
 
 enum PrescriptionDispatchStatus {
@@ -101,12 +114,14 @@ enum PrescriptionDispatchStatus {
   READY
   DISPENSED
   REJECTED
+
 }
 
 enum EncounterStatus {
   DRAFT
   SIGNED
   AMENDED
+
 }
 
 enum LabStatus {
@@ -114,11 +129,13 @@ enum LabStatus {
   PENDING
   COMPLETED
   CANCELLED
+
 }
 
 enum ReferralType {
   INTERNAL
   EXTERNAL
+
 }
 
 enum SlotStatus {
@@ -126,6 +143,7 @@ enum SlotStatus {
   BOOKED
   LOCKED
   CANCELLED
+
 }
 
 // =========================================================
@@ -145,6 +163,8 @@ model User {
   role        UserRole @default(PATIENT)
   dateOfBirth DateTime
   gender      Gender
+
+  stripeCustomerId String? @unique
 
   subscriptionState SubStatus @default(UNSUBSCRIBED)
 
@@ -171,6 +191,7 @@ model User {
 
   @@map("User")
   @@index([organizationId])
+
 }
 
 model Organization {
@@ -184,6 +205,7 @@ model Organization {
   updatedAt DateTime @updatedAt
 
   @@map("Organization")
+
 }
 
 
@@ -198,6 +220,7 @@ model SupportAgent {
   assignedTickets SupportTicket[]
 
   @@map("SupportAgent")
+
 }
 
 model ActivityLog {
@@ -212,6 +235,7 @@ model ActivityLog {
   createdAt DateTime @default(now())
 
   @@map("ActivityLog")
+
 }
 
 model DoctorProfile {
@@ -251,6 +275,7 @@ model DoctorProfile {
 
 
   @@map("DoctorProfile")
+
 }
 
 model PharmacyProfile {
@@ -283,6 +308,7 @@ model PharmacyProfile {
   medicineOrders  MedicineOrder[]
 
   @@map("PharmacyProfile")
+
 }
 
 model PatientProfile {
@@ -325,6 +351,7 @@ model PatientProfile {
   medicineOrders  MedicineOrder[]
 
   @@map("PatientProfile")
+
 }
 
 model Appointment {
@@ -347,15 +374,20 @@ model Appointment {
   roomName        String?
   callStatus      String    @default("idle")
 
+  paymentStatus   String    @default("UNPAID") // UNPAID, PAID, FAILED
+  paymentId       String?   @unique
+
   doctor  DoctorProfile  @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
   patient PatientProfile @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
   encounter ClinicalEncounter?
+  transactions Transaction[]
 
   @@index([doctorId])
   @@index([patientId])
   @@index([appointmentDate])
 
   @@map("Appointment")
+
 }
 
 model DoctorSchedule {
@@ -379,6 +411,7 @@ model DoctorSchedule {
   @@index([doctorId])
   @@index([dayOfWeek])
   @@map("DoctorSchedule")
+
 }
 
 model SupportTicket {
@@ -397,6 +430,7 @@ model SupportTicket {
   replies   SupportReply[]
 
   @@map("SupportTicket")
+
 }
 
 model SupportReply {
@@ -413,6 +447,7 @@ model SupportReply {
   createdAt DateTime @default(now())
 
   @@map("SupportReply")
+
 }
 
 // Prescription and other models kept as is
@@ -451,6 +486,7 @@ model Prescription {
   @@index([pharmacyId])
 
   @@map("Prescription")
+
 }
 
 model ClinicalEncounter {
@@ -485,6 +521,7 @@ model ClinicalEncounter {
   referrals     Referral[]
 
   @@map("ClinicalEncounter")
+
 }
 
 model LabOrder {
@@ -504,6 +541,7 @@ model LabOrder {
   encounter   ClinicalEncounter? @relation(fields: [encounterId], references: [id])
 
   @@map("LabOrder")
+
 }
 
 model Referral {
@@ -524,6 +562,7 @@ model Referral {
   encounter   ClinicalEncounter? @relation(fields: [encounterId], references: [id])
 
   @@map("Referral")
+
 }
 
 model Message {
@@ -540,6 +579,7 @@ model Message {
 
 
   @@map("Message")
+
 }
 
 model VideoConsultation {
@@ -569,6 +609,7 @@ model VideoConsultation {
   @@index([patientId])
 
   @@map("VideoConsultation")
+
 }
 
 model SubscriptionSetting {
@@ -583,6 +624,7 @@ model SubscriptionSetting {
   updatedAt          DateTime @updatedAt
 
   @@map("SubscriptionSetting")
+
 }
 
 model Subscription {
@@ -600,6 +642,10 @@ model Subscription {
   startDate DateTime?
   endDate   DateTime?
 
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  currentPeriodEnd     DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -610,6 +656,7 @@ model Subscription {
   @@index([plan])
 
   @@map("Subscription")
+
 }
 
 model DoctorPatient {
@@ -627,6 +674,7 @@ model DoctorPatient {
   @@index([doctorId])
 
   @@map("DoctorPatient")
+
 }
 
 model SelectedPharmacy {
@@ -642,6 +690,7 @@ model SelectedPharmacy {
 
   @@unique([patientId, pharmacyId])
   @@map("SelectedPharmacy")
+
 }
 
 model SystemSetting {
@@ -656,6 +705,7 @@ model SystemSetting {
   updatedAt   DateTime @updatedAt
 
   @@map("SystemSetting")
+
 }
 // ============================================
 // CUREVIRTUAL V2.0 - NEW SCHEMA ADDITIONS
@@ -676,13 +726,16 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
   REJECTED
+
 }
 
 enum TransactionType {
   SUBSCRIPTION_PAYMENT
   ORDER_PAYMENT
   CONSULTATION_PAYMENT
+  APPOINTMENT_PAYMENT
   REFUND
+
 }
 
 enum TransactionStatus {
@@ -690,6 +743,7 @@ enum TransactionStatus {
   SUCCESS
   FAILED
   REFUNDED
+
 }
 
 enum NotificationType {
@@ -699,6 +753,7 @@ enum NotificationType {
   MESSAGE
   PAYMENT
   SYSTEM
+
 }
 
 // ============================================
@@ -745,6 +800,7 @@ model Medicine {
   @@index([pharmacyId])
   @@index([name])
   @@map("medicine")
+
 }
 
 // ============================================
@@ -802,6 +858,7 @@ model MedicineOrder {
   @@index([status])
   @@index([orderNumber])
   @@map("medicineorder")
+
 }
 
 model MedicineOrderItem {
@@ -819,6 +876,7 @@ model MedicineOrderItem {
   @@index([orderId])
   @@index([medicineId])
   @@map("medicineorderitem")
+
 }
 
 // ============================================
@@ -850,6 +908,9 @@ model Transaction {
   orderId         String?
   order           MedicineOrder?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
   
+  appointmentId   String?
+  appointment    Appointment?      @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+  
   // Metadata
   description     String?
   metadata        String?           @db.Text // JSON string
@@ -861,6 +922,7 @@ model Transaction {
   @@index([status])
   @@index([type])
   @@map("transaction")
+
 }
 
 // ============================================
@@ -888,6 +950,7 @@ model Notification {
   @@index([userId, isRead])
   @@index([createdAt])
   @@map("notification")
+
 }
 
 // ============================================
@@ -914,6 +977,7 @@ model VideoSession {
   recordingId     String?
   
   @@map("videosession")
+
 }
 
 // ============================================
@@ -929,6 +993,7 @@ model SystemMetric {
   
   @@index([metricType, recordedAt])
   @@map("systemmetric")
+
 }
 
 // ============================================
