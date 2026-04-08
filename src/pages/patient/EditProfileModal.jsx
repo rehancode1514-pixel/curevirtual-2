@@ -9,6 +9,11 @@ const GENDER_OPTIONS = [
   { value: "OTHER", label: "Other" },
 ];
 
+const MARITAL_STATUS_OPTIONS = [
+  { value: "SINGLE", label: "Single" },
+  { value: "MARRIED", label: "Married" },
+];
+
 const BLOOD_GROUP_OPTIONS = [
   { value: "A_POS", label: "A+" },
   { value: "A_NEG", label: "A-" },
@@ -38,6 +43,7 @@ export default function EditProfileModal({ isOpen, onClose, profile, onProfileUp
         firstName: profile.user?.firstName || "",
         lastName: profile.user?.lastName || "",
         phone: profile.user?.phone || "",
+        maritalStatus: profile.user?.maritalStatus || "SINGLE",
         // bloodGroup and other fields are directly in profile (PatientProfile model)
         bloodGroup: profile.bloodGroup || "UNKNOWN",
         height: profile.height || "",
@@ -200,6 +206,23 @@ export default function EditProfileModal({ isOpen, onClose, profile, onProfileUp
                     className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-[#2a2a2a] border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-black focus:ring-0 text-sm font-medium transition-all dark:text-white"
                   >
                     {GENDER_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-600 dark:text-white uppercase tracking-wide">
+                    Marital Status
+                  </label>
+                  <select
+                    name="maritalStatus"
+                    value={formData.maritalStatus}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-[#2a2a2a] border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-black focus:ring-0 text-sm font-medium transition-all dark:text-white"
+                  >
+                    {MARITAL_STATUS_OPTIONS.map((opt) => (
                       <option key={opt.value} value={opt.value}>
                         {opt.label}
                       </option>

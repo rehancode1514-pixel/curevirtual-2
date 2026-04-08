@@ -26,6 +26,7 @@ export default function PharmacyProfile() {
     longitude: "",
     openingHours: "",
     services: "",
+    maritalStatus: "SINGLE",
   });
 
   const [loading, setLoading] = useState(true);
@@ -48,6 +49,7 @@ export default function PharmacyProfile() {
       longitude: p.longitude ?? "",
       openingHours: p.openingHours ?? "",
       services: p.services ?? "",
+      maritalStatus: p.user?.maritalStatus ?? "SINGLE",
     }),
     [userId]
   );
@@ -196,6 +198,20 @@ export default function PharmacyProfile() {
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   placeholder="+1 555-0123"
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] ml-1">
+                  Marital Status
+                </label>
+                <select
+                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none"
+                  value={form.maritalStatus}
+                  onChange={(e) => setForm({ ...form, maritalStatus: e.target.value })}
+                >
+                  <option value="SINGLE">Single</option>
+                  <option value="MARRIED">Married</option>
+                </select>
               </div>
 
               {/* Address Section */}

@@ -30,6 +30,12 @@ function humanGender(g) {
   return map[g] || g;
 }
 
+function humanMaritalStatus(m) {
+  if (!m) return "—";
+  const map = { SINGLE: "Single", MARRIED: "Married" };
+  return map[m] || m;
+}
+
 function getInitials(name) {
   if (!name) return "P";
   const parts = String(name).trim().split(/\s+/);
@@ -159,6 +165,10 @@ export default function PatientViewProfile() {
                       {
                         label: "Phone",
                         value: profile.user?.phone || profile.phone || "—",
+                      },
+                      {
+                        label: "Marital Status",
+                        value: humanMaritalStatus(profile.user?.maritalStatus),
                       },
                       {
                         label: "Blood Group",

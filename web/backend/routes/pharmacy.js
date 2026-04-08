@@ -182,6 +182,7 @@ router.put("/profile", verifyToken, async (req, res) => {
       longitude,
       openingHours,
       services,
+      maritalStatus,
     } = req.body || {};
 
     const data = {
@@ -205,6 +206,7 @@ router.put("/profile", verifyToken, async (req, res) => {
     if (phone) userData.phone = String(phone).trim();
     if (firstName) userData.firstName = String(firstName).trim();
     if (lastName) userData.lastName = String(lastName).trim();
+    if (maritalStatus) userData.maritalStatus = maritalStatus;
 
     if (Object.keys(userData).length > 0) {
       await prisma.user.update({

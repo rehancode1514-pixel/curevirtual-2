@@ -202,6 +202,7 @@ router.put("/profile", async (req, res) => {
       timezone, // String
       bio,
       languages, // JSON string or array
+      maritalStatus,
       emergencyContact,
       emergencyContactName,
       emergencyContactEmail,
@@ -215,6 +216,7 @@ router.put("/profile", async (req, res) => {
       ...(middleName ? { middleName } : {}),
       ...(lastName ? { lastName } : {}),
       ...(phone ? { phone } : {}),
+      ...(maritalStatus ? { maritalStatus } : {}),
     };
 
     if (Object.keys(userData).length > 0) {

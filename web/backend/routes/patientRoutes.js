@@ -114,6 +114,7 @@ router.put("/profile", async (req, res) => {
       phone,
       dateOfBirth,
       gender,
+      maritalStatus,
       bloodGroup,
       height,
       heightUnit,
@@ -179,6 +180,7 @@ router.put("/profile", async (req, res) => {
         ...(phone !== undefined && { phone }),
         ...(validDob && { dateOfBirth: validDob }),
         ...(gender && { gender }),
+        ...(maritalStatus && { maritalStatus }),
       },
     });
 

@@ -43,6 +43,7 @@ export default function DoctorProfile() {
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
     bio: "",
     languages: "",
+    maritalStatus: "SINGLE",
     emergencyContact: "",
     emergencyContactName: "",
     emergencyContactEmail: "",
@@ -70,6 +71,7 @@ export default function DoctorProfile() {
           timezone: p.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
           bio: p.bio || "",
           languages: p.languages || "",
+          maritalStatus: p.user?.maritalStatus || "SINGLE",
           emergencyContact: p.emergencyContact || "",
           emergencyContactName: p.emergencyContactName || "",
           emergencyContactEmail: p.emergencyContactEmail || "",
@@ -189,6 +191,20 @@ export default function DoctorProfile() {
                   value={form.phone}
                   onChange={handleChange("phone")}
                 />
+              </div>
+
+              <div className="md:col-span-2 space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] ml-1">
+                  Marital Status
+                </label>
+                <select
+                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none"
+                  value={form.maritalStatus}
+                  onChange={handleChange("maritalStatus")}
+                >
+                  <option value="SINGLE">Single</option>
+                  <option value="MARRIED">Married</option>
+                </select>
               </div>
 
               <div className="space-y-1.5">
