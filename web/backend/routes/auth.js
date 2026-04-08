@@ -21,6 +21,7 @@ router.post("/register", async (req, res) => {
       role,
       dateOfBirth,
       gender,
+      maritalStatus,
       specialization,
     } = req.body || {};
 
@@ -47,6 +48,7 @@ router.post("/register", async (req, res) => {
         role,
         dateOfBirth,
         gender,
+        maritalStatus,
         specialization,
       },
     });
@@ -70,6 +72,7 @@ router.post("/register", async (req, res) => {
           role: role || "PATIENT",
           dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(),
           gender: gender || "PREFER_NOT_TO_SAY",
+          maritalStatus: maritalStatus || "SINGLE",
         },
       });
     } catch (dbError) {
@@ -118,6 +121,7 @@ router.post("/register-success", async (req, res) => {
       role,
       dateOfBirth,
       gender,
+      maritalStatus,
       specialization,
     } = req.body || {};
 
@@ -148,6 +152,7 @@ router.post("/register-success", async (req, res) => {
             role: role || "PATIENT",
             dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : new Date(),
             gender: gender || "PREFER_NOT_TO_SAY",
+            maritalStatus: maritalStatus || "SINGLE",
             // Organization can be created separately if needed
           },
         });

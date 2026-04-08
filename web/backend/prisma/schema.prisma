@@ -1,18 +1,1340 @@
 generator client {
-  provider        = "prisma-client-js"
-  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-  schemas   = ["public", "auth"]
+  schemas   = ["auth", "public"]
 }
 
-// =========================================================
-// ENUMS
-// =========================================================
+model User {
+  id                String           @id @default(uuid())
+  firstName         String
+  middleName        String?
+  lastName          String
+  email             String           @unique
+  phone             String?
+  password          String?
+  role              UserRole         @default(PATIENT)
+  dateOfBirth       DateTime
+  gender            Gender
+  maritalStatus     MaritalStatus?   @default(SINGLE)
+  subscriptionState SubStatus        @default(UNSUBSCRIBED)
+  organizationId    String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  stripeCustomerId  String?          @unique
+  doctor            DoctorProfile?
+  recvMessages      Message[]        @relation("MessagesRecv")
+  sentMessages      Message[]        @relation("MessagesSent")
+  patient           PatientProfile?
+  pharmacy          PharmacyProfile?
+  subscriptions     Subscription[]
+  supportAgent      SupportAgent?
+  sentReplies       SupportReply[]
+  raisedTickets     SupportTicket[]  @relation("raisedBy")
+  organization      Organization?    @relation(fields: [organizationId], references: [id])
+  notifications     Notification[]
+  transactions      Transaction[]
+
+  @@index([organizationId])
+  @@map("User")
+  @@schema("public")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+
+  @@map("Organization")
+  @@schema("public")
+}
+
+model SupportAgent {
+  id              Int             @id @default(autoincrement())
+  userId          String          @unique
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedTickets SupportTicket[]
+
+  @@map("SupportAgent")
+  @@schema("public")
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  actorId   String
+  actorRole String
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@map("ActivityLog")
+  @@schema("public")
+}
+
+model DoctorProfile {
+  id                    String              @id @default(uuid())
+  userId                String              @unique
+  specialization        String
+  customProfession      String?
+  qualifications        String
+  licenseNumber         String              @unique
+  hospitalAffiliation   String?
+  yearsOfExperience     Int?
+  consultationFee       Float
+  availability          String?
+  timezone              String              @default("UTC")
+  bio                   String?
+  languages             String?
+  emergencyContact      String?
+  emergencyContactName  String?
+  emergencyContactEmail String?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  appointments          Appointment[]       @relation("DoctorAppointments")
+  encounters            ClinicalEncounter[]
+  doctorPatients        DoctorPatient[]     @relation("DoctorPatient_Doctor")
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schedules             DoctorSchedule[]    @relation("DoctorSchedules")
+  labOrders             LabOrder[]
+  prescriptions         Prescription[]
+  referralsSent         Referral[]          @relation("Referrer")
+  referralsRecv         Referral[]          @relation("Referee")
+  consultations         VideoConsultation[] @relation("DoctorConsultations")
+
+  @@map("DoctorProfile")
+  @@schema("public")
+}
+
+model PharmacyProfile {
+  id                 String             @id @default(uuid())
+  userId             String             @unique
+  displayName        String?
+  licenseNumber      String?
+  phone              String?
+  address            String?
+  city               String?
+  state              String?
+  country            String?
+  postalCode         String?
+  latitude           Float?
+  longitude          Float?
+  openingHours       String?
+  services           String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescriptions      Prescription[]
+  selectedByPatients SelectedPharmacy[]
+  medicines          Medicine[]
+  medicineOrders     MedicineOrder[]
+
+  @@map("PharmacyProfile")
+  @@schema("public")
+}
+
+model PatientProfile {
+  id                    String              @id @default(uuid())
+  userId                String              @unique
+  bloodGroup            BloodGroup
+  height                Float?
+  heightUnit            String?             @default("cm")
+  weight                Float?
+  weightUnit            String?             @default("kg")
+  allergies             String?
+  medications           String?
+  medicalHistory        String?
+  address               String?
+  medicalRecordNumber   String?             @unique
+  insuranceProvider     String?
+  insuranceMemberId     String?
+  emergencyContact      String?
+  emergencyContactName  String?
+  emergencyContactEmail String?
+  riskLevel             String?
+  chronicConditions     String?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  appointments          Appointment[]       @relation("PatientAppointments")
+  encounters            ClinicalEncounter[]
+  doctorLinks           DoctorPatient[]     @relation("DoctorPatient_Patient")
+  labOrders             LabOrder[]
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prescriptions         Prescription[]
+  referrals             Referral[]
+  selectedPharmacies    SelectedPharmacy[]
+  consultations         VideoConsultation[] @relation("PatientConsultations")
+  medicineOrders        MedicineOrder[]
+
+  @@map("PatientProfile")
+  @@schema("public")
+}
+
+model Appointment {
+  id              String             @id @default(uuid())
+  doctorId        String
+  patientId       String
+  appointmentDate DateTime
+  startTime       DateTime?
+  endTime         DateTime?
+  reason          String?
+  status          AppointmentStatus  @default(PENDING)
+  chiefComplaint  String?
+  intakeNotes     String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  roomName        String?
+  callStatus      String             @default("idle")
+  paymentStatus   String?            @default("UNPAID")
+  paymentId       String?            @unique
+  doctor          DoctorProfile      @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
+  patient         PatientProfile     @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
+  encounter       ClinicalEncounter?
+  transactions    Transaction[]
+
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([appointmentDate])
+  @@map("Appointment")
+  @@schema("public")
+}
+
+model DoctorSchedule {
+  id            String        @id @default(uuid())
+  doctorId      String
+  dayOfWeek     Int
+  startTime     String
+  endTime       String
+  slotDuration  Int           @default(15)
+  effectiveFrom DateTime?
+  effectiveTo   DateTime?
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  doctor        DoctorProfile @relation("DoctorSchedules", fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@index([doctorId])
+  @@index([dayOfWeek])
+  @@map("DoctorSchedule")
+  @@schema("public")
+}
+
+model SupportTicket {
+  id        Int            @id @default(autoincrement())
+  ticketNo  String         @unique @default(uuid())
+  userId    String
+  agentId   Int?
+  subject   String
+  body      String
+  status    TicketStatus   @default(OPEN)
+  priority  Priority       @default(MEDIUM)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  replies   SupportReply[]
+  agent     SupportAgent?  @relation(fields: [agentId], references: [id])
+  user      User           @relation("raisedBy", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("SupportTicket")
+  @@schema("public")
+}
+
+model SupportReply {
+  id        Int           @id @default(autoincrement())
+  ticketId  Int
+  userId    String
+  message   String
+  createdAt DateTime      @default(now())
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("SupportReply")
+  @@schema("public")
+}
+
+model Prescription {
+  id             String                     @id @default(cuid())
+  doctorId       String
+  patientId      String
+  medication     String
+  dosage         String
+  frequency      String
+  duration       String
+  notes          String?
+  isControlled   Boolean                    @default(false)
+  deaNumber      String?
+  refills        Int                        @default(0)
+  drugAlerts     String?
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  pharmacyId     String?
+  dispatchStatus PrescriptionDispatchStatus @default(NONE)
+  dispatchedAt   DateTime?
+  encounterId    String?
+  doctor         DoctorProfile              @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  encounter      ClinicalEncounter?         @relation(fields: [encounterId], references: [id])
+  patient        PatientProfile             @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  pharmacy       PharmacyProfile?           @relation(fields: [pharmacyId], references: [id])
+  medicineOrders MedicineOrder[]
+
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([pharmacyId])
+  @@map("Prescription")
+  @@schema("public")
+}
+
+model ClinicalEncounter {
+  id            String          @id @default(uuid())
+  appointmentId String          @unique
+  doctorId      String
+  patientId     String
+  subjective    String?
+  objective     String?
+  assessment    String?
+  plan          String?
+  systolic      Int?
+  diastolic     Int?
+  pulse         Int?
+  temperature   Float?
+  weight        Float?
+  oxygenSat     Int?
+  status        EncounterStatus @default(DRAFT)
+  signedAt      DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  appointment   Appointment     @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  doctor        DoctorProfile   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient       PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  labOrders     LabOrder[]
+  prescriptions Prescription[]
+  referrals     Referral[]
+
+  @@map("ClinicalEncounter")
+  @@schema("public")
+}
+
+model LabOrder {
+  id          String             @id @default(uuid())
+  doctorId    String
+  patientId   String
+  encounterId String?
+  testName    String
+  status      LabStatus          @default(ORDERED)
+  results     String?
+  orderedAt   DateTime           @default(now())
+  completedAt DateTime?
+  doctor      DoctorProfile      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  encounter   ClinicalEncounter? @relation(fields: [encounterId], references: [id])
+  patient     PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("LabOrder")
+  @@schema("public")
+}
+
+model Referral {
+  id             String             @id @default(uuid())
+  doctorId       String
+  patientId      String
+  encounterId    String?
+  targetDoctorId String?
+  specialistName String?
+  type           ReferralType
+  reason         String
+  status         String             @default("PENDING")
+  doctor         DoctorProfile      @relation("Referrer", fields: [doctorId], references: [id], onDelete: Cascade)
+  encounter      ClinicalEncounter? @relation(fields: [encounterId], references: [id])
+  patient        PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  referee        DoctorProfile?     @relation("Referee", fields: [targetDoctorId], references: [id])
+
+  @@map("Referral")
+  @@schema("public")
+}
+
+model Message {
+  id         String    @id @default(cuid())
+  senderId   String?
+  receiverId String?
+  content    String
+  createdAt  DateTime  @default(now())
+  readAt     DateTime?
+  receiver   User?     @relation("MessagesRecv", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender     User?     @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("Message")
+  @@schema("public")
+}
+
+model VideoConsultation {
+  id              String             @id @default(uuid())
+  doctorId        String
+  patientId       String
+  title           String?
+  notes           String?
+  scheduledAt     DateTime
+  durationMins    Int?
+  status          ConsultationStatus @default(SCHEDULED)
+  roomName        String?
+  meetingUrl      String?
+  actualStartTime DateTime?
+  actualEndTime   DateTime?
+  recordingUrl    String?
+  failureReason   String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  doctor          DoctorProfile      @relation("DoctorConsultations", fields: [doctorId], references: [id], onDelete: Cascade)
+  patient         PatientProfile     @relation("PatientConsultations", fields: [patientId], references: [id], onDelete: Cascade)
+  videoSession    VideoSession?
+
+  @@index([doctorId])
+  @@index([patientId])
+  @@map("VideoConsultation")
+  @@schema("public")
+}
+
+model SubscriptionSetting {
+  id                 Int      @id @default(1)
+  doctorMonthlyUsd   Float?
+  doctorYearlyUsd    Float?
+  patientMonthlyUsd  Float?
+  patientYearlyUsd   Float?
+  pharmacyMonthlyUsd Float?
+  pharmacyYearlyUsd  Float?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("SubscriptionSetting")
+  @@schema("public")
+}
+
+model Subscription {
+  id                   String        @id @default(uuid())
+  userId               String
+  plan                 Plan
+  status               SubStatus     @default(PENDING)
+  provider             String?
+  reference            String?       @unique
+  amount               Int?
+  currency             String?
+  startDate            DateTime?
+  endDate              DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  currentPeriodEnd     DateTime?     @db.Timestamp(6)
+  user                 User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions         Transaction[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([plan])
+  @@map("Subscription")
+  @@schema("public")
+}
+
+model DoctorPatient {
+  id        String         @id @default(uuid())
+  doctorId  String
+  patientId String
+  createdAt DateTime       @default(now())
+  doctor    DoctorProfile  @relation("DoctorPatient_Doctor", fields: [doctorId], references: [id], onDelete: Cascade)
+  patient   PatientProfile @relation("DoctorPatient_Patient", fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, patientId])
+  @@index([patientId])
+  @@index([doctorId])
+  @@map("DoctorPatient")
+  @@schema("public")
+}
+
+model SelectedPharmacy {
+  id         String          @id @default(uuid())
+  patientId  String
+  pharmacyId String
+  preferred  Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+  patient    PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  pharmacy   PharmacyProfile @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, pharmacyId])
+  @@map("SelectedPharmacy")
+  @@schema("public")
+}
+
+model SystemSetting {
+  id          Int      @id @default(1)
+  systemName  String?
+  themeColor  String?
+  logoUrl     String?
+  defaultFee  Float?
+  monthlyPlan Float?
+  yearlyPlan  Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("SystemSetting")
+  @@schema("public")
+}
+
+model Medicine {
+  id                   String              @id @default(uuid())
+  pharmacyId           String
+  name                 String
+  genericName          String?
+  category             String
+  manufacturer         String?
+  description          String?
+  stockQuantity        Int                 @default(0)
+  unitPrice            Float
+  currency             String              @default("USD")
+  dosageForm           String?
+  strength             String?
+  packSize             Int?
+  isAvailable          Boolean             @default(true)
+  requiresPrescription Boolean             @default(true)
+  lowStockThreshold    Int                 @default(10)
+  imageUrl             String?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  pharmacy             PharmacyProfile     @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
+  orderItems           MedicineOrderItem[]
+
+  @@index([pharmacyId])
+  @@index([name])
+  @@map("medicine")
+  @@schema("public")
+}
+
+model MedicineOrder {
+  id                String              @id @default(uuid())
+  orderNumber       String              @unique
+  patientId         String
+  pharmacyId        String
+  prescriptionId    String?
+  status            OrderStatus         @default(PENDING)
+  subtotal          Float
+  deliveryFee       Float               @default(0)
+  tax               Float               @default(0)
+  discount          Float               @default(0)
+  totalAmount       Float
+  paymentStatus     String              @default("PENDING")
+  paymentMethod     String?
+  paymentReference  String?             @unique
+  deliveryAddress   String?
+  deliveryType      String              @default("PICKUP")
+  estimatedDelivery DateTime?
+  notes             String?
+  rejectionReason   String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  completedAt       DateTime?
+  patient           PatientProfile      @relation(fields: [patientId], references: [id])
+  pharmacy          PharmacyProfile     @relation(fields: [pharmacyId], references: [id])
+  prescription      Prescription?       @relation(fields: [prescriptionId], references: [id])
+  items             MedicineOrderItem[]
+  transactions      Transaction[]
+
+  @@index([patientId])
+  @@index([pharmacyId])
+  @@index([status])
+  @@index([orderNumber])
+  @@map("medicineorder")
+  @@schema("public")
+}
+
+model MedicineOrderItem {
+  id         String        @id @default(uuid())
+  orderId    String
+  medicineId String
+  quantity   Int
+  unitPrice  Float
+  totalPrice Float
+  medicine   Medicine      @relation(fields: [medicineId], references: [id])
+  order      MedicineOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([medicineId])
+  @@map("medicineorderitem")
+  @@schema("public")
+}
+
+model Transaction {
+  id                 String            @id @default(uuid())
+  userId             String
+  type               TransactionType
+  status             TransactionStatus @default(PENDING)
+  amount             Float
+  currency           String            @default("USD")
+  provider           String
+  providerTxId       String?           @unique
+  providerCustomerId String?
+  subscriptionId     String?
+  orderId            String?
+  description        String?
+  metadata           String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  appointmentId      String?
+  appointment        Appointment?      @relation(fields: [appointmentId], references: [id])
+  order              MedicineOrder?    @relation(fields: [orderId], references: [id])
+  subscription       Subscription?     @relation(fields: [subscriptionId], references: [id])
+  user               User              @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@map("transaction")
+  @@schema("public")
+}
+
+model Notification {
+  id         String           @id @default(uuid())
+  userId     String
+  type       NotificationType
+  title      String
+  message    String
+  link       String?
+  actionData String?
+  isRead     Boolean          @default(false)
+  readAt     DateTime?
+  createdAt  DateTime         @default(now())
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notification")
+  @@schema("public")
+}
+
+model VideoSession {
+  id             String            @id @default(uuid())
+  consultationId String            @unique
+  channelName    String            @unique
+  token          String?
+  uid            String?
+  startedAt      DateTime?
+  endedAt        DateTime?
+  duration       Int?
+  recordingUrl   String?
+  recordingId    String?
+  consultation   VideoConsultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+
+  @@map("videosession")
+  @@schema("public")
+}
+
+model SystemMetric {
+  id         String   @id @default(uuid())
+  metricType String
+  value      Float
+  metadata   String?
+  recordedAt DateTime @default(now())
+
+  @@index([metricType, recordedAt])
+  @@map("systemmetric")
+  @@schema("public")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model audit_log_entries {
+  instance_id String?   @db.Uuid
+  id          String    @id @db.Uuid
+  payload     Json?     @db.Json
+  created_at  DateTime? @db.Timestamptz(6)
+  ip_address  String    @default("") @db.VarChar(64)
+
+  @@index([instance_id], map: "audit_logs_instance_id_idx")
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model custom_oauth_providers {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provider_type         String
+  identifier            String    @unique
+  name                  String
+  client_id             String
+  client_secret         String
+  acceptable_client_ids String[]  @default([])
+  scopes                String[]  @default([])
+  pkce_enabled          Boolean   @default(true)
+  attribute_mapping     Json      @default("{}")
+  authorization_params  Json      @default("{}")
+  enabled               Boolean   @default(true)
+  email_optional        Boolean   @default(false)
+  issuer                String?
+  discovery_url         String?
+  skip_nonce_check      Boolean   @default(false)
+  cached_discovery      Json?
+  discovery_cached_at   DateTime? @db.Timestamptz(6)
+  authorization_url     String?
+  token_url             String?
+  userinfo_url          String?
+  jwks_uri              String?
+  created_at            DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime  @default(now()) @db.Timestamptz(6)
+
+  @@index([created_at])
+  @@index([enabled])
+  @@index([identifier])
+  @@index([provider_type])
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model flow_state {
+  id                     String                 @id @db.Uuid
+  user_id                String?                @db.Uuid
+  auth_code              String?
+  code_challenge_method  code_challenge_method?
+  code_challenge         String?
+  provider_type          String
+  provider_access_token  String?
+  provider_refresh_token String?
+  created_at             DateTime?              @db.Timestamptz(6)
+  updated_at             DateTime?              @db.Timestamptz(6)
+  authentication_method  String
+  auth_code_issued_at    DateTime?              @db.Timestamptz(6)
+  invite_token           String?
+  referrer               String?
+  oauth_client_state_id  String?                @db.Uuid
+  linking_target_id      String?                @db.Uuid
+  email_optional         Boolean                @default(false)
+  saml_relay_states      saml_relay_states[]
+
+  @@index([created_at(sort: Desc)])
+  @@index([auth_code], map: "idx_auth_code")
+  @@index([user_id, authentication_method], map: "idx_user_id_auth_method")
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model identities {
+  provider_id     String
+  user_id         String    @db.Uuid
+  identity_data   Json
+  provider        String
+  last_sign_in_at DateTime? @db.Timestamptz(6)
+  created_at      DateTime? @db.Timestamptz(6)
+  updated_at      DateTime? @db.Timestamptz(6)
+  email           String?   @default(dbgenerated("lower((identity_data ->> 'email'::text))"))
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  users           users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([provider_id, provider], map: "identities_provider_id_provider_unique")
+  @@index([email])
+  @@index([user_id])
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model instances {
+  id              String    @id @db.Uuid
+  uuid            String?   @db.Uuid
+  raw_base_config String?
+  created_at      DateTime? @db.Timestamptz(6)
+  updated_at      DateTime? @db.Timestamptz(6)
+
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model mfa_amr_claims {
+  session_id            String   @db.Uuid
+  created_at            DateTime @db.Timestamptz(6)
+  updated_at            DateTime @db.Timestamptz(6)
+  authentication_method String
+  id                    String   @id(map: "amr_id_pk") @db.Uuid
+  sessions              sessions @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([session_id, authentication_method], map: "mfa_amr_claims_session_id_authentication_method_pkey")
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model mfa_challenges {
+  id                     String      @id @db.Uuid
+  factor_id              String      @db.Uuid
+  created_at             DateTime    @db.Timestamptz(6)
+  verified_at            DateTime?   @db.Timestamptz(6)
+  ip_address             String      @db.Inet
+  otp_code               String?
+  web_authn_session_data Json?
+  mfa_factors            mfa_factors @relation(fields: [factor_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "mfa_challenges_auth_factor_id_fkey")
+
+  @@index([created_at(sort: Desc)], map: "mfa_challenge_created_at_idx")
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model mfa_factors {
+  id                           String           @id @db.Uuid
+  user_id                      String           @db.Uuid
+  friendly_name                String?
+  factor_type                  factor_type
+  status                       factor_status
+  created_at                   DateTime         @db.Timestamptz(6)
+  updated_at                   DateTime         @db.Timestamptz(6)
+  secret                       String?
+  phone                        String?
+  last_challenged_at           DateTime?        @unique @db.Timestamptz(6)
+  web_authn_credential         Json?
+  web_authn_aaguid             String?          @db.Uuid
+  last_webauthn_challenge_data Json?
+  mfa_challenges               mfa_challenges[]
+  users                        users            @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, phone], map: "unique_phone_factor_per_user")
+  @@index([user_id, created_at], map: "factor_id_created_at_idx")
+  @@index([user_id])
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model oauth_authorizations {
+  id                    String                     @id @db.Uuid
+  authorization_id      String                     @unique
+  client_id             String                     @db.Uuid
+  user_id               String?                    @db.Uuid
+  redirect_uri          String
+  scope                 String
+  state                 String?
+  resource              String?
+  code_challenge        String?
+  code_challenge_method code_challenge_method?
+  response_type         oauth_response_type        @default(code)
+  status                oauth_authorization_status @default(pending)
+  authorization_code    String?                    @unique
+  created_at            DateTime                   @default(now()) @db.Timestamptz(6)
+  expires_at            DateTime                   @default(dbgenerated("(now() + '00:03:00'::interval)")) @db.Timestamptz(6)
+  approved_at           DateTime?                  @db.Timestamptz(6)
+  nonce                 String?
+  oauth_clients         oauth_clients              @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                 users?                     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model oauth_client_states {
+  id            String   @id @db.Uuid
+  provider_type String
+  code_verifier String?
+  created_at    DateTime @db.Timestamptz(6)
+
+  @@index([created_at], map: "idx_oauth_client_states_created_at")
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model oauth_clients {
+  id                         String                  @id @db.Uuid
+  client_secret_hash         String?
+  registration_type          oauth_registration_type
+  redirect_uris              String
+  grant_types                String
+  client_name                String?
+  client_uri                 String?
+  logo_uri                   String?
+  created_at                 DateTime                @default(now()) @db.Timestamptz(6)
+  updated_at                 DateTime                @default(now()) @db.Timestamptz(6)
+  deleted_at                 DateTime?               @db.Timestamptz(6)
+  client_type                oauth_client_type       @default(confidential)
+  token_endpoint_auth_method String
+  oauth_authorizations       oauth_authorizations[]
+  oauth_consents             oauth_consents[]
+  sessions                   sessions[]
+
+  @@index([deleted_at])
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model oauth_consents {
+  id            String        @id @db.Uuid
+  user_id       String        @db.Uuid
+  client_id     String        @db.Uuid
+  scopes        String
+  granted_at    DateTime      @default(now()) @db.Timestamptz(6)
+  revoked_at    DateTime?     @db.Timestamptz(6)
+  oauth_clients oauth_clients @relation(fields: [client_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users         users         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, client_id], map: "oauth_consents_user_client_unique")
+  @@index([user_id, granted_at(sort: Desc)], map: "oauth_consents_user_order_idx")
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model one_time_tokens {
+  id         String              @id @db.Uuid
+  user_id    String              @db.Uuid
+  token_type one_time_token_type
+  token_hash String
+  relates_to String
+  created_at DateTime            @default(now()) @db.Timestamp(6)
+  updated_at DateTime            @default(now()) @db.Timestamp(6)
+  users      users               @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, token_type])
+  @@index([relates_to], map: "one_time_tokens_relates_to_hash_idx", type: Hash)
+  @@index([token_hash], map: "one_time_tokens_token_hash_hash_idx", type: Hash)
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model refresh_tokens {
+  instance_id String?   @db.Uuid
+  id          BigInt    @id @default(autoincrement())
+  token       String?   @unique(map: "refresh_tokens_token_unique") @db.VarChar(255)
+  user_id     String?   @db.VarChar(255)
+  revoked     Boolean?
+  created_at  DateTime? @db.Timestamptz(6)
+  updated_at  DateTime? @db.Timestamptz(6)
+  parent      String?   @db.VarChar(255)
+  session_id  String?   @db.Uuid
+  sessions    sessions? @relation(fields: [session_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([instance_id])
+  @@index([instance_id, user_id])
+  @@index([parent])
+  @@index([session_id, revoked])
+  @@index([updated_at(sort: Desc)])
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model saml_providers {
+  id                String        @id @db.Uuid
+  sso_provider_id   String        @db.Uuid
+  entity_id         String        @unique
+  metadata_xml      String
+  metadata_url      String?
+  attribute_mapping Json?
+  created_at        DateTime?     @db.Timestamptz(6)
+  updated_at        DateTime?     @db.Timestamptz(6)
+  name_id_format    String?
+  sso_providers     sso_providers @relation(fields: [sso_provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([sso_provider_id])
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model saml_relay_states {
+  id              String        @id @db.Uuid
+  sso_provider_id String        @db.Uuid
+  request_id      String
+  for_email       String?
+  redirect_to     String?
+  created_at      DateTime?     @db.Timestamptz(6)
+  updated_at      DateTime?     @db.Timestamptz(6)
+  flow_state_id   String?       @db.Uuid
+  flow_state      flow_state?   @relation(fields: [flow_state_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  sso_providers   sso_providers @relation(fields: [sso_provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([created_at(sort: Desc)])
+  @@index([for_email])
+  @@index([sso_provider_id])
+  @@schema("auth")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model schema_migrations {
+  version String @id @db.VarChar(255)
+
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model sessions {
+  id                     String           @id @db.Uuid
+  user_id                String           @db.Uuid
+  created_at             DateTime?        @db.Timestamptz(6)
+  updated_at             DateTime?        @db.Timestamptz(6)
+  factor_id              String?          @db.Uuid
+  aal                    aal_level?
+  not_after              DateTime?        @db.Timestamptz(6)
+  refreshed_at           DateTime?        @db.Timestamp(6)
+  user_agent             String?
+  ip                     String?          @db.Inet
+  tag                    String?
+  oauth_client_id        String?          @db.Uuid
+  refresh_token_hmac_key String?
+  refresh_token_counter  BigInt?
+  scopes                 String?
+  mfa_amr_claims         mfa_amr_claims[]
+  refresh_tokens         refresh_tokens[]
+  oauth_clients          oauth_clients?   @relation(fields: [oauth_client_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                  users            @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([not_after(sort: Desc)])
+  @@index([oauth_client_id])
+  @@index([user_id])
+  @@index([user_id, created_at], map: "user_id_created_at_idx")
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model sso_domains {
+  id              String        @id @db.Uuid
+  sso_provider_id String        @db.Uuid
+  domain          String
+  created_at      DateTime?     @db.Timestamptz(6)
+  updated_at      DateTime?     @db.Timestamptz(6)
+  sso_providers   sso_providers @relation(fields: [sso_provider_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([sso_provider_id])
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model sso_providers {
+  id                String              @id @db.Uuid
+  resource_id       String?
+  created_at        DateTime?           @db.Timestamptz(6)
+  updated_at        DateTime?           @db.Timestamptz(6)
+  disabled          Boolean?
+  saml_providers    saml_providers[]
+  saml_relay_states saml_relay_states[]
+  sso_domains       sso_domains[]
+
+  @@index([resource_id], map: "sso_providers_resource_id_pattern_idx")
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
+model users {
+  instance_id                 String?                @db.Uuid
+  id                          String                 @id @db.Uuid
+  aud                         String?                @db.VarChar(255)
+  role                        String?                @db.VarChar(255)
+  email                       String?                @db.VarChar(255)
+  encrypted_password          String?                @db.VarChar(255)
+  email_confirmed_at          DateTime?              @db.Timestamptz(6)
+  invited_at                  DateTime?              @db.Timestamptz(6)
+  confirmation_token          String?                @db.VarChar(255)
+  confirmation_sent_at        DateTime?              @db.Timestamptz(6)
+  recovery_token              String?                @db.VarChar(255)
+  recovery_sent_at            DateTime?              @db.Timestamptz(6)
+  email_change_token_new      String?                @db.VarChar(255)
+  email_change                String?                @db.VarChar(255)
+  email_change_sent_at        DateTime?              @db.Timestamptz(6)
+  last_sign_in_at             DateTime?              @db.Timestamptz(6)
+  raw_app_meta_data           Json?
+  raw_user_meta_data          Json?
+  is_super_admin              Boolean?
+  created_at                  DateTime?              @db.Timestamptz(6)
+  updated_at                  DateTime?              @db.Timestamptz(6)
+  phone                       String?                @unique
+  phone_confirmed_at          DateTime?              @db.Timestamptz(6)
+  phone_change                String?                @default("")
+  phone_change_token          String?                @default("") @db.VarChar(255)
+  phone_change_sent_at        DateTime?              @db.Timestamptz(6)
+  confirmed_at                DateTime?              @default(dbgenerated("LEAST(email_confirmed_at, phone_confirmed_at)")) @db.Timestamptz(6)
+  email_change_token_current  String?                @default("") @db.VarChar(255)
+  email_change_confirm_status Int?                   @default(0) @db.SmallInt
+  banned_until                DateTime?              @db.Timestamptz(6)
+  reauthentication_token      String?                @default("") @db.VarChar(255)
+  reauthentication_sent_at    DateTime?              @db.Timestamptz(6)
+  is_sso_user                 Boolean                @default(false)
+  deleted_at                  DateTime?              @db.Timestamptz(6)
+  is_anonymous                Boolean                @default(false)
+  identities                  identities[]
+  mfa_factors                 mfa_factors[]
+  oauth_authorizations        oauth_authorizations[]
+  oauth_consents              oauth_consents[]
+  one_time_tokens             one_time_tokens[]
+  sessions                    sessions[]
+  webauthn_challenges         webauthn_challenges[]
+  webauthn_credentials        webauthn_credentials[]
+  profiles                    profiles?
+
+  @@index([instance_id])
+  @@index([is_anonymous])
+  @@schema("auth")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model webauthn_challenges {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id        String?  @db.Uuid
+  challenge_type String
+  session_data   Json
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+  expires_at     DateTime @db.Timestamptz(6)
+  users          users?   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([expires_at])
+  @@index([user_id])
+  @@schema("auth")
+}
+
+model webauthn_credentials {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String    @db.Uuid
+  credential_id    Bytes     @unique
+  public_key       Bytes
+  attestation_type String    @default("")
+  aaguid           String?   @db.Uuid
+  sign_count       BigInt    @default(0)
+  transports       Json      @default("[]")
+  backup_eligible  Boolean   @default(false)
+  backed_up        Boolean   @default(false)
+  friendly_name    String    @default("")
+  created_at       DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime  @default(now()) @db.Timestamptz(6)
+  last_used_at     DateTime? @db.Timestamptz(6)
+  users            users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id])
+  @@schema("auth")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model EmailOTP {
+  id        Int       @id @default(autoincrement())
+  email     String
+  otp       String
+  expiresAt DateTime  @db.Timestamp(6)
+  verified  Boolean?  @default(false)
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+
+  @@index([email])
+  @@index([expiresAt])
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model messages {
+  id                                      String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  sender_id                               String?   @db.Uuid
+  receiver_id                             String?   @db.Uuid
+  title                                   String?
+  body                                    String
+  type                                    String?   @default("admin_message")
+  is_read                                 Boolean?  @default(false)
+  created_at                              DateTime? @default(now()) @db.Timestamptz(6)
+  profiles_messages_receiver_idToprofiles profiles? @relation("messages_receiver_idToprofiles", fields: [receiver_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  profiles_messages_sender_idToprofiles   profiles? @relation("messages_sender_idToprofiles", fields: [sender_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model plans {
+  id                String         @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name              String
+  price_usd         Decimal        @db.Decimal(10, 2)
+  daily_roi_percent Decimal        @db.Decimal(5, 2)
+  duration_days     Int
+  active            Boolean?       @default(true)
+  created_at        DateTime?      @default(now()) @db.Timestamptz(6)
+  transactions      transactions[]
+  user_plans        user_plans[]
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model profiles {
+  id                                                                 String                 @id @db.Uuid
+  full_name                                                          String?
+  email                                                              String                 @unique
+  username                                                           String?
+  country                                                            String?
+  phone_number                                                       String?
+  referral_code                                                      String?                @unique
+  referred_by                                                        String?
+  team_id                                                            String?                @db.Uuid
+  role                                                               String?                @default("user")
+  balance                                                            Decimal?               @default(0.00) @db.Decimal(10, 2)
+  total_roi                                                          Decimal?               @default(0.00) @db.Decimal(10, 2)
+  total_invested                                                     Decimal?               @default(0.00) @db.Decimal(10, 2)
+  email_verified                                                     Boolean?               @default(false)
+  email_confirmed_at                                                 DateTime?              @db.Timestamptz(6)
+  created_at                                                         DateTime?              @default(now()) @db.Timestamptz(6)
+  updated_at                                                         DateTime?              @default(now()) @db.Timestamptz(6)
+  messages_messages_receiver_idToprofiles                            messages[]             @relation("messages_receiver_idToprofiles")
+  messages_messages_sender_idToprofiles                              messages[]             @relation("messages_sender_idToprofiles")
+  users                                                              users                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  team_member_requests_team_member_requests_requested_byToprofiles   team_member_requests[] @relation("team_member_requests_requested_byToprofiles")
+  team_member_requests_team_member_requests_target_user_idToprofiles team_member_requests[] @relation("team_member_requests_target_user_idToprofiles")
+  team_messages                                                      team_messages[]
+  team_requests                                                      team_requests[]
+  teams                                                              teams[]
+  transactions                                                       transactions[]
+  user_plans                                                         user_plans[]
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model team_member_requests {
+  id                                                     String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  team_id                                                String?   @db.Uuid
+  requested_by                                           String?   @db.Uuid
+  target_user_id                                         String?   @db.Uuid
+  status                                                 String?   @default("pending")
+  note                                                   String?
+  created_at                                             DateTime? @default(now()) @db.Timestamptz(6)
+  profiles_team_member_requests_requested_byToprofiles   profiles? @relation("team_member_requests_requested_byToprofiles", fields: [requested_by], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  profiles_team_member_requests_target_user_idToprofiles profiles? @relation("team_member_requests_target_user_idToprofiles", fields: [target_user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model team_messages {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  team_id    String?   @db.Uuid
+  sender_id  String?   @db.Uuid
+  body       String
+  created_at DateTime? @default(now()) @db.Timestamptz(6)
+  profiles   profiles? @relation(fields: [sender_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model team_requests {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id      String?   @db.Uuid
+  team_name    String?
+  request_type String?
+  status       String?   @default("pending")
+  team_id      String?   @db.Uuid
+  created_at   DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime? @default(now()) @db.Timestamptz(6)
+  profiles     profiles? @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model teams {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  total_deposit Decimal?  @default(0.00) @db.Decimal(10, 2)
+  live_profit   Decimal?  @default(0.00) @db.Decimal(10, 2)
+  score         Int?      @default(0)
+  owner_id      String?   @db.Uuid
+  status        String?   @default("approved")
+  created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  profiles      profiles? @relation(fields: [owner_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model teams_backup {
+  id            String?   @db.Uuid
+  name          String?
+  total_deposit Decimal?  @db.Decimal(10, 2)
+  live_profit   Decimal?  @db.Decimal(10, 2)
+  score         Int?
+  owner_id      String?   @db.Uuid
+  status        String?
+  created_at    DateTime? @db.Timestamptz(6)
+
+  @@ignore
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model transactions {
+  id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id        String    @db.Uuid
+  type           String
+  amount         Decimal   @db.Decimal(10, 2)
+  status         String?   @default("pending")
+  plan_id        String?   @db.Uuid
+  notes          String?
+  screenshot_url String?
+  proof_url      String?
+  request_number String?
+  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime? @default(now()) @db.Timestamptz(6)
+  plans          plans?    @relation(fields: [plan_id], references: [id], onUpdate: NoAction)
+  profiles       profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_plans {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id         String    @db.Uuid
+  plan_id         String    @db.Uuid
+  amount_invested Decimal   @db.Decimal(10, 2)
+  start_date      DateTime? @default(now()) @db.Timestamptz(6)
+  end_date        DateTime  @db.Timestamptz(6)
+  active          Boolean?  @default(true)
+  total_earned    Decimal?  @default(0.00) @db.Decimal(10, 2)
+  created_at      DateTime? @default(now()) @db.Timestamptz(6)
+  plans           plans     @relation(fields: [plan_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  profiles        profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@schema("public")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model weekly_battles {
+  id             String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title          String
+  description    String?
+  start_date     DateTime  @db.Timestamptz(6)
+  end_date       DateTime  @db.Timestamptz(6)
+  winner_team_id String?   @db.Uuid
+  status         String?   @default("active")
+  created_at     DateTime? @default(now()) @db.Timestamptz(6)
+
+  @@schema("public")
+}
 
 enum UserRole {
   DOCTOR
@@ -30,6 +1352,13 @@ enum Gender {
   FEMALE
   OTHER
   PREFER_NOT_TO_SAY
+
+  @@schema("public")
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
 
   @@schema("public")
 }
@@ -83,8 +1412,6 @@ enum ConsultationStatus {
 
 enum AppointmentStatus {
   PENDING
-  PENDING_PAYMENT
-  PAYMENT_FAILED
   APPROVED
   CHECKED_IN
   WAITING
@@ -93,6 +1420,8 @@ enum AppointmentStatus {
   CANCELLED
   SCHEDULED
   NO_SHOW
+  PENDING_PAYMENT
+  PAYMENT_FAILED
 
   @@schema("public")
 }
@@ -159,563 +1488,6 @@ enum SlotStatus {
   @@schema("public")
 }
 
-// =========================================================
-// MODELS
-// =========================================================
-
-model User {
-  id          String   @id @default(uuid())
-  firstName   String
-  middleName  String?
-  lastName    String
-  email       String   @unique
-  phone       String?
-  password    String? // Made optional - Supabase manages passwords
-  role        UserRole @default(PATIENT)
-  dateOfBirth DateTime
-  gender      Gender
-
-  stripeCustomerId String? @unique
-
-  subscriptionState SubStatus @default(UNSUBSCRIBED)
-
-  subscriptions Subscription[]
-  doctor        DoctorProfile?
-  patient       PatientProfile?
-  pharmacy      PharmacyProfile?
-
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-
-  sentMessages Message[] @relation("MessagesSent")
-  recvMessages Message[] @relation("MessagesRecv")
-
-  supportAgent  SupportAgent?
-  raisedTickets SupportTicket[] @relation("raisedBy")
-  sentReplies   SupportReply[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  transactions  Transaction[]
-  notifications Notification[]
-
-  @@index([organizationId])
-  @@map("User")
-  @@schema("public")
-}
-
-model Organization {
-  id      String  @id @default(uuid())
-  name    String
-  ownerId String?
-
-  users User[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("Organization")
-  @@schema("public")
-}
-
-model SupportAgent {
-  id        Int      @id @default(autoincrement())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  assignedTickets SupportTicket[]
-
-  @@map("SupportAgent")
-  @@schema("public")
-}
-
-model ActivityLog {
-  id        Int      @id @default(autoincrement())
-  actorId   String
-  actorRole String
-  action    String
-  entity    String?
-  entityId  String?
-  metadata  String?  @db.Text
-  ipAddress String?
-  createdAt DateTime @default(now())
-
-  @@map("ActivityLog")
-  @@schema("public")
-}
-
-model DoctorProfile {
-  id                  String  @id @default(uuid())
-  userId              String  @unique
-  user                User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  specialization      String
-  customProfession    String?
-  qualifications      String
-  licenseNumber       String  @unique
-  hospitalAffiliation String?
-  yearsOfExperience   Int?
-  consultationFee     Float
-  availability        String? @db.Text
-  timezone            String  @default("UTC")
-  bio                 String?
-  languages           String? @db.Text
-
-  emergencyContact      String? @db.Text
-  emergencyContactName  String?
-  emergencyContactEmail String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  prescriptions  Prescription[]
-  consultations  VideoConsultation[] @relation("DoctorConsultations")
-  appointments   Appointment[]       @relation("DoctorAppointments")
-  doctorPatients DoctorPatient[]     @relation("DoctorPatient_Doctor")
-  schedules      DoctorSchedule[]    @relation("DoctorSchedules")
-
-  encounters    ClinicalEncounter[]
-  labOrders     LabOrder[]
-  referralsSent Referral[]          @relation("Referrer")
-  referralsRecv Referral[]          @relation("Referee")
-
-  @@map("DoctorProfile")
-  @@schema("public")
-}
-
-model PharmacyProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  displayName   String?
-  licenseNumber String?
-  phone         String?
-  address       String?
-  city          String?
-  state         String?
-  country       String?
-  postalCode    String?
-
-  latitude  Float?
-  longitude Float?
-
-  openingHours String? @db.Text
-  services     String? @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  prescriptions      Prescription[]
-  selectedByPatients SelectedPharmacy[]
-
-  medicines      Medicine[]
-  medicineOrders MedicineOrder[]
-
-  @@map("PharmacyProfile")
-  @@schema("public")
-}
-
-model PatientProfile {
-  id             String     @id @default(uuid())
-  userId         String     @unique
-  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bloodGroup     BloodGroup
-  height         Float?
-  heightUnit     String?    @default("cm")
-  weight         Float?
-  weightUnit     String?    @default("kg")
-  allergies      String?    @db.Text
-  medications    String?    @db.Text
-  medicalHistory String?    @db.Text
-  address        String?
-
-  medicalRecordNumber String? @unique
-  insuranceProvider   String?
-  insuranceMemberId   String?
-
-  emergencyContact      String? @db.Text
-  emergencyContactName  String?
-  emergencyContactEmail String?
-
-  riskLevel         String?
-  chronicConditions String? @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  selectedPharmacies SelectedPharmacy[]
-
-  prescriptions  Prescription[]
-  consultations  VideoConsultation[] @relation("PatientConsultations")
-  appointments   Appointment[]       @relation("PatientAppointments")
-  doctorLinks    DoctorPatient[]     @relation("DoctorPatient_Patient")
-  encounters     ClinicalEncounter[]
-  labOrders      LabOrder[]
-  referrals      Referral[]
-  medicineOrders MedicineOrder[]
-
-  @@map("PatientProfile")
-  @@schema("public")
-}
-
-model Appointment {
-  id        String @id @default(uuid())
-  doctorId  String
-  patientId String
-
-  appointmentDate DateTime // Start time
-  startTime       DateTime? // New explicit start time
-  endTime         DateTime? // New explicit end time
-
-  reason String?
-  status AppointmentStatus @default(PENDING)
-
-  chiefComplaint String? @db.Text
-  intakeNotes    String? @db.Text
-
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  roomName   String?
-  callStatus String   @default("idle")
-
-  paymentStatus String  @default("UNPAID") // UNPAID, PAID, FAILED
-  paymentId     String? @unique
-
-  doctor       DoctorProfile      @relation("DoctorAppointments", fields: [doctorId], references: [id], onDelete: Cascade)
-  patient      PatientProfile     @relation("PatientAppointments", fields: [patientId], references: [id], onDelete: Cascade)
-  encounter    ClinicalEncounter?
-  transactions Transaction[]
-
-  @@index([doctorId])
-  @@index([patientId])
-  @@index([appointmentDate])
-  @@map("Appointment")
-  @@schema("public")
-}
-
-model DoctorSchedule {
-  id        String @id @default(uuid())
-  doctorId  String
-  dayOfWeek Int // 0=Sunday, 1=Monday, ...
-  startTime String // "09:00"
-  endTime   String // "17:00"
-
-  slotDuration Int @default(15) // Duration in minutes
-
-  effectiveFrom DateTime?
-  effectiveTo   DateTime?
-  isActive      Boolean   @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  doctor DoctorProfile @relation("DoctorSchedules", fields: [doctorId], references: [id], onDelete: Cascade)
-
-  @@index([doctorId])
-  @@index([dayOfWeek])
-  @@map("DoctorSchedule")
-  @@schema("public")
-}
-
-model SupportTicket {
-  id        Int            @id @default(autoincrement())
-  ticketNo  String         @unique @default(uuid())
-  userId    String
-  user      User           @relation("raisedBy", fields: [userId], references: [id], onDelete: Cascade)
-  agentId   Int?
-  agent     SupportAgent?  @relation(fields: [agentId], references: [id], onDelete: SetNull)
-  subject   String
-  body      String         @db.Text
-  status    TicketStatus   @default(OPEN)
-  priority  Priority       @default(MEDIUM)
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  replies   SupportReply[]
-
-  @@map("SupportTicket")
-  @@schema("public")
-}
-
-model SupportReply {
-  id       Int           @id @default(autoincrement())
-  ticketId Int
-  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  message   String   @db.Text
-  createdAt DateTime @default(now())
-
-  @@map("SupportReply")
-  @@schema("public")
-}
-
-// Prescription and other models kept as is
-model Prescription {
-  id         String  @id @default(cuid())
-  doctorId   String
-  patientId  String
-  medication String
-  dosage     String
-  frequency  String
-  duration   String
-  notes      String?
-
-  isControlled Boolean @default(false)
-  deaNumber    String?
-  refills      Int     @default(0)
-  drugAlerts   String? @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  pharmacyId     String?
-  pharmacy       PharmacyProfile?           @relation(fields: [pharmacyId], references: [id], onDelete: SetNull)
-  dispatchStatus PrescriptionDispatchStatus @default(NONE)
-  dispatchedAt   DateTime?
-
-  doctor      DoctorProfile      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  patient     PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  encounterId String?
-  encounter   ClinicalEncounter? @relation(fields: [encounterId], references: [id])
-
-  medicineOrders MedicineOrder[]
-
-  @@index([doctorId])
-  @@index([patientId])
-  @@index([pharmacyId])
-  @@map("Prescription")
-  @@schema("public")
-}
-
-model ClinicalEncounter {
-  id            String @id @default(uuid())
-  appointmentId String @unique
-  doctorId      String
-  patientId     String
-
-  subjective String? @db.Text
-  objective  String? @db.Text
-  assessment String? @db.Text
-  plan       String? @db.Text
-
-  systolic    Int?
-  diastolic   Int?
-  pulse       Int?
-  temperature Float?
-  weight      Float?
-  oxygenSat   Int?
-
-  status   EncounterStatus @default(DRAFT)
-  signedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  appointment   Appointment    @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-  doctor        DoctorProfile  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  patient       PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  prescriptions Prescription[]
-  labOrders     LabOrder[]
-  referrals     Referral[]
-
-  @@map("ClinicalEncounter")
-  @@schema("public")
-}
-
-model LabOrder {
-  id          String  @id @default(uuid())
-  doctorId    String
-  patientId   String
-  encounterId String?
-
-  testName    String
-  status      LabStatus @default(ORDERED)
-  results     String?   @db.Text
-  orderedAt   DateTime  @default(now())
-  completedAt DateTime?
-
-  doctor    DoctorProfile      @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-  patient   PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  encounter ClinicalEncounter? @relation(fields: [encounterId], references: [id])
-
-  @@map("LabOrder")
-  @@schema("public")
-}
-
-model Referral {
-  id          String  @id @default(uuid())
-  doctorId    String
-  patientId   String
-  encounterId String?
-
-  targetDoctorId String?
-  specialistName String?
-  type           ReferralType
-  reason         String       @db.Text
-  status         String       @default("PENDING")
-
-  doctor    DoctorProfile      @relation("Referrer", fields: [doctorId], references: [id], onDelete: Cascade)
-  referee   DoctorProfile?     @relation("Referee", fields: [targetDoctorId], references: [id])
-  patient   PatientProfile     @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  encounter ClinicalEncounter? @relation(fields: [encounterId], references: [id])
-
-  @@map("Referral")
-  @@schema("public")
-}
-
-model Message {
-  id         String    @id @default(cuid())
-  senderId   String?
-  receiverId String?
-  content    String
-  createdAt  DateTime  @default(now())
-  readAt     DateTime?
-
-  sender   User? @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver User? @relation("MessagesRecv", fields: [receiverId], references: [id], onDelete: Cascade)
-
-  @@map("Message")
-  @@schema("public")
-}
-
-model VideoConsultation {
-  id              String             @id @default(uuid())
-  doctorId        String
-  patientId       String
-  title           String?
-  notes           String?
-  scheduledAt     DateTime
-  durationMins    Int?
-  status          ConsultationStatus @default(SCHEDULED)
-  roomName        String?
-  meetingUrl      String?
-  actualStartTime DateTime?
-  actualEndTime   DateTime?
-  recordingUrl    String?
-  failureReason   String?
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-
-  doctor  DoctorProfile  @relation("DoctorConsultations", fields: [doctorId], references: [id], onDelete: Cascade)
-  patient PatientProfile @relation("PatientConsultations", fields: [patientId], references: [id], onDelete: Cascade)
-
-  videoSession VideoSession?
-
-  @@index([doctorId])
-  @@index([patientId])
-  @@map("VideoConsultation")
-  @@schema("public")
-}
-
-model SubscriptionSetting {
-  id                 Int      @id @default(1)
-  doctorMonthlyUsd   Float?
-  doctorYearlyUsd    Float?
-  patientMonthlyUsd  Float?
-  patientYearlyUsd   Float?
-  pharmacyMonthlyUsd Float?
-  pharmacyYearlyUsd  Float?
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-
-  @@map("SubscriptionSetting")
-  @@schema("public")
-}
-
-model Subscription {
-  id     String    @id @default(uuid())
-  userId String
-  user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan   Plan
-  status SubStatus @default(PENDING)
-
-  provider  String?
-  reference String? @unique
-  amount    Int?
-  currency  String?
-
-  startDate DateTime?
-  endDate   DateTime?
-
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  currentPeriodEnd     DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  transactions Transaction[]
-
-  @@index([userId])
-  @@index([status])
-  @@index([plan])
-  @@map("Subscription")
-  @@schema("public")
-}
-
-model DoctorPatient {
-  id        String @id @default(uuid())
-  doctorId  String
-  patientId String
-
-  doctor  DoctorProfile  @relation(name: "DoctorPatient_Doctor", fields: [doctorId], references: [id], onDelete: Cascade)
-  patient PatientProfile @relation(name: "DoctorPatient_Patient", fields: [patientId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([doctorId, patientId])
-  @@index([patientId])
-  @@index([doctorId])
-  @@map("DoctorPatient")
-  @@schema("public")
-}
-
-model SelectedPharmacy {
-  id         String  @id @default(uuid())
-  patientId  String
-  pharmacyId String
-  preferred  Boolean @default(false)
-
-  patient  PatientProfile  @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  pharmacy PharmacyProfile @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([patientId, pharmacyId])
-  @@map("SelectedPharmacy")
-  @@schema("public")
-}
-
-model SystemSetting {
-  id          Int      @id @default(1)
-  systemName  String?
-  themeColor  String?
-  logoUrl     String?
-  defaultFee  Float?
-  monthlyPlan Float?
-  yearlyPlan  Float?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("SystemSetting")
-  @@schema("public")
-}
-
-// ============================================
-// CUREVIRTUAL V2.0 - NEW SCHEMA ADDITIONS
-// ============================================
-// This file contains all new models to be added to the main schema.prisma
-// Copy these models into your main schema.prisma file
-
-// ============================================
-// ENUMS (Add to existing enums section)
-// ============================================
-
 enum OrderStatus {
   PENDING
   CONFIRMED
@@ -733,8 +1505,8 @@ enum TransactionType {
   SUBSCRIPTION_PAYMENT
   ORDER_PAYMENT
   CONSULTATION_PAYMENT
-  APPOINTMENT_PAYMENT
   REFUND
+  APPOINTMENT_PAYMENT
 
   @@schema("public")
 }
@@ -759,267 +1531,72 @@ enum NotificationType {
   @@schema("public")
 }
 
-// ============================================
-// PHARMACY INVENTORY MANAGEMENT
-// ============================================
+enum aal_level {
+  aal1
+  aal2
+  aal3
 
-model Medicine {
-  id         String          @id @default(uuid())
-  pharmacyId String
-  pharmacy   PharmacyProfile @relation(fields: [pharmacyId], references: [id], onDelete: Cascade)
-
-  name         String
-  genericName  String?
-  category     String // e.g., "Antibiotic", "Painkiller"
-  manufacturer String?
-  description  String? @db.Text
-
-  // Inventory
-  stockQuantity Int    @default(0)
-  unitPrice     Float // Price per unit
-  currency      String @default("USD")
-
-  // Product Details
-  dosageForm String? // e.g., "Tablet", "Syrup", "Injection"
-  strength   String? // e.g., "500mg"
-  packSize   Int? // Units per pack
-
-  // Availability
-  isAvailable          Boolean @default(true)
-  requiresPrescription Boolean @default(true)
-
-  // Alerts
-  lowStockThreshold Int @default(10)
-
-  // Images
-  imageUrl String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  orderItems MedicineOrderItem[]
-
-  @@index([pharmacyId])
-  @@index([name])
-  @@map("medicine")
-  @@schema("public")
+  @@schema("auth")
 }
 
-// ============================================
-// MEDICINE ORDERS (Patient → Pharmacy)
-// ============================================
+enum code_challenge_method {
+  s256
+  plain
 
-model MedicineOrder {
-  id          String @id @default(uuid())
-  orderNumber String @unique // e.g., "ORD-2025-001"
-
-  // Relations
-  patientId String
-  patient   PatientProfile @relation(fields: [patientId], references: [id])
-
-  pharmacyId String
-  pharmacy   PharmacyProfile @relation(fields: [pharmacyId], references: [id])
-
-  prescriptionId String? // Optional: linked prescription
-  prescription   Prescription? @relation(fields: [prescriptionId], references: [id], onDelete: SetNull)
-
-  // Order Details
-  status OrderStatus         @default(PENDING)
-  items  MedicineOrderItem[]
-
-  // Pricing
-  subtotal    Float
-  deliveryFee Float @default(0)
-  tax         Float @default(0)
-  discount    Float @default(0)
-  totalAmount Float
-
-  // Payment
-  paymentStatus    String  @default("PENDING") // PENDING, PAID, FAILED
-  paymentMethod    String? // e.g., "CARD", "CASH"
-  paymentReference String? @unique
-
-  // Delivery
-  deliveryAddress   String?   @db.Text
-  deliveryType      String    @default("PICKUP") // PICKUP, DELIVERY
-  estimatedDelivery DateTime?
-
-  // Tracking
-  notes           String? @db.Text
-  rejectionReason String? @db.Text
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  completedAt DateTime?
-
-  // Relations
-  transactions Transaction[]
-
-  @@index([patientId])
-  @@index([pharmacyId])
-  @@index([status])
-  @@index([orderNumber])
-  @@map("medicineorder")
-  @@schema("public")
+  @@schema("auth")
 }
 
-model MedicineOrderItem {
-  id      String        @id @default(uuid())
-  orderId String
-  order   MedicineOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+enum factor_status {
+  unverified
+  verified
 
-  medicineId String
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
-
-  quantity   Int
-  unitPrice  Float
-  totalPrice Float
-
-  @@index([orderId])
-  @@index([medicineId])
-  @@map("medicineorderitem")
-  @@schema("public")
+  @@schema("auth")
 }
 
-// ============================================
-// PAYMENTS & TRANSACTIONS
-// ============================================
+enum factor_type {
+  totp
+  webauthn
+  phone
 
-model Transaction {
-  id String @id @default(uuid())
-
-  // User
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  // Transaction Details
-  type     TransactionType
-  status   TransactionStatus @default(PENDING)
-  amount   Float
-  currency String            @default("USD")
-
-  // Payment Gateway
-  provider           String // e.g., "STRIPE", "PAYPAL", "MOCK"
-  providerTxId       String? @unique // Stripe payment intent ID
-  providerCustomerId String?
-
-  // References
-  subscriptionId String?
-  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
-
-  orderId String?
-  order   MedicineOrder? @relation(fields: [orderId], references: [id], onDelete: SetNull)
-
-  appointmentId String?
-  appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
-
-  // Metadata
-  description String?
-  metadata    String? @db.Text // JSON string
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([status])
-  @@index([type])
-  @@map("transaction")
-  @@schema("public")
+  @@schema("auth")
 }
 
-// ============================================
-// REAL-TIME NOTIFICATIONS
-// ============================================
+enum oauth_authorization_status {
+  pending
+  approved
+  denied
+  expired
 
-model Notification {
-  id     String @id @default(uuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  type    NotificationType
-  title   String
-  message String           @db.Text
-
-  // Metadata
-  link       String? // URL to navigate
-  actionData String? @db.Text // JSON metadata
-
-  isRead Boolean   @default(false)
-  readAt DateTime?
-
-  createdAt DateTime @default(now())
-
-  @@index([userId, isRead])
-  @@index([createdAt])
-  @@map("notification")
-  @@schema("public")
+  @@schema("auth")
 }
 
-// ============================================
-// VIDEO CONSULTATION ENHANCEMENTS
-// ============================================
+enum oauth_client_type {
+  public
+  confidential
 
-model VideoSession {
-  id             String            @id @default(uuid())
-  consultationId String            @unique
-  consultation   VideoConsultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
-
-  // Agora/Twilio Details
-  channelName String  @unique
-  token       String? @db.Text
-  uid         String?
-
-  // Session State
-  startedAt DateTime?
-  endedAt   DateTime?
-  duration  Int? // minutes
-
-  // Recording (if enabled)
-  recordingUrl String?
-  recordingId  String?
-
-  @@map("videosession")
-  @@schema("public")
+  @@schema("auth")
 }
 
-// ============================================
-// ANALYTICS & REPORTING
-// ============================================
+enum oauth_registration_type {
+  dynamic
+  manual
 
-model SystemMetric {
-  id         String   @id @default(uuid())
-  metricType String // e.g., "DAILY_REVENUE", "ACTIVE_USERS", "ORDERS_COUNT"
-  value      Float
-  metadata   String?  @db.Text // JSON
-  recordedAt DateTime @default(now())
-
-  @@index([metricType, recordedAt])
-  @@map("systemmetric")
-  @@schema("public")
+  @@schema("auth")
 }
 
-// ============================================
-// RELATION UPDATES FOR EXISTING MODELS
-// ============================================
-// Add these fields to existing models in your main schema.prisma:
+enum oauth_response_type {
+  code
 
-// User model - Add:
-//   transactions    Transaction[]
-//   notifications   Notification[]
+  @@schema("auth")
+}
 
-// PharmacyProfile model - Add:
-//   medicines       Medicine[]
-//   medicineOrders  MedicineOrder[]
+enum one_time_token_type {
+  confirmation_token
+  reauthentication_token
+  recovery_token
+  email_change_token_new
+  email_change_token_current
+  phone_change_token
 
-// PatientProfile model - Add:
-//   medicineOrders  MedicineOrder[]
-
-// Prescription model - Add:
-//   medicineOrders  MedicineOrder[]
-
-// Subscription model - Add:
-//   transactions    Transaction[]
-
-// VideoConsultation model - Add:
-//   videoSession    VideoSession?
+  @@schema("auth")
+}

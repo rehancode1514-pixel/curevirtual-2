@@ -22,6 +22,7 @@ export default function Register() {
     customProfession: "",
     gender: "PREFER_NOT_TO_SAY",
     dateOfBirth: "",
+    maritalStatus: "SINGLE",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -45,6 +46,15 @@ export default function Register() {
       return;
     }
 
+    if (form.dateOfBirth) {
+      const birthDate = new Date(form.dateOfBirth);
+      const today = new Date();
+      if (birthDate > today) {
+        toast.error("Date of Birth cannot be in the future.");
+        return;
+      }
+    }
+
     setSubmitting(true);
     try {
       // Register with Supabase Auth
@@ -58,6 +68,7 @@ export default function Register() {
             role: form.role,
             dateOfBirth: form.dateOfBirth,
             gender: form.gender,
+            maritalStatus: form.maritalStatus,
             specialization:
               form.specialization === "Other" ? form.customProfession : form.specialization,
           },
@@ -77,6 +88,7 @@ export default function Register() {
         role: form.role,
         dateOfBirth: form.dateOfBirth,
         gender: form.gender,
+        maritalStatus: form.maritalStatus,
         specialization:
           form.specialization === "Other" ? form.customProfession : form.specialization,
       });
@@ -227,6 +239,7 @@ export default function Register() {
                   required
                 />
               </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
                   Gender
@@ -243,6 +256,22 @@ export default function Register() {
                   <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
                 </select>
               </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                  Marital Status
+                </label>
+                <select
+                  name="maritalStatus"
+                  value={form.maritalStatus}
+                  onChange={handleChange}
+                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
+                >
+                  <option value="SINGLE">Single</option>
+                  <option value="MARRIED">Married</option>
+                </select>
+              </div>
+            </div>
             </div>
 
             <div className="space-y-1.5">
