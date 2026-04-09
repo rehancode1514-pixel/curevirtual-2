@@ -193,8 +193,8 @@ export default function Home() {
               </div>
               <div className="w-px h-10 bg-[var(--border)]"></div>
               <div className="text-center">
-                <p className="text-2xl md:text-3xl font-black text-[var(--brand-green)]">100%</p>
-                <p className="text-[10px] font-black uppercase tracking-widest">Secure</p>
+                <p className="text-2xl md:text-3xl font-black text-[var(--brand-green)]">Privacy</p>
+                <p className="text-[10px] font-black uppercase tracking-widest">Protected</p>
               </div>
             </div>
           </div>
