@@ -31,8 +31,6 @@ const DASHBOARD_CONFIGS = {
       { id: 'messages', label: 'Messages', icon: 'chatbubbles-outline', target: 'MessagesTab' },
       { id: 'reports', label: 'Lab Reports', icon: 'thermometer-outline', target: 'HomeTab', screen: 'HealthRecords' },
       { id: 'video', label: 'Video Call', icon: 'videocam-outline', target: 'HomeTab', screen: 'VideoCall' },
-      { id: 'payments', label: 'Payments', icon: 'card-outline', target: 'ProfileTab' },
-      { id: 'packages', label: 'Packages', icon: 'cube-outline', target: 'ProfileTab' },
       { id: 'profile', label: 'My Profile', icon: 'person-outline', target: 'ProfileTab' },
       { id: 'all', label: 'See All', icon: 'ellipsis-horizontal-outline', target: 'HomeTab' },
     ]
@@ -50,8 +48,6 @@ const DASHBOARD_CONFIGS = {
       { id: 'messages', label: 'Messages', icon: 'chatbubbles-outline', target: 'MessagesTab' },
       { id: 'video', label: 'Video Call', icon: 'videocam-outline', target: 'HomeTab', screen: 'VideoCall' },
       { id: 'reports', label: 'Reports', icon: 'pie-chart-outline', target: 'PatientsTab', screen: 'PatientHistory' },
-      { id: 'wallet', label: 'Earnings', icon: 'cash-outline', target: 'ProfileTab' },
-      { id: 'packages', label: 'Packages', icon: 'cube-outline', target: 'ProfileTab' },
       { id: 'profile', label: 'My Profile', icon: 'person-outline', target: 'ProfileTab' },
       { id: 'all', label: 'See All', icon: 'ellipsis-horizontal-outline', target: 'HomeTab' },
     ]

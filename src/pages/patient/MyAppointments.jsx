@@ -636,31 +636,6 @@ export default function MyAppointments() {
         </div>
       )}
 
-      {/* Payment Modal */}
-      {paymentClientSecret && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setPaymentClientSecret(null)}></div>
-          <div className="relative w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl animate-in zoom-in-95 duration-300">
-            <h3 className="text-xl font-black text-gray-800 tracking-tighter uppercase mb-6 text-center">
-              Complete Payment
-            </h3>
-            <div className="bg-blue-50 text-blue-800 p-4 rounded-xl mb-6 flex justify-between font-bold text-sm">
-              <span>Session Fee</span>
-              <span>$10.00</span>
-            </div>
-            <Elements stripe={stripePromise} options={{ clientSecret: paymentClientSecret }}>
-              <CheckoutForm 
-                clientSecret={paymentClientSecret} 
-                onSuccess={handlePaymentSuccess} 
-                onCancel={() => {
-                  setPaymentClientSecret(null);
-                }} 
-              />
-            </Elements>
-          </div>
-        </div>
-      )}
-
       {confirmOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="relative w-full max-w-md glass !p-8 animate-in zoom-in-95 duration-300">
