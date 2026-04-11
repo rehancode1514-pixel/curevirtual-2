@@ -32,7 +32,6 @@ export default function MyAppointments() {
   const [rescheduleId, setRescheduleId] = useState(null);
   const [joiningCallId, setJoiningCallId] = useState(null);
   const [paymentClientSecret, setPaymentClientSecret] = useState(null);
-  const [payingAppointmentId, setPayingAppointmentId] = useState(null);
 
   // Track previous callStatus to detect transitions
   const prevCallStatuses = useRef({});
@@ -184,28 +183,11 @@ export default function MyAppointments() {
     }
   };
 
-  const handlePay = async (appt) => {
-    try {
-      const res = await api.post("/session/create", {
-        patientId: patientUserId,
-        doctorId: appt.doctorId,
-        appointmentId: appt.id
-      });
-      if (res.data.clientSecret) {
-        setPaymentClientSecret(res.data.clientSecret);
-        setPayingAppointmentId(appt.id);
-      } else {
-        toast.error("No checkout token returned.");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to start payment");
-    }
-  };
+
 
   const handlePaymentSuccess = () => {
     toast.success("Payment completed successfully!");
     setPaymentClientSecret(null);
-    setPayingAppointmentId(null);
     fetchAppointments(); // Refresh statuses
   };
 
@@ -266,7 +248,8 @@ export default function MyAppointments() {
 
   // Render video/call button based on callStatus
   const renderCallButton = (appt) => {
-    if (appt.status !== "APPROVED") return null;
+    // Allow joining for all active statuses during testing
+    if (["CANCELLED", "COMPLETED"].includes(appt.status)) return null;
 
     const cs = (appt.callStatus || "idle").toLowerCase();
     const isJoining = joiningCallId === appt.id;
@@ -325,7 +308,7 @@ export default function MyAppointments() {
   // Render inline call notification banner
   const renderCallBanner = (appt) => {
     const cs = (appt.callStatus || "idle").toLowerCase();
-    if (appt.status !== "APPROVED") return null;
+    if (["CANCELLED", "COMPLETED"].includes(appt.status)) return null;
 
     switch (cs) {
       case "idle":
@@ -498,16 +481,9 @@ export default function MyAppointments() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex justify-center gap-3">
-                          {(a.status === "PENDING" || a.status === "PENDING_PAYMENT") && (
-                            <button
-                              onClick={() => handlePay(a)}
-                              className="px-3 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-500 hover:bg-orange-500 hover:text-white transition-all text-xs font-bold whitespace-nowrap"
-                              title="Pay for Session"
-                            >
-                              Pay Now
-                            </button>
-                          )}
-                          {(a.status === "PENDING" || a.status === "APPROVED") && (
+
+                          {/* Allow actions for all active statuses */}
+                          {!["CANCELLED", "COMPLETED"].includes(a.status) && (
                             <>
                               <button
                                 onClick={() => handleUpdate(a)}
@@ -678,7 +654,6 @@ export default function MyAppointments() {
                 onSuccess={handlePaymentSuccess} 
                 onCancel={() => {
                   setPaymentClientSecret(null);
-                  setPayingAppointmentId(null);
                 }} 
               />
             </Elements>

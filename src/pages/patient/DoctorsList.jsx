@@ -79,12 +79,7 @@ function DoctorViewModal({ open, onClose, doctor, onAssign, isAssigned }) {
                     {d.yearsOfExperience != null ? `${d.yearsOfExperience} years` : "—"}
                   </span>
                 </p>
-                <p>
-                  <span className="text-[var(--text-muted)]">Fee:</span>{" "}
-                  <span className="font-medium text-green-400">
-                    {d.consultationFee != null ? `$${Number(d.consultationFee).toFixed(2)}` : "—"}
-                  </span>
-                </p>
+
                 <p>
                   <span className="text-[var(--text-muted)]">Languages:</span>{" "}
                   <span>{langs.length ? langs.join(", ") : "—"}</span>
@@ -370,7 +365,7 @@ export default function DoctorsList() {
                     <th className="p-3">Specialization</th>
                     <th className="p-3">Experience</th>
                     <th className="p-3">Availability</th>
-                    <th className="p-3">Fee</th>
+
                     <th className="p-3">Actions</th>
                   </tr>
                 </thead>
@@ -400,11 +395,7 @@ export default function DoctorsList() {
                             {status.label}
                           </span>
                         </td>
-                        <td className="p-3">
-                          {d.consultationFee != null
-                            ? `$${Number(d.consultationFee).toFixed(2)}`
-                            : "—"}
-                        </td>
+
                         <td className="p-3">
                           <div className="flex items-center gap-3">
                             <button

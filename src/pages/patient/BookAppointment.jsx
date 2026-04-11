@@ -229,7 +229,7 @@ const BookAppointment = () => {
                       : "bg-blue-700 hover:bg-blue-800"
                   } text-white`}
                 >
-                  {loading ? "Preparing..." : "Proceed to Payment"}
+                  {loading ? "Preparing..." : "Confirm Booking"}
                 </button>
               </form>
             )}
@@ -237,7 +237,6 @@ const BookAppointment = () => {
             {bookingStep === 'payment' && checkoutData && (
               <CheckoutForm 
                 appointmentId={checkoutData.appointmentId}
-                doctorFee={checkoutData.doctorFee}
                 onSuccess={handlePaymentSuccess}
                 onCancel={handlePaymentCancel}
               />
@@ -251,7 +250,7 @@ const BookAppointment = () => {
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-[var(--text-main)] mb-2">Booking Confirmed!</h2>
-                <p className="text-[var(--text-soft)] mb-6">Your appointment is scheduled and paid for. Check your dashboard for details.</p>
+                <p className="text-[var(--text-soft)] mb-6">Your appointment is scheduled. Check your dashboard for details.</p>
                 <button 
                   onClick={() => setBookingStep('select')}
                   className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition"
@@ -271,9 +270,6 @@ const BookAppointment = () => {
                 </p>
                 <p className="text-[var(--text-soft)]">
                   <strong>Specialization:</strong> {selectedDoctor.specialization}
-                </p>
-                <p className="text-[var(--text-soft)]">
-                  <strong>Fee:</strong> ${selectedDoctor.consultationFee}
                 </p>
               </div>
             )}

@@ -41,7 +41,7 @@ function DoctorViewModal({ open, onClose, doctor }) {
             <p><strong>Specialization:</strong> {d.specialization || "—"}</p>
             <p><strong>Qualifications:</strong> {d.qualifications || "—"}</p>
             <p><strong>Experience:</strong> {d.yearsOfExperience != null ? `${d.yearsOfExperience} yrs` : "—"}</p>
-            <p><strong>Consultation Fee:</strong> {d.consultationFee != null ? `$${Number(d.consultationFee).toFixed(2)}` : "—"}</p>
+
           </div>
           <div>
             <p><strong>License #:</strong> {d.licenseNumber || "—"}</p>
@@ -166,7 +166,7 @@ export default function MyDoctors() {
                     <th className="p-3">Name</th>
                     <th className="p-3">Specialization</th>
                     <th className="p-3">Experience</th>
-                    <th className="p-3">Fee</th>
+
                     <th className="p-3 text-center">Profile</th>
                   </tr>
                 </thead>
@@ -181,9 +181,7 @@ export default function MyDoctors() {
                       <td className="p-3">
                         {d.yearsOfExperience != null ? `${d.yearsOfExperience} yrs` : "—"}
                       </td>
-                      <td className="p-3">
-                        {d.consultationFee != null ? `$${Number(d.consultationFee).toFixed(2)}` : "—"}
-                      </td>
+
                       <td className="p-3">
                         <div className="flex justify-center">
                           <button

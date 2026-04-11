@@ -144,7 +144,7 @@ export default function VideoCallScreen({ navigation, route }) {
           </View>
         </View>
 
-        {isScheduled && (
+        {!['CANCELLED', 'COMPLETED', 'FAILED'].includes(item.status) && (
           <TouchableOpacity style={styles.joinBtn} onPress={() => startCall(item)}>
             <Ionicons name="videocam" size={20} color={COLORS.white} />
             <Text style={styles.joinBtnText}>Enter Hub</Text>

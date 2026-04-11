@@ -18,9 +18,12 @@ const StatusPill = ({ status }) => {
   const s = (status || "").toUpperCase();
   const base = "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border";
   switch (s) {
+    case "PENDING_PAYMENT":
     case "SCHEDULED":
       return (
-        <span className={`${base} bg-orange-500/20 text-orange-500 border-orange-500/30`}>{s}</span>
+        <span className={`${base} bg-orange-500/20 text-orange-500 border-orange-500/30`}>
+          {s === "PENDING_PAYMENT" ? "APPROVED" : s}
+        </span>
       );
     case "ONGOING":
       return (
@@ -213,7 +216,7 @@ export default function VideoConsultation() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex justify-center gap-4">
-                          {c.status === "SCHEDULED" && (
+                          {!["CANCELLED", "COMPLETED"].includes(c.status) && (
                             <>
                               <button
                                 onClick={() => {
