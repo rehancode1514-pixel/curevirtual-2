@@ -106,18 +106,42 @@ export default function VideoCallScreen({ navigation, route }) {
   const renderItem = ({ item }) => {
     const isScheduled = item.status === 'SCHEDULED' || item.status === 'ONGOING';
     
+    // Resolve display name based on role
+    const isDoctor = user?.role === 'DOCTOR';
+    const otherParty = isDoctor ? item.patient : item.doctor;
+    const otherUser = otherParty?.user;
+    
+    const firstName = otherUser?.firstName || '';
+    const lastName = otherUser?.lastName || '';
+    const otherName = [firstName, lastName].filter(Boolean).join(' ') || (isDoctor ? 'Patient' : 'Doctor');
+    const initial = (firstName[0] || (isDoctor ? 'P' : 'D')).toUpperCase();
+
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Consultation</Text>
+          <View style={styles.cardHeaderLeft}>
+            <View style={styles.miniAvatar}>
+              <Text style={styles.avatarText}>{initial}</Text>
+            </View>
+            <View>
+              <Text style={styles.cardTitle}>{otherName}</Text>
+              <Text style={styles.cardSubTitle}>Video Consultation</Text>
+            </View>
+          </View>
           <View style={[styles.statusBadge, { backgroundColor: isScheduled ? COLORS.brandBlue + '20' : COLORS.brandGreen + '20' }]}>
             <Text style={[styles.statusText, { color: isScheduled ? COLORS.brandBlue : COLORS.brandGreen }]}>{item.status}</Text>
           </View>
         </View>
 
         <View style={styles.cardBody}>
-          <Text style={styles.infoText}>Duration: {item.durationMins || 30} mins</Text>
-          <Text style={styles.infoText}>Time: {new Date(item.scheduledAt).toLocaleString()}</Text>
+          <View style={styles.infoRow}>
+            <Ionicons name="time-outline" size={14} color={COLORS.textSoft} />
+            <Text style={styles.infoText}>Time: {new Date(item.scheduledAt).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
+          </View>
+          <View style={styles.infoRow}>
+            <Ionicons name="hourglass-outline" size={14} color={COLORS.textSoft} />
+            <Text style={styles.infoText}>Duration: {item.durationMins || 30} mins</Text>
+          </View>
         </View>
 
         {isScheduled && (
@@ -165,12 +189,24 @@ const styles = StyleSheet.create({
   listContent: { padding: SPACING.md },
   
   card: { backgroundColor: COLORS.white, borderRadius: RADIUS.md, padding: SPACING.lg, marginBottom: SPACING.md, ...SHADOWS.sm },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.sm },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.md },
+  cardHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
+  miniAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: `${COLORS.brandGreen}15`,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarText: { fontSize: 14, fontWeight: TYPOGRAPHY.black, color: COLORS.brandGreen },
   cardTitle: { fontSize: TYPOGRAPHY.md, fontWeight: TYPOGRAPHY.bold, color: COLORS.textMain },
+  cardSubTitle: { fontSize: 10, color: COLORS.textMuted, marginTop: 1 },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: RADIUS.full },
   statusText: { fontSize: TYPOGRAPHY.xs, fontWeight: TYPOGRAPHY.bold },
-  cardBody: { marginBottom: SPACING.md },
-  infoText: { fontSize: TYPOGRAPHY.sm, color: COLORS.textSoft, marginBottom: 4 },
+  cardBody: { marginBottom: SPACING.lg, paddingLeft: 4 },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
+  infoText: { fontSize: TYPOGRAPHY.sm, color: COLORS.textSoft },
   joinBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.brandBlue, padding: SPACING.md, borderRadius: RADIUS.sm, gap: 8 },
   joinBtnText: { color: COLORS.white, fontWeight: TYPOGRAPHY.bold, fontSize: TYPOGRAPHY.sm },
 

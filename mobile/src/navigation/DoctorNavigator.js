@@ -7,7 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
-import HomeScreen from '../screens/Shared/HomeScreen';
+import DoctorDashboard from '../screens/Doctor/DoctorDashboard';
 import PatientHistoryScreen from '../screens/Doctor/PatientHistoryScreen';
 import MyPatientsScreen from '../screens/Doctor/MyPatientsScreen';
 import SchedulesScreen from '../screens/Doctor/SchedulesScreen';
@@ -36,7 +36,7 @@ const DrawerButton = ({ navigation }) => (
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="DoctorHome" component={HomeScreen} options={{ title: 'Dashboard', headerShown: false }} />
+      <Stack.Screen name="DoctorHome" component={DoctorDashboard} options={{ title: 'Dashboard', headerShown: false }} />
       <Stack.Screen name="PatientHistory" component={PatientHistoryScreen} options={{ title: 'Patient Records' }} />
       <Stack.Screen name="Chat" component={ChatScreen} options={({ route }) => ({ title: route.params?.name || 'Chat' })} />
       <Stack.Screen name="Schedules" component={SchedulesScreen} options={{ title: 'Manage Schedule' }} />
