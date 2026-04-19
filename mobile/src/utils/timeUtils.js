@@ -1,4 +1,5 @@
 import { getDeviceTimezone } from './timezones';
+import { format } from 'date-fns-tz';
 
 /**
  * Resolves the target timezone based on user preference.
@@ -39,12 +40,7 @@ export const formatToLocalTime = (date, timezone = 'auto') => {
   const d = typeof date === 'string' ? new Date(date) : date;
   const tz = resolveUserTimezone(timezone);
 
-  return d.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: tz
-  });
+  return format(d, 'hh:mm a', { timeZone: tz });
 };
 
 /**

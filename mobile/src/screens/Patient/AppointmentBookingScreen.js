@@ -102,7 +102,8 @@ export default function AppointmentBookingScreen({ route, navigation }) {
           .filter(s => s.status === 'AVAILABLE')
           .map(s => {
             const label = formatToLocalTime(s.startTime, userTimezone);
-            console.log(`  -> Slot Conv: ${s.startTime} (UTC) -> ${label} (Local: ${userTimezone})`);
+            // 🚨 DEBUG LOG for Timezone validation
+            console.log(`[Timezone FIX DEBUG] Slot Received: ${s.startTime} (UTC) -> Displaying: ${label} (Tz: ${userTimezone})`);
             return {
               id: s.id,
               label: label,

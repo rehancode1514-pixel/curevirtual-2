@@ -77,19 +77,41 @@ router.post("/", async (req, res) => {
       });
     if (!doctorProfile) return res.status(404).json({ error: "Doctor profile not found" });
 
-    // Check conflicts
+    // 🔧 UTC CONVERSION LOGIC (Fixed for "Always Store UTC")
+    const doctorTz = doctorProfile.timezone || DEFAULT_TIMEZONE;
+    
+    // Create a dummy date to perform the shift
+    const dummyDate = "2024-01-01"; // Monday
+    const localStartStr = `${dummyDate} ${startTime}:00`;
+    const localEndStr = `${dummyDate} ${endTime}:00`;
+    
+    const utcStartDate = fromZonedTime(localStartStr, doctorTz);
+    const utcEndDate = fromZonedTime(localEndStr, doctorTz);
+
+    // Calculate shifts relative to dummy Monday (2024-01-01)
+    // getUTCDay() returns 1 for Monday
+    const dayShift = utcStartDate.getUTCDay() - 1; 
+    const newDayOfWeek = (parseInt(dayOfWeek) + dayShift + 7) % 7;
+    
+    const pad = (n) => String(n).padStart(2, "0");
+    const utcStartFormatted = `${pad(utcStartDate.getUTCHours())}:${pad(utcStartDate.getUTCMinutes())}`;
+    const utcEndFormatted = `${pad(utcEndDate.getUTCHours())}:${pad(utcEndDate.getUTCMinutes())}`;
+
+    console.log(`[Schedule DEBUG] Doctor (${doctorTz}) local: ${startTime}-${endTime} (Day ${dayOfWeek}) -> UTC: ${utcStartFormatted}-${utcEndFormatted} (Day ${newDayOfWeek})`);
+
+    // Check conflicts (now using UTC values for comparison)
     const existing = await prisma.doctorSchedule.findMany({
       where: {
         doctorId: doctorProfile.id,
-        dayOfWeek: parseInt(dayOfWeek),
+        dayOfWeek: newDayOfWeek,
         isActive: true,
       },
     });
 
     for (const slot of existing) {
-      if (hasTimeConflict(startTime, endTime, slot.startTime, slot.endTime)) {
+      if (hasTimeConflict(utcStartFormatted, utcEndFormatted, slot.startTime, slot.endTime)) {
         return res.status(409).json({
-          error: `Conflict with existing slot: ${slot.startTime}-${slot.endTime}`,
+          error: `Conflict with existing slot: ${slot.startTime}-${slot.endTime} (UTC)`,
         });
       }
     }
@@ -97,9 +119,9 @@ router.post("/", async (req, res) => {
     const schedule = await prisma.doctorSchedule.create({
       data: {
         doctorId: doctorProfile.id,
-        dayOfWeek: parseInt(dayOfWeek),
-        startTime,
-        endTime,
+        dayOfWeek: newDayOfWeek,
+        startTime: utcStartFormatted,
+        endTime: utcEndFormatted,
         slotDuration: 15,
         isActive: true,
       },
@@ -116,9 +138,33 @@ router.post("/", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    // We should ideally check conflicts here too if times are changing.
-    // For now assuming simple toggle or update without complex validation for brevity,
-    // but in production add conflict check.
+    const { startTime, endTime, dayOfWeek } = req.body;
+
+    // If times are updating, we need to convert them to UTC
+    if (startTime || endTime || dayOfWeek !== undefined) {
+      const scheduleRecord = await prisma.doctorSchedule.findUnique({
+        where: { id },
+        include: { doctor: true }
+      });
+      
+      const doctorTz = scheduleRecord.doctor.timezone || DEFAULT_TIMEZONE;
+      const targetStartTime = startTime || scheduleRecord.startTime;
+      const targetEndTime = endTime || scheduleRecord.endTime;
+      const targetDay = dayOfWeek !== undefined ? dayOfWeek : scheduleRecord.dayOfWeek;
+
+      const dummyDate = "2024-01-01"; // Monday
+      const utcStartDate = fromZonedTime(`${dummyDate} ${targetStartTime}:00`, doctorTz);
+      const utcEndDate = fromZonedTime(`${dummyDate} ${targetEndTime}:00`, doctorTz);
+
+      const dayShift = utcStartDate.getUTCDay() - 1;
+      req.body.dayOfWeek = (parseInt(targetDay) + dayShift + 7) % 7;
+      
+      const pad = (n) => String(n).padStart(2, "0");
+      req.body.startTime = `${pad(utcStartDate.getUTCHours())}:${pad(utcStartDate.getUTCMinutes())}`;
+      req.body.endTime = `${pad(utcEndDate.getUTCHours())}:${pad(utcEndDate.getUTCMinutes())}`;
+      
+      console.log(`[Schedule DEBUG] Update: Local Day ${targetDay} ${targetStartTime} -> UTC Day ${req.body.dayOfWeek} ${req.body.startTime}`);
+    }
 
     const updated = await prisma.doctorSchedule.update({
       where: { id },
@@ -126,6 +172,7 @@ router.patch("/:id", async (req, res) => {
     });
     res.json({ success: true, data: updated });
   } catch (error) {
+    console.error("Error updating schedule:", error);
     res.status(500).json({ error: "Failed to update schedule" });
   }
 });
@@ -135,7 +182,7 @@ router.delete("/:id", async (req, res) => {
   try {
     await prisma.doctorSchedule.delete({ where: { id: req.params.id } });
     res.json({ success: true });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: "Failed to delete" });
   }
 });
@@ -210,10 +257,15 @@ router.get("/slots", async (req, res) => {
     // Generate Slots
     let slots = [];
     for (const rule of rules) {
-      // rule.startTime/endTime are "HH:MM" (doctor's local time)
-      // Convert these to UTC for the specific date
-      const startSlotUTC = fromZonedTime(`${date} ${rule.startTime}:00`, doctorTz);
-      const endSlotUTC = fromZonedTime(`${date} ${rule.endTime}:00`, doctorTz);
+      // rule.startTime/endTime are ALREADY UTC in the database now.
+      // We just need to combine them with the requested 'date'.
+      
+      // ✅ FIX: Do NOT call fromZonedTime here. The values are already UTC.
+      // We just ensure they are formatted as a proper ISO string.
+      const startSlotUTC = new Date(`${date}T${rule.startTime}:00.000Z`);
+      const endSlotUTC = new Date(`${date}T${rule.endTime}:00.000Z`);
+
+      console.log(`[Slot DEBUG] Rule: ${rule.startTime}-${rule.endTime} (UTC) -> Generating for ${date}`);
 
       let current = startSlotUTC;
       let iterationSafety = 0;
