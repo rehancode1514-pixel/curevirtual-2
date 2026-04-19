@@ -24,10 +24,16 @@ class SocketService {
       console.log(`[Socket] Initializing connection to ${SOCKET_URL}...`);
       this.socket = io(SOCKET_URL, {
         auth: { token },
-        transports: ['websocket'], // Force WebSocket to avoid polling issues
+        // Standard Socket.io handshake: start with polling, upgrade to websocket
+        // This is more reliable for passing through sticky-session load balancers
+        transports: ['polling', 'websocket'], 
         reconnection: true,
-        reconnectionAttempts: 7,
+        reconnectionAttempts: 10, // Increased for stability
         timeout: 20000,
+        // Optional: Some environments require explicit headers
+        // extraHeaders: {
+        //   "Origin": SOCKET_URL
+        // }
       });
 
       this.socket.on('connect', () => {
@@ -40,9 +46,14 @@ class SocketService {
       });
 
       this.socket.on('connect_error', (error) => {
-        console.error('[Socket] ⚠️ Connection error:', error.message);
+        // 🚨 CRITICAL DIAGNOSTICS
+        console.error('[Socket] ⚠️ Connection error DETAIL:', {
+          message: error.message,
+          type: error.type,
+          description: error.description, // Low-level detail (e.g. 403, 404)
+          context: error.context?.status // XHR status code
+        });
         
-        // Manual retry logic for timeout errors if reconnection doesn't fire
         if (error.message === 'timeout' && this.socket.disconnected) {
            console.log('[Socket] Attempting manual reconnect after timeout...');
            this.socket.connect();

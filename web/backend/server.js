@@ -34,7 +34,8 @@ const io = new Server(server, {
   cors: {
     origin: (origin, callback) => {
       // allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
+      // also allow literal "null" origin which is common in some mobile environments
+      if (!origin || origin === "null") return callback(null, true);
       if (
         allowedOrigins.indexOf(origin) !== -1 ||
         allowedOrigins.some((o) => origin.startsWith(o))
