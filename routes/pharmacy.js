@@ -160,6 +160,8 @@ router.put("/profile", verifyToken, async (req, res) => {
       return res.status(400).json({ error: "userId is required" });
     }
 
+    console.log(`[ProfileUpdate] Request received for userId: ${userId}, role: PHARMACY, timezone: ${req.body?.timezone}`);
+
     // Ensure user exists
     const user = await prisma.user.findUnique({
       where: { id: String(userId) },
@@ -182,21 +184,29 @@ router.put("/profile", verifyToken, async (req, res) => {
       longitude,
       openingHours,
       services,
+      timezone,
+      emergencyContact,
+      emergencyContactName,
+      emergencyContactEmail,
     } = req.body || {};
 
-    const data = {
-      displayName: toNullIfBlank(displayName),
-      licenseNumber: toNullIfBlank(licenseNumber),
-      phone: toNullIfBlank(phone),
-      address: toNullIfBlank(address),
-      city: toNullIfBlank(city),
-      state: toNullIfBlank(state),
-      country: toNullIfBlank(country),
-      postalCode: toNullIfBlank(postalCode),
-      latitude: toFloatOrNull(latitude),
-      longitude: toFloatOrNull(longitude),
-      openingHours: toNullIfBlank(openingHours),
-      services: toNullIfBlank(services),
+    const pharmacyData = {
+      ...(displayName !== undefined && { displayName: toNullIfBlank(displayName) }),
+      ...(licenseNumber !== undefined && { licenseNumber: toNullIfBlank(licenseNumber) }),
+      ...(phone !== undefined && { phone: toNullIfBlank(phone) }),
+      ...(address !== undefined && { address: toNullIfBlank(address) }),
+      ...(city !== undefined && { city: toNullIfBlank(city) }),
+      ...(state !== undefined && { state: toNullIfBlank(state) }),
+      ...(country !== undefined && { country: toNullIfBlank(country) }),
+      ...(postalCode !== undefined && { postalCode: toNullIfBlank(postalCode) }),
+      ...(latitude !== undefined && { latitude: toFloatOrNull(latitude) }),
+      ...(longitude !== undefined && { longitude: toFloatOrNull(longitude) }),
+      ...(openingHours !== undefined && { openingHours: toNullIfBlank(openingHours) }),
+      ...(services !== undefined && { services: toNullIfBlank(services) }),
+      ...(timezone !== undefined && { timezone }),
+      ...(emergencyContact !== undefined && { emergencyContact: toNullIfBlank(emergencyContact) }),
+      ...(emergencyContactName !== undefined && { emergencyContactName: toNullIfBlank(emergencyContactName) }),
+      ...(emergencyContactEmail !== undefined && { emergencyContactEmail: toNullIfBlank(emergencyContactEmail) }),
       updatedAt: new Date(),
     };
 
@@ -215,8 +225,8 @@ router.put("/profile", verifyToken, async (req, res) => {
 
     const saved = await prisma.pharmacyProfile.upsert({
       where: { userId: String(userId) },
-      update: data,
-      create: { userId: String(userId), ...data },
+      update: pharmacyData,
+      create: { userId: String(userId), ...pharmacyData },
       include: { user: true },
     });
 

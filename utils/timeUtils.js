@@ -60,7 +60,25 @@ function formatLocal(date) {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
+/**
+ * Logs timezone context for a date and target timezone.
+ */
+function logTimezoneInfo(label, date, tz) {
+  const d = typeof date === "string" ? new Date(date) : date;
+  console.log(`[TimeUtils DEBUG] ${label}:`);
+  console.log(`  Input: ${date}`);
+  console.log(`  UTC ISO: ${d.toISOString()}`);
+  console.log(`  Target TZ: ${tz}`);
+  try {
+    const local = d.toLocaleString("en-US", { timeZone: tz });
+    console.log(`  Local Display: ${local}`);
+  } catch (e) {
+    console.log(`  Local Display: Error (Invalid TZ)`);
+  }
+}
+
 module.exports = {
   parseAsLocal,
   formatLocal,
+  logTimezoneInfo,
 };

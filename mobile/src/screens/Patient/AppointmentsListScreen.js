@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
+import { formatToLocalTime, formatToLocalDate } from '../../utils/timeUtils';
 
-export default function AppointmentsListScreen() {
+export default function AppointmentsListScreen({ navigation }) {
+  const { user, userTimezone } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -21,6 +24,29 @@ export default function AppointmentsListScreen() {
       setRefreshing(false);
     }
   }, []);
+  
+  const handleJoinCall = useCallback((appt) => {
+    if (!appt?.roomName) {
+      Alert.alert("Waiting for Doctor", "The doctor has not initialized the secure room yet. Please wait a moment.");
+      return;
+    }
+    
+    // ZEGO requires alphanumeric IDs — strip hyphens
+    const sanitize = (id) => String(id || '').replace(/[^a-zA-Z0-9_]/g, '_');
+    const callID = sanitize(appt.roomName);
+    const userID = sanitize(user?.id || Date.now());
+    const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Patient';
+
+    console.log(`[AppList] 📞 Navigating to ActiveCall. ID: ${callID}`);
+
+    // Navigate directly to the isolated ZEGO screen
+    navigation.navigate('ActiveCall', {
+      userID,
+      userName: displayName,
+      callID,
+      isGroup: false,
+    });
+  }, [user, navigation]);
 
   useEffect(() => {
     fetchAppointments();
@@ -32,14 +58,24 @@ export default function AppointmentsListScreen() {
   };
 
   const renderItem = ({ item }) => {
-    const doctorName = item.doctorProfile?.user?.firstName
-      ? `Dr. ${item.doctorProfile.user.firstName} ${item.doctorProfile.user.lastName || ''}`
+    // 🔍 DEBUG: Inspecting appointment data to find why doctor name is missing
+    if (__DEV__) {
+        console.log(`[Appointments DEBUG] Item ID ${item.id}:`, {
+            hasDoctor: !!item.doctor,
+            hasDoctorProfile: !!item.doctorProfile,
+            doctorKeys: item.doctor ? Object.keys(item.doctor) : [],
+            doctorUser: item.doctor?.user ? 'Yes' : 'No',
+            doctorUserName: item.doctor?.user?.firstName
+        });
+    }
+
+    const doctorName = item.doctor?.user?.firstName
+      ? `Dr. ${item.doctor.user.firstName} ${item.doctor.user.lastName || ''}`
       : 'Dr. Unknown';
     
-    // Fallback date/time parsing
-    const dateObj = new Date(item.appointmentDate);
-    const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    // ✅ Formatted using centralized timezone logic
+    const dateStr = formatToLocalDate(item.appointmentDate, userTimezone);
+    const timeStr = formatToLocalTime(item.appointmentDate, userTimezone);
 
     return (
       <View style={styles.card}>
@@ -51,9 +87,18 @@ export default function AppointmentsListScreen() {
         </View>
         <View style={styles.cardFooter}>
           <Text style={styles.dateTime}>{dateStr} at {timeStr}</Text>
-          <TouchableOpacity style={styles.detailsBtn}>
-            <Text style={styles.detailsBtnText}>Details</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <TouchableOpacity style={styles.detailsBtn}>
+              <Text style={styles.detailsBtnText}>Details</Text>
+            </TouchableOpacity>
+
+            {/* ✅ JOIN CALL BUTTON: Only show if doctor has started the call */}
+            {['requested', 'active'].includes(item.callStatus) && (
+              <TouchableOpacity style={styles.listJoinBtn} onPress={() => handleJoinCall(item)}>
+                <Text style={styles.listJoinBtnText}>Join</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
     );
@@ -61,9 +106,6 @@ export default function AppointmentsListScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>All Appointments</Text>
-      </View>
       {loading ? (
         <ActivityIndicator size="large" color={COLORS.brandGreen} style={{ marginTop: SPACING.xxl }} />
       ) : (
@@ -104,4 +146,15 @@ const styles = StyleSheet.create({
   detailsBtnText: { color: COLORS.textSoft, fontSize: TYPOGRAPHY.xs, fontWeight: '600' },
   emptyContainer: { alignItems: 'center', marginTop: SPACING.xxxl },
   emptyText: { color: COLORS.textMuted, fontSize: TYPOGRAPHY.md },
+  listJoinBtn: {
+    backgroundColor: COLORS.brandBlue,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: RADIUS.sm,
+  },
+  listJoinBtnText: {
+    color: COLORS.white,
+    fontSize: TYPOGRAPHY.xs,
+    fontWeight: 'bold',
+  },
 });

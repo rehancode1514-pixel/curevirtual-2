@@ -13,8 +13,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '../../services/api';
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
+import { useAuth } from '../../context/AuthContext';
+import { getLocalDateString, formatToLocalTime, formatToLocalDate } from '../../utils/timeUtils';
 
 export default function AppointmentBookingScreen({ route, navigation }) {
+  const { userTimezone } = useAuth();
   // 1. Core Selected State
   const [selectedDoctor, setSelectedDoctor] = useState(route.params?.doctor || null);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -31,7 +34,8 @@ export default function AppointmentBookingScreen({ route, navigation }) {
   const [fetchingSlots, setFetchingSlots] = useState(false);
   const [booking, setBooking] = useState(false);
 
-  const dateStr = selectedDate.toISOString().split('T')[0];
+  // ✅ FIX: Use localized date string instead of toISOString() to prevent day-shifting
+  const dateStr = getLocalDateString(selectedDate, userTimezone);
 
   // ==========================================
   // FETCH LIST OF DOCTORS (if bypassed)
@@ -62,18 +66,12 @@ export default function AppointmentBookingScreen({ route, navigation }) {
     const fetchDatesAndSlots = async () => {
       try {
         setFetchingSchedule(true);
-        // Fulfilling requirement: GET /doctor/:id/schedule -> fetch available dates
-        const schedRes = await api.get(`/doctor/${selectedDoctor.id}/schedule`);
-        
-        if (schedRes.data?.dates && schedRes.data.dates.length > 0) {
-          // Auto select first available date if current date isn't in it
-          if (!schedRes.data.dates.includes(dateStr)) {
-            setSelectedDate(new Date(schedRes.data.dates[0]));
-          }
-        }
+        // GET /api/schedule?doctorId=... -> fetch recurring rules
+        await api.get(`/schedule?doctorId=${selectedDoctor.id}`);
+        // For now, these are rules, but specific dates would come from a calendar view.
+        // We'll keep the current day-by-day logic for simplicity.
       } catch (err) {
-        console.log('[Booking] Schedule fetch error or endpoint missing:', err.message);
-        // Fallback gracefully if endpoint doesn't perfectly match
+        console.log('[Booking] Schedule fetch error:', err.message);
       } finally {
         setFetchingSchedule(false);
       }
@@ -93,11 +91,29 @@ export default function AppointmentBookingScreen({ route, navigation }) {
         setFetchingSlots(true);
         setSelectedTime(''); // Reset time selection safely
         
-        // Fulfilling requirement: GET /doctor/:id/timeslots?date=YYYY-MM-DD
-        const slotsRes = await api.get(`/doctor/${selectedDoctor.id}/timeslots?date=${dateStr}`);
-        setTimeSlots(slotsRes.data?.slots || slotsRes.data || []);
+        // Fulfilling requirement: GET /schedule/slots?doctorId=...&date=YYYY-MM-DD
+        const slotsRes = await api.get(`/schedule/slots?doctorId=${selectedDoctor.id}&date=${dateStr}`);
+        const data = slotsRes.data?.data || [];
+        
+        console.log(`[Booking DEBUG] API Response for ${selectedDoctor.id} on ${dateStr}:`, data);
+
+        // Map to displayable format: [{ id, label, value }]
+        const formatted = data
+          .filter(s => s.status === 'AVAILABLE')
+          .map(s => {
+            const label = formatToLocalTime(s.startTime, userTimezone);
+            console.log(`  -> Slot Conv: ${s.startTime} (UTC) -> ${label} (Local: ${userTimezone})`);
+            return {
+              id: s.id,
+              label: label,
+              value: s.startTime // ISO string
+            };
+          });
+
+        console.log(`[Booking DEBUG] Formatted ${formatted.length} available slots.`);
+        setTimeSlots(formatted);
       } catch (err) {
-        console.log('[Booking] Timeslots missing or fallback:', err.message);
+        console.log('[Booking] Timeslots fetch error:', err.message);
         setTimeSlots([]);
       } finally {
         setFetchingSlots(false);
@@ -105,7 +121,7 @@ export default function AppointmentBookingScreen({ route, navigation }) {
     };
 
     fetchSlots();
-  }, [selectedDoctor, dateStr]);
+  }, [selectedDoctor, dateStr, userTimezone]);
 
   // ==========================================
   // HANDLERS
@@ -117,20 +133,22 @@ export default function AppointmentBookingScreen({ route, navigation }) {
     }
     if (!selectedDoctor) return;
 
-    const appointmentDate = `${dateStr}T${selectedTime}:00`;
     setBooking(true);
     
     try {
       await api.post('/patient/appointments', {
         doctorId: selectedDoctor.id,
-        appointmentDate,
+        appointmentDate: selectedTime, // Now contains the full ISO string
         reason: reason.trim() || undefined,
       });
 
       Alert.alert(
         '✅ Appointment Booked!',
-        `Your appointment is confirmed for ${selectedTime}.`,
-        [{ text: 'Done', onPress: () => navigation.goBack() }]
+        'Your appointment is confirmed and pending approval.',
+        [{ 
+          text: 'View My Bookings', 
+          onPress: () => navigation.navigate('AppointmentsTab') 
+        }]
       );
     } catch (error) {
       const msg = error.response?.data?.error || error.response?.data?.message || 'Booking failed. Try another time.';
@@ -215,7 +233,7 @@ export default function AppointmentBookingScreen({ route, navigation }) {
   // ==========================================
   const doctorFirst = selectedDoctor.user?.firstName || selectedDoctor.firstName || '';
   const doctorLast = selectedDoctor.user?.lastName || selectedDoctor.lastName || '';
-  const displayDate = selectedDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const displayDate = formatToLocalDate(selectedDate, userTimezone);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -285,15 +303,15 @@ export default function AppointmentBookingScreen({ route, navigation }) {
           </View>
         ) : (
           <View style={styles.slotGrid}>
-            {timeSlots.map((time) => (
+            {timeSlots.map((slot) => (
               <TouchableOpacity
-                key={time}
-                style={[styles.slotBtn, selectedTime === time && styles.selectedSlot]}
-                onPress={() => setSelectedTime(time)}
+                key={slot.id}
+                style={[styles.slotBtn, selectedTime === slot.value && styles.selectedSlot]}
+                onPress={() => setSelectedTime(slot.value)}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.slotText, selectedTime === time && styles.selectedSlotText]}>
-                  {time}
+                <Text style={[styles.slotText, selectedTime === slot.value && styles.selectedSlotText]}>
+                  {slot.label}
                 </Text>
               </TouchableOpacity>
             ))}

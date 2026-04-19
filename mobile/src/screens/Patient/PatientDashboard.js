@@ -1,23 +1,4 @@
-/**
- * PatientDashboard.js — CureVirtual Mobile
- *
- * ──────────────────────────────────────────────────────────────
- * API RESPONSE SHAPE (from GET /api/patient/appointments):
- *   [{
- *     id, status, appointmentDate,       ← ✅ "appointmentDate" NOT "date"
- *     reason,
- *     doctor: {
- *       user: { firstName, lastName }    ← ✅ nested doctor.user.*
- *     }
- *   }]
- *
- * API STATS (from GET /api/patient/stats):
- *   { success: true, data: { totalAppointments, completedAppointments,
- *     pendingAppointments, totalPrescriptions, totalConsultations, totalDoctors } }
- * ──────────────────────────────────────────────────────────────
- */
-
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -26,62 +7,83 @@ import {
   FlatList,
   ActivityIndicator,
   RefreshControl,
-  Image,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AuthContext } from '../../context/AuthContext';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
-import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
-
-const logo = require('../../../assets/images/logo.png');
+import { COLORS, SPACING, RADIUS, SHADOWS } from '../../../theme/designSystem';
+import { formatToLocalTime, formatToLocalDate } from '../../utils/timeUtils';
 
 const QUICK_ACTIONS = [
-  { key: 'Doctors', icon: '👨‍⚕️', label: 'Find Doctor', color: COLORS.brandGreen },
-  { key: 'Chatbot', icon: '🤖', label: 'AI Assistant', color: COLORS.brandBlue },
-  { key: 'Map', icon: '🗺️', label: 'Near Me', color: COLORS.brandOrange },
+  { key: 'Doctors', icon: 'search-outline', label: 'Find Doctor', color: COLORS.primary },
+  { key: 'Pharmacy', icon: 'medkit-outline', label: 'Pharmacy', color: COLORS.secondary },
+  { key: 'Chatbot', icon: 'chatbubbles-outline', label: 'AI Assistant', color: COLORS.secondary },
+  { key: 'Map', icon: 'map-outline', label: 'Near Me', color: COLORS.tertiary },
 ];
 
-// ──────────────────────────────────────────────────────────────
-const formatDate = (dateStr) => {
+const formatDate = (dateStr, timezone = 'auto') => {
   if (!dateStr) return 'Date TBD';
-  try {
-    return new Date(dateStr).toLocaleString('en-US', {
-      weekday: 'short', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
-  } catch { return 'Date TBD'; }
+  return `${formatToLocalDate(dateStr, timezone)} at ${formatToLocalTime(dateStr, timezone)}`;
 };
 
-const AppointmentCard = ({ item }) => {
-  // ✅ Correct path: doctor.user.firstName
-  const doctorFirst = item.doctor?.user?.firstName || '';
-  const doctorLast = item.doctor?.user?.lastName || '';
-  const doctorName = [doctorFirst, doctorLast].filter(Boolean).join(' ') || 'Doctor';
+const StatusBadge = ({ status }) => {
+  const isCompleted = status === 'COMPLETED';
+  const isCancelled = status === 'CANCELLED';
+  const color = isCompleted ? COLORS.success : (isCancelled ? COLORS.error : COLORS.secondary);
+  const bgColor = isCompleted ? 'rgba(5, 150, 105, 0.1)' : (isCancelled ? 'rgba(186, 26, 26, 0.1)' : 'rgba(0, 84, 204, 0.1)');
+  
+  return (
+    <View style={[styles.statusBadge, { backgroundColor: bgColor }]}>
+      <Text style={[styles.statusBadgeText, { color }]}>{status}</Text>
+    </View>
+  );
+};
+
+const AppointmentCard = ({ item, userTimezone, onJoinCall }) => {
+  const doctorName = [item.doctor?.user?.firstName, item.doctor?.user?.lastName].filter(Boolean).join(' ') || 'Doctor';
 
   return (
     <View style={styles.appointmentCard}>
-      <View style={styles.aptLeft}>
-        <View style={styles.aptIndicator} />
-        <View>
-          <Text style={styles.aptDocName}>Dr. {doctorName}</Text>
-          {/* ✅ Correct field: appointmentDate */}
-          <Text style={styles.aptTime}>{formatDate(item.appointmentDate)}</Text>
-          {item.status && (
-            <View style={styles.aptTypeBadge}>
-              <Text style={styles.aptTypeText}>{item.status}</Text>
-            </View>
-          )}
-          {item.reason && (
-            <Text style={styles.aptReason} numberOfLines={1}>{item.reason}</Text>
-          )}
+      <View style={styles.cardHeader}>
+        <View style={styles.doctorInfo}>
+           <View style={styles.avatar}>
+             <Ionicons name="person-outline" size={20} color={COLORS.primary} />
+           </View>
+           <View>
+             <Text style={styles.doctorName}>Dr. {doctorName}</Text>
+             <View style={styles.timeRow}>
+               <Ionicons name="time-outline" size={12} color={COLORS.textMuted} />
+               <Text style={styles.timeText}>{formatDate(item.appointmentDate, userTimezone)}</Text>
+             </View>
+           </View>
         </View>
+        <StatusBadge status={item.status} />
       </View>
+      {item.reason && (
+        <View style={styles.reasonContainer}>
+          <Text style={styles.reasonText} numberOfLines={2}>{item.reason}</Text>
+        </View>
+      )}
+
+      {/* ✅ JOIN CALL BUTTON: Only show if doctor has started the call */}
+      {['requested', 'active'].includes(item.callStatus) && (
+        <TouchableOpacity 
+          style={styles.joinCallBtn} 
+          onPress={onJoinCall}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="videocam" size={18} color={COLORS.white} />
+          <Text style={styles.joinCallBtnText}>Join Video Session</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
 
 export default function PatientDashboard({ navigation }) {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, userTimezone } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -95,135 +97,147 @@ export default function PatientDashboard({ navigation }) {
       ]);
 
       if (apptRes.status === 'fulfilled') {
-        const data = apptRes.value.data;
-        const list = Array.isArray(data) ? data : (data?.data || data?.appointments || []);
+        const list = Array.isArray(apptRes.value.data) ? apptRes.value.data : (apptRes.value.data?.data || []);
         setAppointments(list);
-        console.log('[PatientDashboard] Appointments loaded:', list.length);
-        if (list[0]) {
-          console.log('[PatientDashboard] First appt keys:', Object.keys(list[0]));
-          console.log('[PatientDashboard] doctor.user:', list[0]?.doctor?.user);
-          console.log('[PatientDashboard] appointmentDate:', list[0]?.appointmentDate);
-        }
-      } else {
-        console.error('[PatientDashboard] Appointment error:', apptRes.reason?.message);
       }
-
       if (statsRes.status === 'fulfilled') {
-        // /patient/stats returns { success: true, data: { ... } }
-        const sData = statsRes.value.data?.data || statsRes.value.data;
-        setStats(sData);
+        setStats(statsRes.value.data?.data || statsRes.value.data);
       }
     } catch (error) {
-      console.error('[PatientDashboard] Unexpected error:', error.message || error);
+      console.error('[PatientDashboard] Error:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, []);
 
+  const handleJoinCall = useCallback((appt) => {
+    if (!appt?.roomName) {
+      Alert.alert("Waiting for Doctor", "The doctor has not initialized the secure room yet. Please wait a moment.");
+      return;
+    }
+    
+    // ZEGO requires alphanumeric IDs — strip hyphens
+    const sanitize = (id) => String(id || '').replace(/[^a-zA-Z0-9_]/g, '_');
+    const callID = sanitize(appt.roomName);
+    const userID = sanitize(user?.id || Date.now());
+    const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'Patient';
+
+    console.log(`[Dashboard] 📞 Navigating to ActiveCall. ID: ${callID}`);
+
+    // Navigate directly to the isolated ZEGO screen
+    navigation.navigate('ActiveCall', {
+      userID,
+      userName: displayName,
+      callID,
+      isGroup: false,
+    });
+  }, [user, navigation]);
+
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const onRefresh = () => { setRefreshing(true); fetchData(); };
-
-  const displayName = user?.firstName || user?.name?.split(' ')[0] || 'Patient';
-
-  // Use API stats where available, fall back to local count
-  const totalAppt = stats?.totalAppointments ?? appointments.length;
-  const prescriptions = stats?.totalPrescriptions ?? 0;
-  const doctors = stats?.totalDoctors ?? 0;
+  const displayName = user?.firstName || 'Patient';
 
   const ListHeader = (
-    <>
-      {/* ── Top Header ── */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.headerLeft} 
-          onPress={() => navigation.openDrawer()}
-          activeOpacity={0.7}
-        >
-          <View style={styles.logoWrapper}>
-            <Image source={logo} style={styles.logoSmall} resizeMode="contain" />
-          </View>
-          <View>
-            <Text style={styles.greeting}>Hello, {displayName} 👋</Text>
-            <Text style={styles.subGreeting}>How are you feeling today?</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={logout} style={styles.logoutBtn} activeOpacity={0.8}>
-          <Text style={styles.logoutText}>Logout</Text>
+    <View style={styles.headerContent}>
+      {/* ── Welcome Header ── */}
+      <View style={styles.topRow}>
+        <View>
+          <Text style={styles.welcomeText}>Welcome back,</Text>
+          <Text style={styles.displayName}>{displayName} 🌿</Text>
+        </View>
+        <TouchableOpacity onPress={logout} style={styles.profileBtn}>
+          <Ionicons name="log-out-outline" size={22} color={COLORS.error} />
         </TouchableOpacity>
       </View>
 
-      {/* ── Stat Cards ── */}
-      <View style={styles.statsRow}>
-        <TouchableOpacity 
-          style={[styles.statCard, { borderTopColor: COLORS.brandGreen }]}
-          onPress={() => navigation.navigate('AppointmentsTab')}
-        >
-          <Text style={styles.statValue}>{totalAppt}</Text>
-          <Text style={styles.statLabel}>Appointments</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.statCard, { borderTopColor: COLORS.brandBlue }]}
-          onPress={() => navigation.navigate('MainTabs', { screen: 'HomeTab', params: { screen: 'Prescriptions' }})}
-        >
-          <Text style={styles.statValue}>{prescriptions}</Text>
-          <Text style={styles.statLabel}>Prescriptions</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.statCard, { borderTopColor: COLORS.brandOrange }]}
-          onPress={() => navigation.navigate('HomeTab', { screen: 'Doctors' })}
-        >
-          <Text style={styles.statValue}>{doctors}</Text>
-          <Text style={styles.statLabel}>Doctors</Text>
-        </TouchableOpacity>
+      {/* ── Modern Stat Bento ── */}
+      <View style={styles.statsBento}>
+        <View style={styles.statsMain}>
+          <TouchableOpacity 
+             style={[styles.bigStat, { backgroundColor: COLORS.primaryContainer }]}
+             onPress={() => navigation.navigate('AppointmentsTab')}
+          >
+            <View style={styles.statIconCircle}>
+               <Ionicons name="calendar" size={24} color={COLORS.primary} />
+            </View>
+            <Text style={styles.bigStatValue}>{stats?.totalAppointments ?? appointments.length}</Text>
+            <Text style={styles.bigStatLabel}>Appointments</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.statsSide}>
+          <TouchableOpacity 
+            style={[styles.smallStat, { backgroundColor: COLORS.secondaryContainer }]}
+            onPress={() => {}}
+          >
+            <Text style={styles.smallStatValue}>{stats?.totalPrescriptions ?? 0}</Text>
+            <Text style={styles.smallStatLabel}>Meds</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.smallStat, { backgroundColor: COLORS.surfaceContainerHigh }]}
+            onPress={() => navigation.navigate('HomeTab', { screen: 'Doctors' })}
+          >
+            <Text style={styles.smallStatValue}>{stats?.totalDoctors ?? 0}</Text>
+            <Text style={styles.smallStatLabel}>Doctors</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* ── Quick Actions ── */}
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Services</Text>
+      </View>
       <View style={styles.actionsGrid}>
         {QUICK_ACTIONS.map((action) => (
           <TouchableOpacity
             key={action.key}
             style={styles.actionCard}
             onPress={() => navigation.navigate(action.key)}
-            activeOpacity={0.8}
+            activeOpacity={0.7}
           >
-            <View style={[styles.actionIconBg, { backgroundColor: `${action.color}15` }]}>
-              <Text style={styles.actionIcon}>{action.icon}</Text>
+            <View style={[styles.actionIconBg, { backgroundColor: `${action.color}10` }]}>
+              <Ionicons name={action.icon} size={24} color={action.color} />
             </View>
-            <Text style={[styles.actionLabel, { color: action.color }]}>{action.label}</Text>
+            <Text style={styles.actionLabel}>{action.label}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
-      {loading && <ActivityIndicator color={COLORS.brandGreen} style={{ marginTop: SPACING.base }} />}
-    </>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Upcoming Sessions</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('AppointmentsTab')}>
+          <Text style={styles.seeAllText}>See All</Text>
+        </TouchableOpacity>
+      </View>
+      {loading && <ActivityIndicator color={COLORS.primary} style={{ marginTop: 20 }} />}
+    </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={appointments}
+        data={appointments.slice(0, 3)}
         keyExtractor={(item, i) => item.id?.toString() || `apt-${i}`}
-        renderItem={({ item }) => <AppointmentCard item={item} />}
+        renderItem={({ item }) => (
+          <AppointmentCard 
+            item={item} 
+            userTimezone={userTimezone} 
+            onJoinCall={() => handleJoinCall(item)} 
+          />
+        )}
         ListHeaderComponent={ListHeader}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={COLORS.brandGreen}
-            colors={[COLORS.brandGreen]}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
         }
         ListEmptyComponent={
           !loading ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyIcon}>📅</Text>
-              <Text style={styles.emptyText}>No upcoming appointments</Text>
-              <Text style={styles.emptySubText}>Tap 'Find Doctor' to book one</Text>
+              <MaterialCommunityIcons name="calendar-blank-outline" size={60} color={COLORS.surfaceContainerHighest} />
+              <Text style={styles.emptyText}>Clear schedule for now</Text>
+              <Text style={styles.emptySubText}>Book a new session via the services above</Text>
             </View>
           ) : null
         }
@@ -234,91 +248,150 @@ export default function PatientDashboard({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: COLORS.bgMuted },
-  listContent: { padding: SPACING.lg, paddingBottom: SPACING.xxxl },
-  header: {
+  container: { flex: 1, backgroundColor: COLORS.surfaceContainerLowest },
+  listContent: { paddingBottom: SPACING.xxxl },
+  headerContent: { padding: SPACING.lg },
+  topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: SPACING.xl,
+    marginTop: SPACING.sm,
   },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md },
-  logoWrapper: {
-    backgroundColor: COLORS.white,
-    borderRadius: RADIUS.base,
-    padding: SPACING.sm,
-    ...SHADOWS.sm,
-  },
-  logoSmall: { width: 32, height: 32 },
-  greeting: { fontSize: TYPOGRAPHY.lg, fontWeight: TYPOGRAPHY.bold, color: COLORS.textMain },
-  subGreeting: { fontSize: TYPOGRAPHY.sm, color: COLORS.textMuted, marginTop: 2 },
-  logoutBtn: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLORS.dangerLight,
-    borderRadius: RADIUS.md,
-  },
-  logoutText: { color: COLORS.danger, fontWeight: TYPOGRAPHY.bold, fontSize: TYPOGRAPHY.sm },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: SPACING.xl, gap: SPACING.sm },
-  statCard: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    borderRadius: RADIUS.base,
-    padding: SPACING.base,
-    alignItems: 'center',
-    borderTopWidth: 3,
-    ...SHADOWS.sm,
-  },
-  statValue: { fontSize: TYPOGRAPHY.xl, fontWeight: TYPOGRAPHY.black, color: COLORS.textMain },
-  statLabel: { fontSize: TYPOGRAPHY.xs, color: COLORS.textMuted, marginTop: 2, fontWeight: TYPOGRAPHY.medium },
-  sectionTitle: { fontSize: TYPOGRAPHY.lg, fontWeight: TYPOGRAPHY.bold, color: COLORS.slate700, marginBottom: SPACING.base },
-  actionsGrid: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: SPACING.xl, gap: SPACING.sm },
-  actionCard: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    borderRadius: RADIUS.base,
-    paddingVertical: SPACING.base,
-    alignItems: 'center',
-    ...SHADOWS.sm,
-  },
-  actionIconBg: {
-    width: 44,
-    height: 44,
-    borderRadius: RADIUS.xl,
+  welcomeText: { fontSize: 14, color: COLORS.onSurfaceVariant, fontWeight: '500' },
+  displayName: { fontSize: 28, fontWeight: '900', color: COLORS.onSurface, letterSpacing: -1 },
+  profileBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: COLORS.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: SPACING.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.03)',
   },
-  actionIcon: { fontSize: 22 },
-  actionLabel: { fontSize: TYPOGRAPHY.xs, fontWeight: TYPOGRAPHY.bold, textAlign: 'center' },
-  appointmentCard: {
-    backgroundColor: COLORS.white,
-    padding: SPACING.base,
-    borderRadius: RADIUS.base,
-    marginBottom: SPACING.md,
+
+  // Bento Stats
+  statsBento: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: SPACING.xl,
+    height: 160,
+  },
+  statsMain: { flex: 1.2 },
+  statsSide: { flex: 1, gap: 12 },
+  bigStat: {
+    flex: 1,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.lg,
+    justifyContent: 'flex-end',
+  },
+  statIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 16,
+    right: 16,
+  },
+  bigStatValue: { fontSize: 36, fontWeight: '900', color: COLORS.onPrimaryContainer, letterSpacing: -1 },
+  bigStatLabel: { fontSize: 14, fontWeight: '700', color: COLORS.onPrimaryContainer, opacity: 0.7 },
+  smallStat: {
+    flex: 1,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.md,
+    justifyContent: 'center',
+  },
+  smallStatValue: { fontSize: 24, fontWeight: '900', color: COLORS.onSurface },
+  smallStatLabel: { fontSize: 12, fontWeight: '600', color: COLORS.onSurfaceVariant, opacity: 0.8 },
+
+  // Quick Actions
+  sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.brandGreen,
+    marginBottom: SPACING.md,
+    marginTop: SPACING.sm,
+  },
+  sectionTitle: { fontSize: 20, fontWeight: '900', color: COLORS.onSurface, letterSpacing: -0.5 },
+  seeAllText: { fontSize: 13, fontWeight: '700', color: COLORS.primary },
+  actionsGrid: { flexDirection: 'row', gap: 12, marginBottom: SPACING.xl },
+  actionCard: {
+    flex: 1,
+    backgroundColor: COLORS.surfaceContainerLow,
+    borderRadius: RADIUS.lg,
+    padding: SPACING.md,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.02)',
+  },
+  actionIconBg: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  actionLabel: { fontSize: 12, fontWeight: '700', color: COLORS.onSurface, textAlign: 'center' },
+
+  // Appointments
+  appointmentCard: {
+    marginHorizontal: SPACING.lg,
+    backgroundColor: COLORS.surfaceContainerLowest,
+    padding: SPACING.lg,
+    borderRadius: RADIUS.xl,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
     ...SHADOWS.sm,
   },
-  aptLeft: { flexDirection: 'row', alignItems: 'flex-start', gap: SPACING.md, flex: 1 },
-  aptIndicator: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.brandGreen, marginTop: 6 },
-  aptDocName: { fontSize: TYPOGRAPHY.md, fontWeight: TYPOGRAPHY.semiBold, color: COLORS.textMain },
-  aptTime: { fontSize: TYPOGRAPHY.sm, color: COLORS.textMuted, marginTop: 3 },
-  aptTypeBadge: {
-    marginTop: 4,
-    backgroundColor: `${COLORS.brandBlue}15`,
-    borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
-    alignSelf: 'flex-start',
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  doctorInfo: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  avatar: { 
+    width: 44, 
+    height: 44, 
+    borderRadius: 22, 
+    backgroundColor: COLORS.primaryContainer, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
   },
-  aptTypeText: { fontSize: TYPOGRAPHY.xs, color: COLORS.brandBlue, fontWeight: TYPOGRAPHY.bold },
-  aptReason: { fontSize: TYPOGRAPHY.xs, color: COLORS.textPlaceholder, marginTop: 2 },
-  emptyContainer: { alignItems: 'center', paddingVertical: SPACING.xxxl },
-  emptyIcon: { fontSize: 40, marginBottom: SPACING.md },
-  emptyText: { fontSize: TYPOGRAPHY.md, fontWeight: TYPOGRAPHY.semiBold, color: COLORS.textMuted },
-  emptySubText: { fontSize: TYPOGRAPHY.sm, color: COLORS.textPlaceholder, marginTop: SPACING.xs },
+  doctorName: { fontSize: 16, fontWeight: '800', color: COLORS.onSurface },
+  timeRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
+  timeText: { fontSize: 12, color: COLORS.onSurfaceVariant, fontWeight: '500' },
+  reasonContainer: {
+    marginTop: 12,
+    padding: 10,
+    backgroundColor: COLORS.surfaceContainerLow,
+    borderRadius: RADIUS.md,
+  },
+  reasonText: { fontSize: 12, color: COLORS.onSurfaceVariant, fontWeight: '500', fontStyle: 'italic' },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: RADIUS.full },
+  statusBadgeText: { fontSize: 10, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.5 },
+  emptyContainer: { alignItems: 'center', paddingVertical: 60 },
+  emptyText: { fontSize: 18, fontWeight: '800', color: COLORS.onSurface, marginTop: 16 },
+  emptySubText: { fontSize: 14, color: COLORS.onSurfaceVariant, marginTop: 4, textAlign: 'center', maxWidth: '80%' },
+  
+  // Join Call Button
+  joinCallBtn: {
+    marginTop: 16,
+    backgroundColor: COLORS.secondary,
+    padding: 14,
+    borderRadius: RADIUS.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    ...SHADOWS.md,
+  },
+  joinCallBtnText: {
+    color: COLORS.white,
+    fontSize: 14,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
 });

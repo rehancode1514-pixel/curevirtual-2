@@ -21,10 +21,10 @@ import DrawerNavigator from './DrawerNavigator'; // ✅ Single entry for all rol
 import { COLORS, TYPOGRAPHY, SPACING } from '../../theme/designSystem';
 
 export default function AppNavigator() {
-  const { user, loading } = useContext(AuthContext);
+  const { user, isInitializing } = useContext(AuthContext);
 
   // ── Loading State ──
-  if (loading) {
+  if (isInitializing) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={COLORS.brandGreen} />

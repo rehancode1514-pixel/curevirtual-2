@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const prisma = require("../prisma/prismaClient");
-const { verifyToken, requireRole } = require("../middleware/rbac");
-const { parseAsLocal } = require("../utils/timeUtils");
+const { verifyToken } = require("../middleware/rbac");
+const { fromZonedTime, toZonedTime } = require("date-fns-tz");
+const { addMinutes } = require("date-fns");
+
+const DEFAULT_TIMEZONE = "Asia/Karachi";
 
 // Middleware
 router.use(verifyToken);
@@ -122,7 +125,7 @@ router.patch("/:id", async (req, res) => {
       data: req.body,
     });
     res.json({ success: true, data: updated });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({ error: "Failed to update schedule" });
   }
 });
@@ -132,7 +135,7 @@ router.delete("/:id", async (req, res) => {
   try {
     await prisma.doctorSchedule.delete({ where: { id: req.params.id } });
     res.json({ success: true });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({ error: "Failed to delete" });
   }
 });
@@ -142,13 +145,23 @@ router.delete("/:id", async (req, res) => {
 // =============================================================================
 
 // GET /api/schedule/slots?doctorId=...&date=YYYY-MM-DD
-const { formatInTimeZone, toDate } = require("date-fns-tz");
-const { parseISO, addMinutes, startOfDay, endOfDay } = require("date-fns");
-
 router.get("/slots", async (req, res) => {
   try {
     const { doctorId, date } = req.query; // date is YYYY-MM-DD
-    if (!doctorId || !date) return res.status(400).json({ error: "Missing params" });
+    
+    // 1. Strict Input Validation
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!doctorId || !date || !dateRegex.test(date)) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Invalid or missing parameters. Required: doctorId (UUID/ID), date (YYYY-MM-DD)" 
+      });
+    }
+
+    const checkDate = new Date(date);
+    if (isNaN(checkDate.getTime())) {
+      return res.status(400).json({ success: false, error: "Invalid date value" });
+    }
 
     let doctorProfile = await prisma.doctorProfile.findUnique({
       where: { userId: doctorId },
@@ -157,16 +170,19 @@ router.get("/slots", async (req, res) => {
       doctorProfile = await prisma.doctorProfile.findUnique({
         where: { id: doctorId },
       });
-    if (!doctorProfile) return res.status(404).json({ error: "Doctor not found" });
+    if (!doctorProfile) return res.status(404).json({ success: false, error: "Doctor not found" });
 
-    const doctorTz = doctorProfile.timezone || "UTC";
+    const doctorTz = doctorProfile.timezone || DEFAULT_TIMEZONE;
 
-    // 1. Get Day of Week in DOCTOR'S timezone (Literal)
-    // We interpret 'date' (YYYY-MM-DD) as a literal time.
-    const doctorDate = parseAsLocal(date);
-    const dayOfWeek = doctorDate.getUTCDay();
+    // 1. Map the selected 'date' (YYYY-MM-DD) to the start/end of that day in DOCTOR'S time
+    const startOfDoctorDayUTC = fromZonedTime(`${date} 00:00:00`, doctorTz);
+    const endOfDoctorDayUTC = fromZonedTime(`${date} 23:59:59.999`, doctorTz);
 
-    // Get Rules for this day
+    // Get rules for this day of week in DOCTOR'S timezone
+    // toZonedTime ensures .getDay() returns the day number (0-6) relative to doc's time
+    const docLocalTime = toZonedTime(startOfDoctorDayUTC, doctorTz);
+    const dayOfWeek = docLocalTime.getDay();
+
     const rules = await prisma.doctorSchedule.findMany({
       where: {
         doctorId: doctorProfile.id,
@@ -178,16 +194,12 @@ router.get("/slots", async (req, res) => {
     if (rules.length === 0) return res.json({ success: true, data: [] });
 
     // Get Appointments for this day (UTC range)
-    // To be safe, look at a 48 hour window around this date to catch all possible overlaps
-    const startRange = addMinutes(doctorDate, -24 * 60);
-    const endRange = addMinutes(doctorDate, 48 * 60);
-
     const existingAppointments = await prisma.appointment.findMany({
       where: {
         doctorId: doctorProfile.id,
         appointmentDate: {
-          gte: startRange,
-          lte: endRange,
+          gte: startOfDoctorDayUTC,
+          lte: endOfDoctorDayUTC,
         },
         status: { not: "CANCELLED" },
       },
@@ -199,13 +211,18 @@ router.get("/slots", async (req, res) => {
     let slots = [];
     for (const rule of rules) {
       // rule.startTime/endTime are "HH:MM" (doctor's local time)
-      const startLocal = parseAsLocal(`${date}T${rule.startTime}`);
-      const endLocal = parseAsLocal(`${date}T${rule.endTime}`);
+      // Convert these to UTC for the specific date
+      const startSlotUTC = fromZonedTime(`${date} ${rule.startTime}:00`, doctorTz);
+      const endSlotUTC = fromZonedTime(`${date} ${rule.endTime}:00`, doctorTz);
 
-      let current = startLocal;
-      while (current < endLocal) {
-        const next = addMinutes(current, 15);
-        if (next > endLocal) break;
+      let current = startSlotUTC;
+      let iterationSafety = 0;
+      const slotSize = rule.slotDuration && rule.slotDuration > 0 ? rule.slotDuration : 15;
+
+      while (current < endSlotUTC && iterationSafety < 500) {
+        iterationSafety++;
+        const next = addMinutes(current, slotSize);
+        if (next > endSlotUTC) break;
 
         const iso = current.toISOString();
         const isBooked = bookedSet.has(iso);
@@ -224,8 +241,16 @@ router.get("/slots", async (req, res) => {
     slots.sort((a, b) => a.startTime.localeCompare(b.startTime));
     res.json({ success: true, data: slots });
   } catch (err) {
-    console.error("Slot generation error:", err);
-    res.status(500).json({ error: "Failed to generate slots" });
+    // 3. Structured Error Logging
+    console.error(`❌ [/api/schedule/slots] Critical failure:`, {
+      message: err.message,
+      stack: err.stack,
+      context: {
+        query: req.query,
+        timestamp: new Date().toISOString(),
+      }
+    });
+    res.status(500).json({ success: false, error: "Internal Server Error during slot generation" });
   }
 });
 
@@ -257,7 +282,9 @@ router.post("/book", async (req, res) => {
       });
     if (!patientProfile) return res.status(404).json({ error: "Patient profile not found" });
 
-    const startDate = parseAsLocal(startTime);
+    // startTime is a UTC ISO string from the frontend
+    const startDate = new Date(startTime);
+    if (isNaN(startDate.getTime())) return res.status(400).json({ error: "Invalid start time" });
 
     // Check if slot is still available (concurrency check)
     const conflict = await prisma.appointment.findFirst({
@@ -280,14 +307,14 @@ router.post("/book", async (req, res) => {
         startTime: startDate,
         endTime: new Date(startDate.getTime() + 15 * 60000),
         reason,
-        status: "PENDING_PAYMENT",
+        status: "APPROVED",
       },
     });
 
     res.json({ success: true, appointment });
   } catch (err) {
     console.error("Booking error:", err);
-    res.status(500).json({ error: "Booking failed" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

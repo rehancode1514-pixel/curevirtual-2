@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthContext } from '../../context/AuthContext';
-import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
+import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS, COMPONENTS } from '../../../theme/designSystem';
 import FloatingChatbotButton from '../../components/FloatingChatbotButton';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -63,7 +63,7 @@ export default function LoginScreen({ navigation }) {
 
             <View style={styles.secureBadgeWrapper}>
               <View style={styles.secureBadge}>
-                <Ionicons name="lock-closed-outline" size={14} color={COLORS.brandGreen} style={{ marginRight: 4 }} />
+                <Ionicons name="lock-closed-outline" size={14} color={COLORS.primary} style={{ marginRight: 4 }} />
                 <Text style={styles.secureBadgeText}>SECURE</Text>
               </View>
             </View>
@@ -124,7 +124,7 @@ export default function LoginScreen({ navigation }) {
               activeOpacity={0.85}
             >
               {loading ? (
-                <ActivityIndicator color={COLORS.white} />
+                <ActivityIndicator color={COLORS.onPrimary} />
               ) : (
                 <Text style={styles.primaryButtonText}>SUBMIT →</Text>
               )}
@@ -139,7 +139,7 @@ export default function LoginScreen({ navigation }) {
 
             {/* Register Link */}
             <View style={styles.registerRow}>
-              <Text style={styles.registerText}>DON'T HAVE AN ACCOUNT? </Text>
+              <Text style={styles.registerText}>DON&apos;T HAVE AN ACCOUNT? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                 <Text style={styles.registerLink}>REGISTER</Text>
               </TouchableOpacity>
@@ -156,26 +156,25 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA', // VERY light bg as in the mockup
+    backgroundColor: COLORS.surfaceContainerLowest,
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: SPACING.xl,
+    padding: SPACING.lg,
   },
   card: {
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.surfaceContainerLowest,
     borderRadius: RADIUS.xl,
-    padding: SPACING.xxl,
-    ...SHADOWS.md,
+    padding: SPACING.xl,
+    ...SHADOWS.premium,
     borderWidth: 1,
-    borderColor: COLORS.slate100,
+    borderColor: 'rgba(0,0,0,0.03)',
   },
-  // Brand Logo inside card
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
   },
   logoTextWrapper: {
     flexDirection: 'row',
@@ -189,51 +188,53 @@ const styles = StyleSheet.create({
   brandName: {
     fontSize: TYPOGRAPHY.lg,
     fontWeight: TYPOGRAPHY.black,
-    color: COLORS.textMain,
+    color: COLORS.onSurface,
     letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   brandNameBlue: {
-    color: COLORS.brandBlue,
+    color: COLORS.primary,
+    fontStyle: 'italic',
   },
   secureBadgeWrapper: {
     flexDirection: 'row',
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.xl,
   },
   secureBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: `${COLORS.brandGreen}40`,
+    borderColor: 'rgba(0, 108, 10, 0.1)',
     borderRadius: RADIUS.full,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: 12,
     paddingVertical: 4,
+    backgroundColor: 'rgba(0, 108, 10, 0.05)',
   },
   secureBadgeText: {
-    fontSize: TYPOGRAPHY.xs,
+    fontSize: 10,
     fontWeight: TYPOGRAPHY.black,
-    color: COLORS.brandGreen,
+    color: COLORS.primary,
     letterSpacing: 1.5,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: TYPOGRAPHY.black,
-    color: COLORS.textMain,
-    marginBottom: SPACING.xs,
+    color: COLORS.onSurface,
+    marginBottom: 4,
+    letterSpacing: -1,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.sm,
-    color: COLORS.textMuted,
+    fontSize: 14,
+    color: COLORS.onSurfaceVariant,
     marginBottom: SPACING.xxl,
+    opacity: 0.7,
+    lineHeight: 20,
   },
   fieldGroup: {
     marginBottom: SPACING.lg,
   },
   label: {
-    fontSize: TYPOGRAPHY.xs,
-    fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.brandGreen,
-    letterSpacing: 1.5,
-    marginBottom: SPACING.sm,
+    ...COMPONENTS.label,
   },
   labelRow: {
     flexDirection: 'row',
@@ -242,75 +243,75 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   forgotLink: {
-    fontSize: TYPOGRAPHY.xs,
-    fontWeight: TYPOGRAPHY.bold,
-    color: COLORS.brandOrange, // Mockup has orange forgot password
+    fontSize: 10,
+    fontWeight: TYPOGRAPHY.black,
+    color: COLORS.secondary,
     letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.slate200,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.surfaceContainer,
+    borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.03)',
   },
   inputIcon: {
-    marginRight: SPACING.sm,
+    marginRight: SPACING.xs,
+    opacity: 0.5,
   },
   inputWithIcon: {
     flex: 1,
-    paddingVertical: SPACING.md,
-    fontSize: TYPOGRAPHY.md,
-    color: COLORS.textMain,
+    paddingVertical: 16,
+    fontSize: 14,
+    color: COLORS.onSurface,
+    fontWeight: '600',
   },
   passwordWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.slate200,
-    borderRadius: RADIUS.lg,
+    backgroundColor: COLORS.surfaceContainer,
+    borderRadius: RADIUS.md,
     paddingHorizontal: SPACING.md,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.03)',
   },
   passwordInput: {
-    paddingRight: SPACING.xxl, // space for eye icon
+    paddingRight: 40,
   },
   eyeBtn: {
     padding: SPACING.sm,
+    position: 'absolute',
+    right: 8,
   },
   primaryButton: {
-    backgroundColor: COLORS.brandGreen,
-    borderRadius: RADIUS.lg,
-    paddingVertical: 18,
-    alignItems: 'center',
+    ...COMPONENTS.primaryButton,
+    paddingVertical: 20,
     marginTop: SPACING.md,
-    marginBottom: SPACING.xl,
-    ...SHADOWS.sm,
+    marginBottom: SPACING.lg,
   },
   primaryButtonDisabled: {
-    opacity: 0.7,
+    opacity: 0.6,
   },
   primaryButtonText: {
-    color: COLORS.white,
-    fontSize: TYPOGRAPHY.md,
-    fontWeight: TYPOGRAPHY.bold,
-    letterSpacing: 1,
+    ...COMPONENTS.primaryButtonText,
   },
   otpRow: {
     alignItems: 'center',
     marginBottom: SPACING.xl,
   },
   otpLink: {
-    color: COLORS.brandBlue,
-    fontSize: TYPOGRAPHY.sm,
-    fontWeight: TYPOGRAPHY.bold,
-    letterSpacing: 0.5,
+    color: COLORS.secondary,
+    fontSize: 11,
+    fontWeight: TYPOGRAPHY.black,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   divider: {
     height: 1,
-    backgroundColor: COLORS.slate200,
+    backgroundColor: 'rgba(0,0,0,0.05)',
     marginBottom: SPACING.xl,
   },
   registerRow: {
@@ -319,13 +320,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   registerText: {
-    color: COLORS.textMain,
-    fontSize: TYPOGRAPHY.xs,
-    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.onSurfaceVariant,
+    fontSize: 12,
+    fontWeight: '700',
   },
   registerLink: {
-    color: COLORS.brandBlue,
-    fontSize: TYPOGRAPHY.xs,
-    fontWeight: TYPOGRAPHY.bold,
+    color: COLORS.primary,
+    fontSize: 12,
+    fontWeight: '900',
   },
 });

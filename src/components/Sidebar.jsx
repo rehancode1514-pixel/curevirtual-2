@@ -1,45 +1,14 @@
-// FILE: src/components/Sidebar.jsx
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import {
-  FaUserMd,
-  FaUsers,
-  FaChartBar,
-  FaCogs,
-  FaSignOutAlt,
-  FaCalendarAlt,
-  FaClipboardList,
-  FaChevronDown,
-  FaUserShield,
-  FaInbox,
-  FaVideo,
-  FaTicketAlt,
-  FaComments,
-  FaEnvelope,
-  FaPaperPlane,
-  FaIdCard,
-  FaPills,
-  FaListUl,
-  FaCircle,
-  FaTimes,
-} from "react-icons/fa";
 import { useState, useEffect } from "react";
-import api, { getNotifications } from "../Lib/api";
-import { useTheme } from "../context/ThemeContext";
+import api from "../Lib/api";
 
 export default function Sidebar({ role: propRole, isMobileMenuOpen, setIsMobileMenuOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { theme } = useTheme();
 
   const [open, setOpen] = useState(true);
-  const [openMessages, setOpenMessages] = useState(false);
-  const [openManageUsers, setOpenManageUsers] = useState(false);
-  const [showPatientMsg, setShowPatientMsg] = useState(false);
-  const [showPatientDoctors, setShowPatientDoctors] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [patientMsgCount, setPatientMsgCount] = useState(0);
-  const [openSubscribers, setOpenSubscribers] = useState(false);
-  const [openPharmacy, setOpenPharmacy] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   const role = propRole || localStorage.getItem("role") || "PATIENT";
   const userId = localStorage.getItem("userId");
@@ -49,385 +18,186 @@ export default function Sidebar({ role: propRole, isMobileMenuOpen, setIsMobileM
     async function loadCounters() {
       try {
         if (!userId) return;
-        if (role === "PATIENT") {
-          const n = await getNotifications(userId);
-          if (mounted) setPatientMsgCount(Number(n) || 0);
-        } else {
-          const res = await api.get(`/messages/unread-count`, {
-            params: { userId },
-          });
-          const count = res?.data?.count ?? 0;
-          if (mounted) setUnreadCount(Number(count) || 0);
-        }
-      } catch {
-        // silent
-      }
+        const res = await api.get(`/messages/unread-count`, { params: { userId } });
+        const count = res?.data?.count ?? 0;
+        if (mounted) setUnreadCount(Number(count) || 0);
+      } catch { /* silent */ }
     }
     loadCounters();
     const t = setInterval(loadCounters, 30000);
-    const handleMessagesRead = () => {
-      if (role === "PATIENT") setPatientMsgCount(0);
-      else setUnreadCount(0);
-    };
-    window.addEventListener("messages:read", handleMessagesRead);
-    return () => {
-      mounted = false;
-      clearInterval(t);
-      window.removeEventListener("messages:read", handleMessagesRead);
-    };
-  }, [role, userId]);
+    return () => { mounted = false; clearInterval(t); };
+  }, [userId]);
 
   const isActive = (path) => location.pathname === path;
 
   const NavItem = ({ to, icon, label, badge }) => (
     <Link
       to={to}
-      onClick={() => setIsMobileMenuOpen?.(false)} // Close mobile menu on navigation
-      className={`flex items-center gap-3 px-4 py-3.5 min-h-[44px] rounded-2xl transition-all duration-200 group relative ${
+      onClick={() => setIsMobileMenuOpen?.(false)}
+      className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group ${
         isActive(to)
-          ? "bg-white text-[var(--brand-green)] shadow-lg"
-          : "text-emerald-100 hover:bg-white/10 hover:text-white"
+          ? "bg-surface-container-highest text-primary shadow-lg shadow-primary/5"
+          : "text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
       }`}
     >
-      <div
-        className={`text-lg transition-transform group-hover:scale-110 ${
-          isActive(to) ? "text-[var(--brand-green)]" : ""
-        }`}
-      >
+      <span className={`material-symbols-outlined text-2xl transition-all ${isActive(to) ? "" : "opacity-70 group-hover:opacity-100"}`} style={{ fontVariationSettings: isActive(to) ? "'FILL' 1" : "" }}>
         {icon}
-      </div>
-      {open && <span className="font-bold text-sm tracking-tight flex-1">{label}</span>}
+      </span>
+      {open && <span className="font-headline text-sm font-bold tracking-tight flex-1">{label}</span>}
       {badge > 0 && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 bg-[var(--brand-orange)] text-white text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-[20px] text-center">
+        <span className="bg-primary text-white text-[10px] font-black px-2 py-0.5 rounded-full min-w-[20px] text-center">
           {badge}
         </span>
-      )}
-      {isActive(to) && open && (
-        <div className="absolute left-[-1rem] top-1/2 -translate-y-1/2 h-8 w-1.5 bg-white rounded-r-full" />
       )}
     </Link>
   );
 
-  const DropdownItem = ({ icon, label, isOpen, onClick, children, badge }) => (
-    <div className="space-y-1">
-      <button
-        onClick={onClick}
-        className={`w-full flex items-center justify-between gap-3 px-4 py-3.5 min-h-[44px] rounded-2xl transition-all duration-200 group ${
-          isOpen ? "text-white bg-white/10" : "text-emerald-100 hover:bg-white/10 hover:text-white"
-        }`}
-      >
-        <div className="flex items-center gap-3 flex-1">
-          <div className="text-lg group-hover:scale-110 transition-transform">{icon}</div>
-          {open && <span className="font-bold text-sm tracking-tight">{label}</span>}
-          {badge > 0 && !isOpen && (
-            <span className="bg-[var(--brand-orange)] text-white text-[10px] font-black px-1.5 py-0.5 rounded-full ml-auto">
-              {badge}
+  const DropdownItem = ({ icon, label, id, children }) => {
+    const isOpen = openDropdown === id;
+    return (
+      <div className="space-y-1">
+        <button
+          onClick={() => setOpenDropdown(isOpen ? null : id)}
+          className={`w-full flex items-center justify-between gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ${
+            isOpen ? "bg-surface-container text-on-surface" : "text-on-surface-variant hover:bg-surface-container-high"
+          }`}
+        >
+          <div className="flex items-center gap-4 flex-1">
+            <span className="material-symbols-outlined text-2xl opacity-70" style={{ fontVariationSettings: isOpen ? "'FILL' 1" : "" }}>{icon}</span>
+            {open && <span className="font-headline text-sm font-bold tracking-tight">{label}</span>}
+          </div>
+          {open && (
+            <span className={`material-symbols-outlined text-lg transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>
+              expand_more
             </span>
           )}
-        </div>
-        {open && (
-          <FaChevronDown
-            className={`transition-transform duration-300 text-[10px] ${
-              isOpen ? "rotate-180" : ""
-            }`}
-          />
+        </button>
+        {isOpen && open && (
+          <div className="ml-6 pl-4 border-l-2 border-outline-variant/30 space-y-1 animate-in slide-in-from-top-2">
+            {children}
+          </div>
         )}
-      </button>
-      {isOpen && open && (
-        <div className="ml-6 pl-4 border-l-2 border-white/20 space-y-1 animate-in slide-in-from-top-2 duration-300">
-          {children}
-        </div>
-      )}
-    </div>
-  );
+      </div>
+    );
+  };
 
-  const SubItem = ({ to, label, icon }) => (
+  const SubItem = ({ to, label }) => (
     <Link
       to={to}
-      onClick={() => setIsMobileMenuOpen?.(false)} // Close mobile menu on navigation
-      className={`flex items-center gap-3 px-3 py-2.5 min-h-[40px] rounded-xl text-xs font-bold transition-all ${
-        isActive(to)
-          ? "bg-white text-[var(--brand-green)] shadow-md"
-          : "text-emerald-100 hover:text-white hover:bg-white/10"
+      onClick={() => setIsMobileMenuOpen?.(false)}
+      className={`flex items-center px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+        isActive(to) ? "text-primary bg-primary-container/10" : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
       }`}
     >
-      {icon && <span className="text-sm">{icon}</span>}
-      <span>{label}</span>
+      {label}
     </Link>
   );
 
   return (
     <>
-      {/* Mobile Overlay Backdrop */}
       {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-[55] lg:hidden animate-in fade-in duration-200"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/40 z-[55] lg:hidden backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
       )}
-
-      {/* Sidebar */}
-      <aside
-        className={`h-screen border-r border-white/10 transition-all duration-500 ease-in-out flex flex-col z-[60] 
-        ${open ? "w-72" : "w-24"} 
-        bg-gradient-to-b from-green-700 via-emerald-800 to-green-900 shadow-xl
-        fixed lg:sticky top-0 left-0
-        ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
-      >
-        {/* Brand Logo Section */}
-        <div className="p-6 mb-4">
-          <div className="flex items-center gap-3">
-            {/* Mobile Close Button - Only visible on mobile when menu is open */}
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="lg:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all text-white shrink-0"
-              aria-label="Close menu"
-            >
-              <FaTimes className="w-5 h-5" />
-            </button>
-
-            <div
-              className="bg-white/10 p-2 rounded-xl shadow-lg cursor-pointer shrink-0 border border-white/10 backdrop-blur-sm"
-              onClick={() => setOpen(!open)}
-            >
+      <aside className={`h-screen border-r border-outline-variant/30 transition-all duration-500 ease-in-out flex flex-col z-[60] bg-surface-container-lowest fixed lg:sticky top-0 left-0 ${open ? "w-72" : "w-24"} ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <div className="p-6 mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="bg-primary/10 p-2 rounded-2xl cursor-pointer" onClick={() => setOpen(!open)}>
               <img src="/images/logo/Asset3.png" alt="Logo" className="w-8 h-8" />
             </div>
             {open && (
-              <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                <p className="text-xl font-black tracking-tighter text-white">
-                  Cure<span className="text-blue-200">Virtual</span>
-                </p>
-                <div className="flex items-center gap-1.5">
-                  <FaCircle className="text-white text-[6px] animate-pulse" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-200">
-                    {role} PANEL
-                  </span>
-                </div>
+              <div className="animate-in fade-in slide-in-from-left-4">
+                <p className="text-xl font-black tracking-tighter text-on-surface">Cure<span className="text-primary italic">Virtual</span></p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-outline">{role} CONSOLE</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-2 space-y-2 overflow-y-auto scrollbar-hide">
-          {/* SUPERADMIN */}
+        <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto no-scrollbar">
           {role === "SUPERADMIN" && (
             <>
-              <NavItem to="/superadmin/dashboard" icon={<FaChartBar />} label="Dashboard" />
-              <NavItem to="/superadmin/manage-admins" icon={<FaUserShield />} label="Admins" />
-              <DropdownItem
-                icon={<FaUsers />}
-                label="Subscribers"
-                isOpen={openSubscribers}
-                onClick={() => setOpenSubscribers(!openSubscribers)}
-              >
-                <SubItem to="/superadmin/subscribers" label="Statistics" icon={<FaChartBar />} />
-                <SubItem to="/superadmin/subscribers/doctors" label="Doctors" icon={<FaUserMd />} />
-                <SubItem
-                  to="/superadmin/subscribers/patients"
-                  label="Patients"
-                  icon={<FaUsers />}
-                />
-                <SubItem
-                  to="/superadmin/subscribers/pharmacy"
-                  label="Pharmacies"
-                  icon={<FaIdCard />}
-                />
+              <NavItem to="/superadmin/dashboard" icon="dashboard" label="Overview" />
+              <NavItem to="/superadmin/manage-admins" icon="shield_with_house" label="Admins" />
+              <DropdownItem icon="group" label="Registry" id="super-registry">
+                <SubItem to="/superadmin/subscribers" label="Market Stats" />
+                <SubItem to="/superadmin/subscribers/doctors" label="Doctors" />
+                <SubItem to="/superadmin/subscribers/patients" label="Patients" />
+                <SubItem to="/superadmin/subscribers/pharmacy" label="Pharmacies" />
               </DropdownItem>
-              <NavItem to="/superadmin/system-reports" icon={<FaChartBar />} label="System Audit" />
-              <NavItem to="/superadmin/settings" icon={<FaCogs />} label="Settings" />
-              <NavItem to="/superadmin/activity-logs" icon={<FaListUl />} label="Activity Logs" />
-              <DropdownItem
-                icon={<FaEnvelope />}
-                label="Messages"
-                isOpen={openMessages}
-                onClick={() => setOpenMessages(!openMessages)}
-                badge={unreadCount}
-              >
-                <SubItem to="/superadmin/messages/inbox" label="Inbox" icon={<FaInbox />} />
-                <SubItem to="/superadmin/messages/send" label="Compose" icon={<FaPaperPlane />} />
-              </DropdownItem>
+              <NavItem to="/superadmin/system-reports" icon="analytics" label="System Audit" />
+              <NavItem to="/superadmin/activity-logs" icon="list_alt" label="Action Logs" />
+              <NavItem to="/superadmin/messages/inbox" icon="mail" label="Unified Inbox" badge={unreadCount} />
             </>
           )}
 
-          {/* ADMIN */}
           {role === "ADMIN" && (
             <>
-              <NavItem to="/admin/dashboard" icon={<FaChartBar />} label="Overview" />
-              <DropdownItem
-                icon={<FaUsers />}
-                label="Manage Users"
-                isOpen={openManageUsers}
-                onClick={() => setOpenManageUsers(!openManageUsers)}
-              >
-                <SubItem to="/admin/users-list" label="User Registry" icon={<FaListUl />} />
-                <SubItem to="/admin/manage-users" label="Add User" icon={<FaUserShield />} />
-                <SubItem to="/admin/reports" label="Activity Reports" icon={<FaChartBar />} />
+              <NavItem to="/admin/dashboard" icon="dashboard" label="Overview" />
+              <DropdownItem icon="manage_accounts" label="Manage Users" id="admin-users">
+                <SubItem to="/admin/users-list" label="Registry" />
+                <SubItem to="/admin/manage-users" label="Provisioning" />
+                <SubItem to="/admin/reports" label="Activity" />
               </DropdownItem>
-              <DropdownItem
-                icon={<FaUsers />}
-                label="Subscribers"
-                isOpen={openSubscribers}
-                onClick={() => setOpenSubscribers(!openSubscribers)}
-              >
-                <SubItem to="/admin/subscribers" label="Market Stats" icon={<FaChartBar />} />
-                <SubItem to="/admin/subscribers/doctors" label="Doctors" icon={<FaUserMd />} />
-                <SubItem to="/admin/subscribers/patients" label="Patients" icon={<FaUsers />} />
-              </DropdownItem>
-              <NavItem to="/admin/subscription" icon={<FaCogs />} label="Billing" />
-              <DropdownItem
-                icon={<FaEnvelope />}
-                label="Messages"
-                isOpen={openMessages}
-                onClick={() => setOpenMessages(!openMessages)}
-                badge={unreadCount}
-              >
-                <SubItem to="/admin/messages/inbox" label="Incoming" icon={<FaInbox />} />
-                <SubItem to="/admin/messages/send" label="New Message" icon={<FaPaperPlane />} />
-              </DropdownItem>
+              <NavItem to="/admin/messages/inbox" icon="mail" label="Inbox" badge={unreadCount} />
+              <NavItem to="/admin/subscription" icon="account_balance_wallet" label="Subscriptions" />
             </>
           )}
 
-          {/* DOCTOR */}
           {role === "DOCTOR" && (
             <>
-              <NavItem to="/doctor/dashboard" icon={<FaChartBar />} label="Dashboard" />
-              <NavItem to="/doctor/appointments" icon={<FaCalendarAlt />} label="Appointments" />
-              <NavItem to="/doctor/schedule" icon={<FaCalendarAlt />} label="My Schedule" />
-              <NavItem
-                to="/doctor/prescriptions"
-                icon={<FaClipboardList />}
-                label="Prescriptions"
-              />
-              <NavItem to="/doctor/patients" icon={<FaUsers />} label="My Patients" />
-              <NavItem to="/doctor/video-consultation" icon={<FaVideo />} label="Video Call" />
-              <NavItem to="/doctor/subscription" icon={<FaCogs />} label="Packages" />
-              <DropdownItem
-                icon={<FaEnvelope />}
-                label="Messages"
-                isOpen={openMessages}
-                onClick={() => setOpenMessages(!openMessages)}
-                badge={unreadCount}
-              >
-                <SubItem to="/doctor/messages/inbox" label="Inbox" icon={<FaInbox />} />
-                <SubItem
-                  to="/doctor/messages/send"
-                  label="Send to All"
-                  icon={<FaPaperPlane />}
-                />
-              </DropdownItem>
-              <NavItem to="/doctor/view-profile" icon={<FaIdCard />} label="Public Profile" />
+              <NavItem to="/doctor/dashboard" icon="dashboard" label="Provider Portal" />
+              <NavItem to="/doctor/appointments" icon="calendar_today" label="Appointments" />
+              <NavItem to="/doctor/schedule" icon="event_note" label="My Schedule" />
+              <NavItem to="/doctor/patients" icon="group" label="Patient Roster" />
+              <NavItem to="/doctor/video-consultation" icon="videocam" label="Telehealth Bridge" />
+              <NavItem to="/doctor/messages/inbox" icon="mail" label="Messenger" badge={unreadCount} />
             </>
           )}
 
-          {/* PATIENT */}
           {role === "PATIENT" && (
             <>
-              <NavItem to="/patient/dashboard" icon={<FaChartBar />} label="Dashboard" />
-              <NavItem to="/patient/my-appointments" icon={<FaCalendarAlt />} label="My Visits" />
-              <NavItem
-                to="/patient/prescriptions"
-                icon={<FaClipboardList />}
-                label="Health Records"
-              />
-              <NavItem to="/patient/video-consultation" icon={<FaVideo />} label="Video Call" />
-              <DropdownItem
-                icon={<FaUserMd />}
-                label="Doctors"
-                isOpen={showPatientDoctors}
-                onClick={() => setShowPatientDoctors(!showPatientDoctors)}
-              >
-                <SubItem to="/patient/doctors/list" label="Find Doctors" icon={<FaListUl />} />
-                <SubItem to="/patient/doctors/my" label="My Doctors" icon={<FaUsers />} />
+              <NavItem to="/patient/dashboard" icon="dashboard" label="My Dashboard" />
+              <NavItem to="/patient/my-appointments" icon="calendar_today" label="Clinical Visits" />
+              <NavItem to="/patient/meds" icon="medication" label="Meds Tracker" />
+              <NavItem to="/patient/history" icon="history_edu" label="Health Narrative" />
+              <NavItem to="/patient/messages" icon="mail" label="Secure Inbox" badge={unreadCount} />
+              <NavItem to="/patient/video-consultation" icon="videocam" label="Join Room" />
+              <DropdownItem icon="local_hospital" label="Network" id="patient-network">
+                <SubItem to="/patient/doctors/list" label="Find Doctors" />
+                <SubItem to="/patient/pharmacy/list" label="Pharmacies" />
               </DropdownItem>
-              <DropdownItem
-                icon={<FaPills />}
-                label="Pharmacy"
-                isOpen={openPharmacy}
-                onClick={() => setOpenPharmacy(!openPharmacy)}
-              >
-                <SubItem to="/patient/pharmacy/list" label="Find a Pharmacy" icon={<FaListUl />} />
-                <SubItem to="/patient/my-pharmacy" label="Preferred" icon={<FaPills />} />
-              </DropdownItem>
-              <DropdownItem
-                icon={<FaEnvelope />}
-                label="Messages"
-                isOpen={showPatientMsg}
-                onClick={() => setShowPatientMsg(!showPatientMsg)}
-                badge={patientMsgCount}
-              >
-                <SubItem to="/patient/messages" label="Replies" icon={<FaInbox />} />
-                <SubItem to="/patient/messages/send" label="Ask Doctor" icon={<FaPaperPlane />} />
-              </DropdownItem>
-              <NavItem to="/patient/subscription" icon={<FaCogs />} label="Membership" />
-              <NavItem to="/patient/profile/view-profile" icon={<FaIdCard />} label="My Account" />
             </>
           )}
 
-          {/* PHARMACY */}
           {role === "PHARMACY" && (
             <>
-              <NavItem to="/pharmacy/dashboard" icon={<FaChartBar />} label="Dashboard" />
-              <NavItem to="/pharmacy/prescriptions" icon={<FaClipboardList />} label="Orders" />
-              <NavItem to="/pharmacist/subscription" icon={<FaCogs />} label="Store Plan" />
-              <DropdownItem
-                icon={<FaEnvelope />}
-                label="Chat"
-                isOpen={openMessages}
-                onClick={() => setOpenMessages(!openMessages)}
-                badge={unreadCount}
-              >
-                <SubItem to="/pharmacy/messages/inbox" label="Inquiries" icon={<FaInbox />} />
-                <SubItem to="/pharmacy/messages/send" label="Respond" icon={<FaPaperPlane />} />
-              </DropdownItem>
-              <NavItem to="/pharmacy/view-profile" icon={<FaIdCard />} label="Store Profile" />
-            </>
-          )}
-
-          {/* SUPPORT */}
-          {role === "SUPPORT" && (
-            <>
-              <NavItem to="/support/dashboard" icon={<FaChartBar />} label="Help Center" />
-              <DropdownItem
-                icon={<FaUsers />}
-                label="Directory"
-                isOpen={openSubscribers}
-                onClick={() => setOpenSubscribers(!openSubscribers)}
-              >
-                <SubItem to="/support/subscribers/doctors" label="Doctors" icon={<FaUserMd />} />
-                <SubItem to="/support/subscribers/patients" label="Patients" icon={<FaUsers />} />
-                <SubItem
-                  to="/support/subscribers/pharmacy"
-                  label="Pharmacies"
-                  icon={<FaIdCard />}
-                />
-              </DropdownItem>
-              <NavItem to="/support/tickets" icon={<FaTicketAlt />} label="Tickets" />
-              <NavItem to="/support/live-chat" icon={<FaComments />} label="Live Support" />
+              <NavItem to="/pharmacy/dashboard" icon="dashboard" label="Fulfillment Hub" />
+              <NavItem to="/pharmacy/prescriptions" icon="inventory" label="Order Flow" />
+              <NavItem to="/pharmacy/messages/inbox" icon="mail" label="Inquiries" badge={unreadCount} />
+              <NavItem to="/pharmacy/view-profile" icon="store" label="Store Identity" />
             </>
           )}
         </nav>
 
-        {/* Footer / User Profile Summary */}
-        <div className="p-4 bg-white/5 border-t border-white/10 backdrop-blur-md">
-          {open && (
-            <div className="flex items-center gap-3 px-2 py-3 rounded-2xl bg-white/10 border border-white/10 shadow-sm">
-              <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center text-[var(--brand-green)] font-black text-lg">
-                {localStorage.getItem("name")?.charAt(0) || "U"}
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-black text-white truncate">
-                  {localStorage.getItem("name") || "User Account"}
-                </p>
-                <p className="text-[10px] font-bold text-emerald-200 uppercase tracking-widest">
-                  {role}
-                </p>
-              </div>
+        <div className="p-6 mt-auto">
+          <div className={`flex items-center gap-3 p-3 rounded-2xl bg-surface-container ${open ? "" : "justify-center"}`}>
+            <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-black">
+              {localStorage.getItem("name")?.[0] || "U"}
             </div>
-          )}
+            {open && (
+              <div className="overflow-hidden">
+                <p className="text-sm font-bold text-on-surface truncate">{localStorage.getItem("name") || "Provider"}</p>
+                <p className="text-[10px] font-bold text-outline uppercase">{role}</p>
+              </div>
+            )}
+          </div>
+          <button onClick={() => { localStorage.clear(); navigate("/login"); }} className={`w-full mt-4 flex items-center gap-4 px-4 py-3 rounded-2xl text-error hover:bg-error/5 transition-all ${open ? "" : "justify-center"}`}>
+            <span className="material-symbols-outlined">logout</span>
+            {open && <span className="font-bold text-sm">Synchronize Logout</span>}
+          </button>
         </div>
       </aside>
     </>
   );
 }
+

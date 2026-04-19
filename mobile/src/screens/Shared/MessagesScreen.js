@@ -17,27 +17,20 @@ export default function MessagesScreen({ navigation }) {
       // Use unified messaging endpoint
       const res = await api.get('/messages/inbox');
       
-      const items = Array.isArray(res.data) ? res.data : res.data?.data || [];
-      console.log('[MessagesScreen] First Item Raw:', JSON.stringify(items[0], null, 2));
+      const items = Array.isArray(res.data?.data) ? res.data.data : (Array.isArray(res.data) ? res.data : []);
+      console.log('[MessagesScreen] Inbox items loaded:', items.length);
       
-      // Transform backend data to match UI expectations if necessary
       const formatted = items.map(chat => {
-        // Handle both unified and legacy backend structures
-        const otherUser = (String(chat.senderId) === String(user.id)) ? chat.receiver : chat.sender;
-        const derivedName = otherUser 
-          ? (otherUser.name || `${otherUser.firstName || ''} ${otherUser.lastName || ''}`.trim()) 
-          : null;
+        const fullName = chat.contactName || 'User';
+        const nameParts = fullName.split(' ');
         
-        const finalName = chat.contactName || derivedName || 'User';
-        const nameParts = finalName.split(' ');
-
         return {
           id: chat.id,
-          senderId: chat.contactId || (String(chat.senderId) === String(user.id) ? chat.receiverId : chat.senderId),
+          senderId: chat.contactId, // Backend maps the 'other user' to contactId
           sender: {
             firstName: nameParts[0] || '',
-            lastName: nameParts[1] || '',
-            name: finalName
+            lastName: nameParts.slice(1).join(' ') || '',
+            name: fullName
           },
           content: chat.content,
           createdAt: chat.createdAt,

@@ -33,8 +33,8 @@ router.post("/doctor/video-consultations", async (req, res) => {
       });
     }
 
-    // ✅ Generate a ZEGO room name
-    const roomName = `consult-${crypto.randomUUID()}`;
+    // ✅ Generate a ZEGO-safe room name (alphanumeric only, no hyphens)
+    const roomName = `consult${crypto.randomUUID().replace(/-/g, '')}`;
 
     // ✅ Create the consultation record
     const newConsultation = await prisma.videoConsultation.create({

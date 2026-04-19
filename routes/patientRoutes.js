@@ -133,6 +133,7 @@ router.put("/profile", async (req, res) => {
       insuranceMemberId,
       maritalStatus,
       disabilityStatus,
+      timezone,
     } = req.body;
 
     // Fallback: If no userId provided, use the logged-in user's ID
@@ -140,14 +141,19 @@ router.put("/profile", async (req, res) => {
       userId = req.user.id;
     }
 
+    console.log(`[ProfileUpdate] Request received for userId: ${userId}, role: PATIENT, timezone: ${timezone}`);
+
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
     }
 
     // Ensure only the user themselves or an admin can update
-    // (This is a simplified check; ideally use verifyOwnerOrAdmin middleware)
     if (req.user.role === "PATIENT" && req.user.id !== userId) {
-      return res.status(403).json({ error: "Unauthorized update attempt" });
+      console.warn(`[RBAC] 🛡️ Blocked profile update attempt. Request ID: ${userId}, Token ID: ${req.user.id}`);
+      return res.status(403).json({ 
+        error: "Unauthorized update attempt",
+        message: "You can only update your own profile record." 
+      });
     }
 
     // Validate Date of Birth
@@ -187,45 +193,35 @@ router.put("/profile", async (req, res) => {
       },
     });
 
+    const patientData = {
+      ...(finalBloodGroup !== undefined && { bloodGroup: finalBloodGroup }),
+      ...(height !== undefined && { height: height === "" ? null : Number(height) || null }),
+      ...(heightUnit !== undefined && { heightUnit }),
+      ...(weight !== undefined && { weight: weight === "" ? null : Number(weight) || null }),
+      ...(weightUnit !== undefined && { weightUnit }),
+      ...(allergies !== undefined && { allergies }),
+      ...(medications !== undefined && { medications }),
+      ...(medicalHistory !== undefined && { medicalHistory }),
+      ...(address !== undefined && { address }),
+      ...(emergencyContact !== undefined && { emergencyContact }),
+      ...(emergencyContactName !== undefined && { emergencyContactName }),
+      ...(emergencyContactEmail !== undefined && { emergencyContactEmail }),
+      ...(medicalRecordNumber !== undefined && { medicalRecordNumber }),
+      ...(insuranceProvider !== undefined && { insuranceProvider }),
+      ...(insuranceMemberId !== undefined && { insuranceMemberId }),
+      ...(disabilityStatus !== undefined && { disabilityStatus }),
+      ...(timezone !== undefined && { timezone }),
+    };
+
     // Upsert Patient Profile
     const updated = await prisma.patientProfile.upsert({
       where: { userId },
-      update: {
-        bloodGroup: finalBloodGroup,
-        height: height === "" ? null : Number(height) || null,
-        heightUnit: heightUnit || "cm",
-        weight: weight === "" ? null : Number(weight) || null,
-        weightUnit: weightUnit || "kg",
-        allergies: allergies || "",
-        medications: medications || "",
-        medicalHistory: medicalHistory || "",
-        address: address || "",
-        emergencyContact: emergencyContact || "",
-        emergencyContactName: emergencyContactName || "",
-        emergencyContactEmail: emergencyContactEmail || "",
-        medicalRecordNumber: medicalRecordNumber || null,
-        insuranceProvider: insuranceProvider || null,
-        insuranceMemberId: insuranceMemberId || null,
-        disabilityStatus: disabilityStatus || "Normal",
-      },
+      update: patientData,
       create: {
         userId,
         bloodGroup: finalBloodGroup,
-        height: height === "" ? null : Number(height) || null,
-        heightUnit: heightUnit || "cm",
-        weight: weight === "" ? null : Number(weight) || null,
-        weightUnit: weightUnit || "kg",
-        allergies: allergies || "",
-        medications: medications || "",
-        medicalHistory: medicalHistory || "",
-        address: address || "",
-        emergencyContact: emergencyContact || "",
-        emergencyContactName: emergencyContactName || "",
-        emergencyContactEmail: emergencyContactEmail || "",
-        medicalRecordNumber: medicalRecordNumber || null,
-        insuranceProvider: insuranceProvider || null,
-        insuranceMemberId: insuranceMemberId || null,
-        disabilityStatus: disabilityStatus || "Normal",
+        ...patientData,
+        timezone: timezone || "UTC",
       },
     });
 
@@ -239,6 +235,7 @@ router.put("/profile", async (req, res) => {
         .catch((err) => console.error("Failed to send profile update email:", err));
     }
 
+    console.log(`[ProfileUpdate] Successfully updated profile for userId: ${userId}`);
     return res.json({
       success: true,
       message: "Profile updated successfully",
@@ -348,7 +345,7 @@ router.get("/stats", async (req, res) => {
 });
 
 /* ==================================================
-   2) PATIENT DIRECTORY (ADMIN/UTILITY)
+2) PATIENT DIRECTORY (ADMIN/UTILITY)
    ================================================== */
 /**
  * GET /api/patient/all?page=&limit=

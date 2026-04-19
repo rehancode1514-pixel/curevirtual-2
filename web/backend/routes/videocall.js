@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
 const prisma = require("../prisma/prismaClient");
-const { verifyToken, requireRole } = require("../middleware/rbac.js");
+const { verifyToken } = require("../middleware/rbac.js");
 
 /* ============================
    Helpers: Profile Resolution
@@ -202,9 +202,48 @@ router.get("/list", verifyToken, async (req, res) => {
       },
     });
 
-    return res.json({ success: true, data: consults });
+    // ✅ ALSO: Fetch standard Appointments that are NOT idle (meaning a call is requested or active)
+    let appointmentFilter = {};
+    if (role === "DOCTOR") {
+      const doc = await prisma.doctorProfile.findUnique({
+        where: { userId: String(userId) },
+        select: { id: true },
+      });
+      if (doc) appointmentFilter.doctorId = doc.id;
+    } else {
+      const pat = await prisma.patientProfile.findUnique({
+        where: { userId: String(userId) },
+        select: { id: true },
+      });
+      if (pat) appointmentFilter.patientId = pat.id;
+    }
+
+    // Only show appointments that are confirmed/scheduled and NOT idle or ended
+    appointmentFilter.callStatus = { in: ["requested", "active"] };
+
+    const activeAppointments = await prisma.appointment.findMany({
+      where: appointmentFilter,
+      include: {
+        doctor: { include: { user: true } },
+        patient: { include: { user: true } },
+      },
+    });
+
+    // Map appointments to fit the consultation shape for the mobile frontend
+    const mappedAppointments = activeAppointments.map(app => ({
+      ...app,
+      scheduledAt: app.appointmentDate,
+      isAppointment: true, // Flag for frontend
+    }));
+
+    // Combine and sort
+    const combined = [...consults, ...mappedAppointments].sort(
+      (a, b) => new Date(b.scheduledAt) - new Date(a.scheduledAt)
+    );
+
+    return res.json({ success: true, data: combined });
   } catch (err) {
-    console.error("❌ Error fetching consultations:", err);
+    console.error("❌ Error fetching combined consultations:", err);
     return res.status(500).json({ error: "Failed to fetch consultations" });
   }
 });
@@ -215,8 +254,8 @@ router.get("/list", verifyToken, async (req, res) => {
 ========================================== */
 router.post("/room-name", verifyToken, async (req, res) => {
   try {
-    // ✅ Generate a ZEGO room name
-    const roomName = `consult-${crypto.randomUUID()}`;
+    // ✅ Generate a ZEGO-safe room name (alphanumeric only, no hyphens)
+    const roomName = `consult${crypto.randomUUID().replace(/-/g, '')}`;
     return res.json({ success: true, roomName });
   } catch (err) {
     console.error("❌ Error generating room name:", err);

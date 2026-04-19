@@ -167,6 +167,16 @@ router.put("/profile", verifyToken, async (req, res) => {
     });
     if (!user) return res.status(404).json({ error: "User not found" });
 
+    console.log(`[RBAC] Incoming Pharmacy Profile Update - UserID: ${userId}, TokenID: ${req.user.id}, Role: ${req.user.role}, Timezone: ${req.body.timezone}`);
+
+    if (req.user.role === "PHARMACY" && String(req.user.id) !== String(userId)) {
+      console.warn(`[RBAC] 🛡️ Blocked pharmacy profile update attempt. Request ID: ${userId}, Token ID: ${req.user.id}`);
+      return res.status(403).json({ 
+        error: "Forbidden", 
+        message: "You are not authorized to update this profile." 
+      });
+    }
+
     const {
       displayName,
       licenseNumber,
@@ -183,6 +193,7 @@ router.put("/profile", verifyToken, async (req, res) => {
       openingHours,
       services,
       maritalStatus,
+      timezone,
     } = req.body || {};
 
     const data = {
@@ -198,6 +209,7 @@ router.put("/profile", verifyToken, async (req, res) => {
       longitude: toFloatOrNull(longitude),
       openingHours: toNullIfBlank(openingHours),
       services: toNullIfBlank(services),
+      timezone: timezone || undefined,
       updatedAt: new Date(),
     };
 

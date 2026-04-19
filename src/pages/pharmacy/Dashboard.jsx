@@ -1,18 +1,7 @@
-// FILE: src/pages/pharmacy/Dashboard.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../Lib/api';
 import DashboardLayout from '../../layouts/DashboardLayout';
-import {
-  FaBoxOpen,
-  FaClipboardCheck,
-  FaTruckLoading,
-  FaCheckCircle,
-  FaArrowRight,
-  FaFilePrescription,
-  FaHistory,
-  FaWarehouse,
-} from 'react-icons/fa';
 
 export default function PharmacyDashboard() {
   const navigate = useNavigate();
@@ -28,6 +17,7 @@ export default function PharmacyDashboard() {
     ack: 0,
     ready: 0,
     dispensed: 0,
+    totalPrescriptions: 0,
   });
 
   useEffect(() => {
@@ -49,7 +39,7 @@ export default function PharmacyDashboard() {
           ['NONE', 'SENT'].includes(String(x.dispatchStatus))
         ).length;
 
-        setCounts({ incoming, ack, ready, dispensed });
+        setCounts({ incoming, ack, ready, dispensed, totalPrescriptions: list.length });
       } catch (e) {
         console.error('Failed to load pharmacy prescriptions:', e);
       }
@@ -58,116 +48,101 @@ export default function PharmacyDashboard() {
 
   return (
     <DashboardLayout role={role}>
-      <div className="space-y-10">
-        {/* Fulfillment Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-          <div>
-            <h2 className="text-[10px] font-black text-[var(--brand-orange)] uppercase tracking-[0.4em] mb-2 font-mono">
-              Registry: Digital Dispensary
-            </h2>
-            <h1 className="text-4xl lg:text-5xl font-black text-[var(--text-main)] tracking-tighter leading-none uppercase">
-              Fulfillment{' '}
-              <span className="text-[var(--brand-blue)]">Tracker</span>
+      <div className="space-y-12">
+        {/* Marketplace Fulfillment Header */}
+        <section className="flex flex-col md:flex-row justify-between items-end gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tighter uppercase italic">
+              Fulfillment <span className="text-primary not-italic">Hub</span>
             </h1>
+            <p className="text-on-surface-variant text-lg font-medium opacity-80 flex items-center gap-2">
+              <span className="material-symbols-outlined text-secondary text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>warehouse</span>
+              {userName} Dispensary • Active Node
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="px-5 py-2.5 rounded-2xl glass border-[var(--border)] flex items-center gap-3 shadow-sm">
-              <FaWarehouse className="text-[var(--brand-green)]" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-soft)]">
-                Unit: Online
-              </span>
-            </div>
-            <button
-              onClick={() => navigate('/pharmacy/prescriptions')}
-              className="btn btn-primary !py-3 !px-6 shadow-green-500/20"
-            >
-              <FaBoxOpen /> Dispatch Queue
-            </button>
+          
+          <div className="flex gap-4">
+             <div className="text-right">
+                <p className="text-[10px] font-bold text-outline uppercase tracking-widest">Global Throughput</p>
+                <div className="flex items-center gap-1 justify-end">
+                  <span className="text-2xl font-black text-on-surface">100.0%</span>
+                  <span className="material-symbols-outlined text-primary text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                </div>
+             </div>
           </div>
-        </div>
+        </section>
 
         {/* Fulfillment Pipeline Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatusCard
-            title="Incoming"
-            value={counts.incoming}
-            icon={<FaFilePrescription />}
-            color="var(--brand-orange)"
+        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <FulfillmentCard 
+            icon="inbox_customize" 
+            label="Inbound Queue" 
+            value={counts.incoming} 
+            color="secondary"
             onClick={() => navigate('/pharmacy/prescriptions?status=INCOMING')}
           />
-          <StatusCard
-            title="Acknowledged"
-            value={counts.ack}
-            icon={<FaClipboardCheck />}
-            color="var(--brand-blue)"
-            onClick={() =>
-              navigate('/pharmacy/prescriptions?status=ACKNOWLEDGED')
-            }
+          <FulfillmentCard 
+            icon="checklist_rtl" 
+            label="Verified Orders" 
+            value={counts.ack} 
+            color="primary"
+            onClick={() => navigate('/pharmacy/prescriptions?status=ACKNOWLEDGED')}
           />
-          <StatusCard
-            title="Processing"
-            value={counts.ready}
-            icon={<FaTruckLoading />}
-            color="var(--brand-green)"
+          <FulfillmentCard 
+            icon="conveyor_belt" 
+            label="Ready for Dispatch" 
+            value={counts.ready} 
+            color="tertiary"
             onClick={() => navigate('/pharmacy/prescriptions?status=READY')}
           />
-          <StatusCard
-            title="Dispensed"
-            value={counts.dispensed}
-            icon={<FaCheckCircle />}
-            color="var(--brand-blue)"
+          <FulfillmentCard 
+            icon="local_shipping" 
+            label="Shipped/Dispensed" 
+            value={counts.dispensed} 
+            color="primary"
             onClick={() => navigate('/pharmacy/prescriptions?status=DISPENSED')}
           />
-        </div>
+        </section>
 
-        {/* Logistics Support Row */}
-        <div className="grid lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-8 card !p-8 border-l-[12px] border-[var(--brand-green)]">
-            <div className="flex items-center justify-between mb-10 pb-6 border-b border-[var(--border)]">
-              <h3 className="text-lg font-black text-[var(--text-main)] uppercase tracking-tight flex items-center gap-3 italic">
-                <FaHistory className="text-[var(--brand-green)]" /> Operational
-                Logistics Audit
-              </h3>
-              <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] animate-pulse">
-                Sync Active
-              </span>
-            </div>
-            <div className="grid sm:grid-cols-2 gap-8">
-              <LogosticItem
-                icon={<FaBoxOpen />}
-                label="Queue Volume"
-                value={`${counts.incoming + counts.ack} items`}
-              />
-              <LogosticItem
-                icon={<FaTruckLoading />}
-                label="Ready Hub"
-                value={`${counts.ready} ready`}
-              />
-              <LogosticItem
-                icon={<FaCheckCircle />}
-                label="Historical total"
-                value={`${counts.dispensed} units`}
-              />
-              <LogosticItem
-                icon={<FaClipboardCheck />}
-                label="Compliance"
-                value="100.0%"
-              />
+        {/* Operational Grid */}
+        <div className="grid lg:grid-cols-12 gap-10">
+          <div className="lg:col-span-8 flex flex-col gap-8">
+            <div className="card-premium !p-8 border-l-[12px] border-primary flex flex-col justify-between shadow-2xl">
+              <div>
+                <h3 className="font-headline text-2xl font-bold text-on-surface flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
+                  Operational Logistics Audit
+                </h3>
+                <p className="text-on-surface-variant font-medium text-sm mt-2 opacity-70">Internal performance synchronization across all nodes.</p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-10 mt-10 pb-4">
+                <LogisticsMetric label="Current Load" value={`${counts.incoming + counts.ack} Active`} subText="Queue units" />
+                <LogisticsMetric label="Success Rate" value="100.0%" subText="Fulfillment accuracy" />
+                <LogisticsMetric label="Total Lifetime" value={counts.totalPrescriptions} subText="Processed scripts" />
+                <LogisticsMetric label="Average TAT" value="12.4m" subText="Turnaround time" />
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-col gap-4">
-            <div className="card !bg-[var(--brand-blue)] text-[var(--text-main)] !p-8 h-full flex flex-col justify-between border-0 shadow-xl shadow-blue-500/20 group hover:-translate-y-1 transition-all">
-              <div className="space-y-4">
-                <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner border border-[var(--border)]">
-                  <FaClipboardCheck />
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <div className="card-premium !bg-secondary text-white !p-8 flex flex-col justify-between border-none shadow-xl shadow-secondary/20 hover:scale-[1.02] cursor-pointer transition-all">
+              <div className="space-y-6">
+                <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+                  <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>gavel</span>
                 </div>
-                <h4 className="text-xl font-black uppercase tracking-tight leading-none">
-                  Global <br /> Protocols
-                </h4>
+                <div>
+                  <h3 className="font-headline text-2xl font-bold">Protocol Guard</h3>
+                  <p className="text-white/70 text-sm font-medium leading-relaxed mt-2 italic">
+                    "All dispensaries must maintain verified electronic chains of custody."
+                  </p>
+                </div>
               </div>
-              <button className="w-full bg-white text-[var(--brand-blue)] font-black uppercase tracking-[0.2em] text-[9px] py-4 rounded-2xl mt-8">
-                Standards Audit
+              <button 
+                onClick={() => navigate("/pharmacy/prescriptions")}
+                className="w-full py-4 bg-white text-secondary rounded-2xl font-black uppercase text-xs tracking-widest mt-8 shadow-lg shadow-black/10"
+              >
+                Review Protocols
               </button>
             </div>
           </div>
@@ -177,46 +152,36 @@ export default function PharmacyDashboard() {
   );
 }
 
-function StatusCard({ title, value, icon, color, onClick }) {
+function FulfillmentCard({ icon, label, value, color, onClick }) {
+  const colorMap = {
+    primary: "text-primary bg-primary-container/10 border-primary/20",
+    secondary: "text-secondary bg-secondary-container/10 border-secondary/20",
+    tertiary: "text-tertiary bg-tertiary-fixed/30 border-tertiary/20"
+  };
+
   return (
-    <div
+    <div 
       onClick={onClick}
-      className="card !p-6 group hover:-translate-y-1 transition-all cursor-pointer bg-[var(--bg-card)] border-b-4 relative overflow-hidden text-center"
-      style={{ borderBottomColor: color }}
+      className={`card-premium flex flex-col justify-between hover:scale-[1.02] cursor-pointer border-2 ${colorMap[color]}`}
     >
-      <div
-        className="h-12 w-12 rounded-2xl bg-[var(--bg-main)] flex items-center justify-center text-2xl mx-auto mb-6 shadow-inner group-hover:scale-110 transition-transform"
-        style={{ color }}
-      >
-        {icon}
+      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6`}>
+        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
       </div>
-      <p className="text-4xl font-black text-[var(--text-main)] tracking-tighter mb-1">
-        {value ?? 0}
-      </p>
-      <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] group-hover:text-[var(--text-soft)] transition-colors">
-        {title}
-      </p>
-      <div className="absolute top-2 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <FaArrowRight className="text-[10px] text-[var(--text-muted)]" />
+      <div>
+        <p className="text-[10px] font-bold opacity-60 tracking-widest uppercase mb-1">{label}</p>
+        <p className="text-4xl font-extrabold text-on-surface tracking-tighter">{value}</p>
       </div>
     </div>
   );
 }
 
-function LogosticItem({ icon, label, value }) {
+function LogisticsMetric({ label, value, subText }) {
   return (
-    <div className="flex items-center gap-6 group">
-      <div className="h-10 w-10 rounded-xl bg-[var(--bg-main)] flex items-center justify-center text-xl text-[var(--text-muted)] group-hover:text-[var(--brand-green)] group-hover:scale-110 transition-all shadow-inner border border-[var(--border)]">
-        {icon}
-      </div>
-      <div className="overflow-hidden">
-        <p className="text-sm font-black text-[var(--text-main)] truncate">
-          {value}
-        </p>
-        <p className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)] mt-0.5">
-          {label}
-        </p>
-      </div>
+    <div className="flex flex-col gap-1">
+      <p className="text-[10px] font-black text-outline uppercase tracking-widest">{label}</p>
+      <p className="text-2xl font-black text-on-surface">{value}</p>
+      <p className="text-[10px] font-bold text-on-surface-variant opacity-50 uppercase">{subText}</p>
     </div>
   );
 }
+

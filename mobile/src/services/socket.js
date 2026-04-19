@@ -24,23 +24,28 @@ class SocketService {
       console.log(`[Socket] Initializing connection to ${SOCKET_URL}...`);
       this.socket = io(SOCKET_URL, {
         auth: { token },
-        transports: ['websocket'],
         reconnection: true,
-        reconnectionAttempts: 5,
-        timeout: 10000,
+        reconnectionAttempts: 7, // Increased from 5
+        timeout: 20000, // Increased from 10s to 20s for mobile stability
       });
 
       this.socket.on('connect', () => {
-        console.log(`[Socket] Connected to ${SOCKET_URL} as ${role}`);
+        console.log(`[Socket] ✅ Connected to ${SOCKET_URL} as ${role}`);
         this.socket.emit('user_online', { userId, role, name });
       });
 
       this.socket.on('disconnect', (reason) => {
-        console.log('[Socket] Disconnected:', reason);
+        console.log('[Socket] ❌ Disconnected:', reason);
       });
 
       this.socket.on('connect_error', (error) => {
-        console.error('[Socket] Connection error:', error.message);
+        console.error('[Socket] ⚠️ Connection error:', error.message);
+        
+        // Manual retry logic for timeout errors if reconnection doesn't fire
+        if (error.message === 'timeout' && this.socket.disconnected) {
+           console.log('[Socket] Attempting manual reconnect after timeout...');
+           this.socket.connect();
+        }
       });
 
       return this.socket;

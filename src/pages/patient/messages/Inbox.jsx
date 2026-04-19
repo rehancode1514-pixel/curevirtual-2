@@ -1,331 +1,194 @@
 import { useEffect, useState, useCallback } from "react";
-import {
-  FaEnvelopeOpen,
-  FaEnvelope,
-  FaTimes,
-  FaPaperPlane,
-  FaTrash,
-} from "react-icons/fa";
-import Sidebar from "../../../components/Sidebar";
-import Topbar from "../../../components/Topbar";
+import DashboardLayout from "../../../layouts/DashboardLayout";
 import api from "../../../Lib/api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-/* -------- Small confirm dialog (prompt modal) -------- */
-function ConfirmDialog({
-  open,
-  title = "Are you sure?",
-  message = "This action cannot be undone.",
-  confirmText = "Delete",
-  cancelText = "Cancel",
-  onConfirm,
-  onCancel,
-  loading,
-}) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-[60] bg-[var(--bg-main)]/95 flex items-center justify-center">
-      <div className="bg-[var(--bg-card)] text-[var(--text-main)] w-full max-w-md rounded-2xl shadow-xl p-6 relative">
-        <h3 className="text-xl font-semibold mb-2">{title}</h3>
-        <p className="text-[var(--text-soft)] mb-6">{message}</p>
-
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 rounded border border-[var(--border)] hover:bg-[var(--bg-glass)] disabled:opacity-50"
-            disabled={loading}
-          >
-            {cancelText}
-          </button>
-          <button
-            onClick={onConfirm}
-            className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-[var(--text-main)] disabled:opacity-50"
-            disabled={loading}
-          >
-            {loading ? "Deleting..." : confirmText}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function PatientInbox() {
   const [messages, setMessages] = useState([]);
-  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
   const [replyContent, setReplyContent] = useState("");
-  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
 
-  // delete modal state
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [pendingDeleteId, setPendingDeleteId] = useState(null);
-
-  const role = "PATIENT";
   const userId = localStorage.getItem("userId") || "";
-  const userName =
-    localStorage.getItem("userName") ||
-    localStorage.getItem("name") ||
-    "Patient";
+  const role = "PATIENT";
 
   const fetchInbox = useCallback(async () => {
     if (!userId) return;
     try {
-      setLoading(true);
-      // Use unified messaging endpoint
       const res = await api.get("/messages/inbox");
       const items = Array.isArray(res.data) ? res.data : res.data?.data || [];
       setMessages(items);
+      // Auto-select first contact if none selected
+      if (items.length > 0 && !selectedContact) {
+        setSelectedContact(items[0]);
+      }
     } catch (err) {
       console.error("Failed to fetch inbox:", err);
       toast.error("Failed to load inbox.");
-    } finally {
-      setLoading(false);
     }
-  }, [userId]);
+  }, [userId, selectedContact]);
+
+  const fetchChatHistory = useCallback(async (contactId) => {
+    try {
+      const res = await api.get(`/messages/history/${contactId}`);
+      setChatHistory(Array.isArray(res.data) ? res.data : res.data?.data || []);
+    } catch (err) {
+      console.error("Failed to fetch chat history:", err);
+    }
+  }, []);
 
   useEffect(() => {
     fetchInbox();
   }, [fetchInbox]);
 
-  // open viewer, mark as read immediately (optimistic)
-const openMessage = async (msg) => {
-  setSelectedMessage(msg);
-
-  if (!msg.readAt) {
-    // Optimistic local update so UI changes immediately
-    const nowIso = new Date().toISOString();
-    setMessages((prev) =>
-      prev.map((m) => (m.id === msg.id ? { ...m, readAt: nowIso } : m))
-    );
-
-    try {
-      // Use unified messaging endpoint
-      await api.patch(`/messages/${msg.id}/read`, { userId });
-    } catch (err) {
-      // Roll back if the server rejects
-      console.warn("Mark read failed:", err?.response?.data || err);
-      setMessages((prev) =>
-        prev.map((m) => (m.id === msg.id ? { ...m, readAt: null } : m))
-      );
+  useEffect(() => {
+    if (selectedContact) {
+      fetchChatHistory(selectedContact.contactId);
     }
-  }
-};
+  }, [selectedContact, fetchChatHistory]);
 
-
-  const handleReply = async () => {
-    if (!replyContent.trim() || !selectedMessage) return;
+  const handleSend = async () => {
+    if (!replyContent.trim() || !selectedContact) return;
     setSending(true);
     try {
-      // Use unified messaging endpoint
       await api.post("/messages/send", {
         senderId: userId,
-        receiverId: selectedMessage.contactId, // Use contactId from inbox response
+        receiverId: selectedContact.contactId,
         content: replyContent,
       });
       setReplyContent("");
-      setSelectedMessage(null);
-      await fetchInbox();
-      toast.success("Reply sent!");
+      await fetchChatHistory(selectedContact.contactId);
+      toast.success("Message sent");
     } catch (err) {
-      console.error("Failed to send reply:", err);
-      toast.error("Failed to send reply.");
+      console.error("Failed to send message:", err);
+      toast.error("Failed to send message.");
     } finally {
       setSending(false);
     }
   };
 
-  // delete flow
-  const requestDelete = (id) => {
-    setPendingDeleteId(id);
-    setConfirmOpen(true);
-  };
-
-  const cancelDelete = () => {
-    if (confirmLoading) return;
-    setConfirmOpen(false);
-    setPendingDeleteId(null);
-  };
-
-  const confirmDelete = async () => {
-    if (!pendingDeleteId) return;
-    try {
-      setConfirmLoading(true);
-      // Use unified messaging endpoint
-      await api.delete(`/messages/${pendingDeleteId}`, {
-        params: { userId }, 
-      });
-      setMessages((prev) => prev.filter((m) => m.id !== pendingDeleteId));
-      if (selectedMessage?.id === pendingDeleteId) setSelectedMessage(null);
-      toast.success("Message deleted");
-    } catch (err) {
-      console.error("Delete failed:", err);
-      toast.error(err?.response?.data?.error || "Failed to delete message");
-    } finally {
-      setConfirmLoading(false);
-      setConfirmOpen(false);
-      setPendingDeleteId(null);
-    }
-  };
-
   return (
-    <div className="flex min-h-screen bg-[var(--bg-main)]/90 text-[var(--text-main)]">
-      <Sidebar role={role} />
-      <div className="flex-1 min-h-screen">
-        <Topbar userName={userName} />
-
-        <div className="p-6">
-                          <img
-                    src="/images/logo/Asset3.png"
-                    alt="CureVirtual"
-                    style={{ width: 120, height: "auto" }}
-                    onError={(e) => { e.currentTarget.src = "/placeholder-logo.png"; }} // fallback if missing
-                  />
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-[var(--text-main)]">Patient Inbox</h1>
+    <DashboardLayout role={role}>
+      <div className="h-[calc(100vh-160px)] flex gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        {/* Sidebar: Contact List */}
+        <aside className="w-80 flex flex-col gap-4">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="font-headline text-2xl font-bold text-on-surface">Messages</h2>
+            <button className="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-primary-container/20 transition-all">
+              <span className="material-symbols-outlined text-primary">edit_square</span>
+            </button>
           </div>
 
-          {loading ? (
-            <p>Loading messages...</p>
-          ) : messages.length === 0 ? (
-            <p>No messages received yet.</p>
-          ) : (
-            <div className="overflow-x-auto bg-[var(--bg-glass)] backdrop-blur-md rounded-2xl p-6 shadow-lg">
-              <table className="w-full border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-[var(--border)] text-[var(--text-main)] bg-[var(--bg-glass)]">
-                    <th className="p-3">From</th>
-                    <th className="p-3">Message</th>
-                    <th className="p-3">Date</th>
-                    <th className="p-3 text-center">Status</th>
-                    <th className="p-3 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                                        
-                      {messages.map((msg) => {
-                        const isRead = !!msg.readAt;
-                        return (
-                          <tr
-                            key={msg.id}
-                            className={`border-b border-[var(--border)] hover:bg-[var(--bg-main)] transition cursor-pointer ${
-                              isRead ? "text-[var(--text-soft)]" : "font-semibold text-[var(--text-main)]"
-                            }`}
-                            onClick={() => openMessage(msg)}
-                          >
-                            <td className="p-3">
-                              {msg.contactName || "Unknown"}
-                            </td>
-                            <td className="p-3 truncate max-w-xs">{msg.content}</td>
-                            <td className="p-3">{new Date(msg.createdAt).toLocaleString()}</td>
- 
-                            {/* Status */}
-                            <td className="p-3 text-center">
-                              {isRead ? (
-                                <FaEnvelopeOpen className="text-green-400 mx-auto" />
-                              ) : (
-                                <FaEnvelope className="text-[var(--text-soft)] mx-auto" />
-                              )}
-                            </td>
- 
-                            {/* Actions (unchanged, but keep stopPropagation on trash) */}
-                            <td className="p-3 text-center">
-                              <button
-                                title="Delete"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  requestDelete(msg.id);
-                                }}
-                                className="hover:scale-110 transition"
-                              >
-                                <FaTrash className="text-red-400 inline-block" />
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
- 
-                </tbody>
-              </table>
-            </div>
-          )}
-          {/* View + Reply modal */}
-          {selectedMessage && (
-            <div className="fixed inset-0 bg-[var(--bg-main)]/95 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg text-black p-6 relative">
-                {/* Close button */}
-                                <img
-                    src="/images/logo/Asset3.png"
-                    alt="CureVirtual"
-                    style={{ width: 120, height: "auto" }}
-                    onError={(e) => { e.currentTarget.src = "/placeholder-logo.png"; }} // fallback if missing
+          <div className="flex-1 overflow-y-auto pr-2 space-y-2 no-scrollbar">
+            {messages.map((msg) => (
+              <button
+                key={msg.id}
+                onClick={() => setSelectedContact(msg)}
+                className={`w-full p-4 rounded-[28px] transition-all flex items-center gap-4 ${
+                  selectedContact?.contactId === msg.contactId
+                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                    : "bg-surface-container-low hover:bg-surface-container text-on-surface"
+                }`}
+              >
+                <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center font-black text-xl flex-shrink-0">
+                  {msg.contactName?.[0] || "?"}
+                </div>
+                <div className="flex-1 text-left overflow-hidden">
+                  <div className="flex justify-between items-center mb-0.5">
+                    <span className="font-bold text-sm truncate">{msg.contactName}</span>
+                    <span className={`text-[10px] uppercase font-bold opacity-60 ${selectedContact?.contactId === msg.contactId ? "text-white" : "text-outline"}`}>
+                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <p className={`text-xs font-medium truncate opacity-70 ${selectedContact?.contactId === msg.contactId ? "text-white/80" : "text-on-surface-variant"}`}>
+                    {msg.content}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        {/* Main Content: Active Chat */}
+        <main className="flex-1 glass-panel rounded-[40px] flex flex-col overflow-hidden shadow-2xl shadow-primary/5">
+          {selectedContact ? (
+            <>
+              {/* Chat Header */}
+              <div className="px-8 py-5 border-b border-outline-variant/30 flex justify-between items-center bg-white/50">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>person</span>
+                  </div>
+                  <div>
+                    <h3 className="font-headline font-bold text-on-surface leading-none">{selectedContact.contactName}</h3>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Active Provider</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                   <button className="w-10 h-10 rounded-full hover:bg-black/5 flex items-center justify-center transition-all">
+                     <span className="material-symbols-outlined text-outline">videocam</span>
+                   </button>
+                   <button className="w-10 h-10 rounded-full hover:bg-black/5 flex items-center justify-center transition-all">
+                     <span className="material-symbols-outlined text-outline">call</span>
+                   </button>
+                </div>
+              </div>
+
+              {/* Message List */}
+              <div className="flex-1 overflow-y-auto p-8 space-y-6 no-scrollbar">
+                {chatHistory.map((chat) => {
+                  const isMine = chat.senderId === userId;
+                  return (
+                    <div key={chat.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
+                      <div className={`max-w-[70%] p-4 ${isMine ? "message-bubble-out" : "message-bubble-in"}`}>
+                        <p className="text-sm font-medium leading-relaxed">{chat.content}</p>
+                        <p className={`text-[10px] font-bold mt-2 opacity-50 uppercase tracking-widest ${isMine ? "text-white" : "text-outline"}`}>
+                          {new Date(chat.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Chat Input */}
+              <div className="p-6 bg-white/50 border-t border-outline-variant/30">
+                <div className="flex items-end gap-4 bg-surface-container-low p-2 rounded-[32px] border border-outline-variant/50 focus-within:border-primary transition-all">
+                  <button className="w-10 h-10 rounded-full hover:bg-black/5 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-outline">add_circle</span>
+                  </button>
+                  <textarea
+                    rows={1}
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    placeholder="Type your secure message..."
+                    className="flex-1 bg-transparent border-none focus:ring-0 py-2.5 px-2 text-sm font-medium text-on-surface placeholder:text-outline"
                   />
-                <button
-                  onClick={() => setSelectedMessage(null)}
-                  className="absolute top-3 right-3 text-gray-600 hover:text-red-500"
-                >
-                  <FaTimes size={20} />
-                </button>
- 
-                {/* Header with inline delete */}
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-[#190366]">
-                    From {selectedMessage.contactName || "Unknown"}
-                  </h2>
-                  <button
-                    title="Delete"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      requestDelete(selectedMessage.id);
-                    }}
-                    className="text-red-600 hover:text-red-700"
+                  <button 
+                    onClick={handleSend}
+                    disabled={sending || !replyContent.trim()}
+                    className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 hover:scale-105 transition-all disabled:opacity-50 disabled:grayscale"
                   >
-                    <FaTrash size={18} />
+                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
                   </button>
                 </div>
-
-                <p className="text-sm text-gray-500 mt-1 mb-3">
-                  {new Date(selectedMessage.createdAt).toLocaleString()}
-                </p>
-
-                <div className="bg-gray-100 rounded-lg p-4 mb-4 text-gray-800">
-                  {selectedMessage.content}
-                </div>
-
-                <textarea
-                  placeholder="Write a reply..."
-                  className="w-full border rounded-md p-3 mb-3 h-24 focus:outline-none focus:ring-2 focus:ring-[#027906]"
-                  value={replyContent}
-                  onChange={(e) => setReplyContent(e.target.value)}
-                ></textarea>
-
-                <button
-                  onClick={handleReply}
-                  disabled={sending}
-                  className="bg-[#027906] text-[var(--text-main)] px-5 py-2 rounded-md hover:bg-[#190366] flex items-center gap-2 disabled:opacity-60"
-                >
-                  <FaPaperPlane /> {sending ? "Sending..." : "Send Reply"}
-                </button>
               </div>
+            </>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-12 opacity-30">
+               <span className="material-symbols-outlined text-8xl mb-4">forum</span>
+               <h3 className="text-xl font-bold">Select a conversation to begin</h3>
             </div>
           )}
-        </div>
+        </main>
       </div>
-
-      <ConfirmDialog
-        open={confirmOpen}
-        loading={confirmLoading}
-        title="Delete this message?"
-        message="This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Keep"
-        onConfirm={confirmDelete}
-        onCancel={cancelDelete}
-      />
-
-      <ToastContainer position="top-right" autoClose={2200} />
-    </div>
+      <ToastContainer position="top-right" autoClose={2200} theme="colored" />
+    </DashboardLayout>
   );
 }
+

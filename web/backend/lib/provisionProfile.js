@@ -29,6 +29,7 @@ async function ensureDefaultProfile(user, specialization) {
         medicalRecordNumber: null,
         insuranceProvider: '',
         insuranceMemberId: '',
+        timezone: 'UTC',
       },
     });
   }
@@ -53,6 +54,7 @@ async function ensureDefaultProfile(user, specialization) {
         availability: JSON.stringify({}),
         bio: '',
         languages: JSON.stringify(['English']),
+        timezone: 'UTC',
       },
     });
   }
@@ -74,6 +76,7 @@ async function ensureDefaultProfile(user, specialization) {
         state: '',
         country: '',
         postalCode: '',
+        timezone: 'UTC',
       },
     });
   }

@@ -79,6 +79,8 @@ const PatientViewProfile = lazy(() => import("./pages/patient/ViewProfile.jsx"))
 const PatientSubscription = lazy(() => import("./pages/patient/PatientSubscription.jsx"));
 const DoctorsList = lazy(() => import("./pages/patient/DoctorsList"));
 const MyDoctors = lazy(() => import("./pages/patient/MyDoctors"));
+const MedicationTracker = lazy(() => import("./pages/patient/MedicationTracker"));
+const HealthHistory = lazy(() => import("./pages/patient/HealthHistory"));
 
 /**=====================================
  * PHARMACY
@@ -591,6 +593,22 @@ export default function App() {
               element={
                 <RequireRole role="PATIENT">
                   <MyDoctors />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/patient/meds"
+              element={
+                <RequireRole role="PATIENT">
+                  <MedicationTracker />
+                </RequireRole>
+              }
+            />
+            <Route
+              path="/patient/history"
+              element={
+                <RequireRole role="PATIENT">
+                  <HealthHistory />
                 </RequireRole>
               }
             />

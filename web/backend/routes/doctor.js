@@ -216,7 +216,6 @@ router.put("/profile", async (req, res) => {
       timezone, // String
       bio,
       languages, // JSON string or array
-      maritalStatus,
       emergencyContact,
       emergencyContactName,
       emergencyContactEmail,
@@ -225,12 +224,23 @@ router.put("/profile", async (req, res) => {
     if (!userId) return res.status(400).json({ error: "userId is required" });
 
     // ✅ Update User fields (Name, Phone)
+    console.log(`[RBAC] Incoming Doctor Profile Update - UserID: ${userId}, TokenID: ${req.user.id}, Role: ${req.user.role}, Timezone: ${req.body.timezone}`);
+
+    if (req.user.role === "DOCTOR" && String(req.user.id) !== String(userId)) {
+      console.warn(`[RBAC] 🛡️ Blocked doctor profile update attempt. Request ID: ${userId}, Token ID: ${req.user.id}`);
+      return res.status(403).json({ 
+        error: "Forbidden", 
+        message: "You are not authorized to update this profile." 
+      });
+    }
+
+    // ✅ Update User fields (Name, Phone, MaritalStatus)
     const userData = {
-      ...(firstName ? { firstName } : {}),
-      ...(middleName ? { middleName } : {}),
-      ...(lastName ? { lastName } : {}),
-      ...(phone ? { phone } : {}),
-      ...(maritalStatus ? { maritalStatus } : {}),
+      ...(firstName !== undefined && { firstName }),
+      ...(middleName !== undefined && { middleName }),
+      ...(lastName !== undefined && { lastName }),
+      ...(phone !== undefined && { phone }),
+      ...(req.body.maritalStatus !== undefined && { maritalStatus: req.body.maritalStatus }),
     };
 
     if (Object.keys(userData).length > 0) {
@@ -240,27 +250,27 @@ router.put("/profile", async (req, res) => {
       });
     }
 
+    const doctorData = {
+      ...(specialization !== undefined && { specialization }),
+      ...(customProfession !== undefined && { customProfession }),
+      ...(qualifications !== undefined && { qualifications }),
+      ...(licenseNumber !== undefined && { licenseNumber }),
+      ...(hospitalAffiliation !== undefined && { hospitalAffiliation }),
+      ...(yearsOfExperience !== undefined && { yearsOfExperience: Number(yearsOfExperience) || 0 }),
+      ...(consultationFee !== undefined && { consultationFee: Number(consultationFee) || 0 }),
+      ...(availability !== undefined && { availability: typeof availability === 'string' ? availability : JSON.stringify(availability) }),
+      ...(req.body.timezone !== undefined && { timezone: req.body.timezone }),
+      ...(bio !== undefined && { bio }),
+      ...(languages !== undefined && { languages: Array.isArray(languages) ? JSON.stringify(languages) : languages }),
+      ...(emergencyContact !== undefined && { emergencyContact }),
+      ...(emergencyContactName !== undefined && { emergencyContactName }),
+      ...(emergencyContactEmail !== undefined && { emergencyContactEmail }),
+    };
+
     const updated = await prisma.doctorProfile.upsert({
       where: { userId },
       update: {
-        specialization: specialization ?? "General Medicine",
-        customProfession: customProfession || undefined,
-        qualifications: qualifications ?? "MBBS",
-        // only set license if provided in update; otherwise keep existing
-        ...(licenseNumber ? { licenseNumber } : {}),
-        hospitalAffiliation: hospitalAffiliation ?? "",
-        yearsOfExperience: yearsOfExperience ?? 0,
-        consultationFee: consultationFee ?? 0,
-        availability:
-          typeof availability === "string" ? availability : JSON.stringify(availability || {}),
-        timezone: timezone ?? "UTC",
-        bio: bio ?? "",
-        languages: Array.isArray(languages)
-          ? JSON.stringify(languages)
-          : (languages ?? JSON.stringify(["English"])),
-        emergencyContact: emergencyContact ?? "",
-        emergencyContactName: emergencyContactName ?? "",
-        emergencyContactEmail: emergencyContactEmail ?? "",
+        ...doctorData,
       },
       create: {
         userId,
@@ -273,7 +283,7 @@ router.put("/profile", async (req, res) => {
         consultationFee: consultationFee ?? 0,
         availability:
           typeof availability === "string" ? availability : JSON.stringify(availability || {}),
-        timezone: timezone ?? "UTC",
+        timezone: timezone ?? "Asia/Karachi",
         bio: bio ?? "",
         languages: Array.isArray(languages)
           ? JSON.stringify(languages)
@@ -1103,12 +1113,10 @@ router.get("/", async (req, res) => {
 //=======================================
 // POST /api/subscription/stripe/checkout
 // body: { userId, plan: "MONTHLY"|"YEARLY" }
-router.post("/subscription/stripe/checkout", async (req, res) => {
-  const { userId, plan } = req.body || {};
-  // 1) look up prices from SubscriptionSetting
-  // 2) create a Stripe Price/Checkout Session with success/cancel URLs
-  // 3) create a pending Subscription row (status=PENDING) referencing session id
-  // 4) return { url: session.url }
+router.post("/subscription/stripe/checkout", async (_req, res) => {
+  // const { userId, plan } = req.body || {};
+  // Placeholder for stripe checkout logic
+  return res.status(501).json({ message: "Stripe checkout not implemented" });
 });
 
 module.exports = router;

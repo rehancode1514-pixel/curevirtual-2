@@ -1,18 +1,19 @@
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
-import Topbar from "../components/Topbar";
+import PremiumTopAppBar from "../components/PremiumTopAppBar";
+import PremiumBottomNavBar from "../components/PremiumBottomNavBar";
 import { useTheme } from "../context/ThemeContext";
 import Chatbot from "../components/Chatbot";
 
 export default function DashboardLayout({ children, role, user }) {
   const { theme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const userName = user?.name || localStorage.getItem("userName") || "User";
+  const userAvatar = user?.avatar_url || localStorage.getItem("userAvatar");
 
   return (
-    <div
-      className={`flex min-h-screen bg-[var(--bg-main)] transition-colors duration-300 ${theme}`}
-    >
-      {/* Sidebar */}
+    <div className={`flex min-h-screen bg-background transition-colors duration-500 ${theme}`}>
+      {/* Sidebar - Hidden on mobile for Patients but potentially visible for others */}
       <Sidebar
         role={role}
         isMobileMenuOpen={isMobileMenuOpen}
@@ -20,21 +21,23 @@ export default function DashboardLayout({ children, role, user }) {
       />
 
       {/* Main Area */}
-      <div className="flex-1 flex flex-col min-w-0 w-full">
-        {/* Topbar */}
-        <Topbar
-          userId={user?.id || ""}
-          userName={user?.name || localStorage.getItem("userName") || "User"}
-          isMobileMenuOpen={isMobileMenuOpen}
-          setIsMobileMenuOpen={setIsMobileMenuOpen}
+      <div className="flex-1 flex flex-col min-w-0 w-full relative">
+        {/* New Premium TopBar */}
+        <PremiumTopAppBar 
+          userName={userName} 
+          userAvatar={userAvatar} 
+          role={role === "PHARMACY" ? "Licensed Pharmacist" : role === "DOCTOR" ? "Verified Provider" : "Premium Member"}
         />
 
         {/* Scrollable Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 relative">
-          <div className="max-w-[1600px] mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <main className="flex-1 overflow-y-auto pt-20 pb-24 md:pb-8 px-4 md:px-8 relative">
+          <div className="max-w-[1400px] mx-auto w-full animate-in fade-in slide-in-from-bottom-6 duration-1000">
             {children}
           </div>
         </main>
+
+        {/* Mobile Navigation for Patients */}
+        {role === "PATIENT" && <PremiumBottomNavBar />}
 
         {/* AI Medical Chatbot (Only for Patients) */}
         {role === "PATIENT" && <Chatbot />}
@@ -42,3 +45,4 @@ export default function DashboardLayout({ children, role, user }) {
     </div>
   );
 }
+

@@ -12,12 +12,14 @@ import DoctorsListScreen from '../screens/Patient/DoctorsListScreen';
 import AppointmentBookingScreen from '../screens/Patient/AppointmentBookingScreen';
 import AppointmentsListScreen from '../screens/Patient/AppointmentsListScreen';
 import HealthRecordsScreen from '../screens/Patient/HealthRecordsScreen';
+import MedicineMarketScreen from '../screens/Patient/MedicineMarketScreen';
 import PrescriptionsListScreen from '../screens/Shared/PrescriptionsListScreen';
 import MessagesScreen from '../screens/Shared/MessagesScreen';
 import ChatScreen from '../screens/Shared/ChatScreen';
 import ChatbotScreen from '../screens/Shared/ChatbotScreen';
 import MapScreen from '../screens/Shared/MapScreen';
 import VideoCallScreen from '../screens/Shared/VideoCallScreen';
+import ActiveCallScreen from '../screens/Shared/ActiveCallScreen';
 import ProfileScreen from '../screens/Shared/ProfileScreen';
 import SettingsScreen from '../screens/Shared/SettingsScreen';
 import { COLORS } from '../../theme/designSystem';
@@ -47,7 +49,13 @@ function HomeStack() {
       <Stack.Screen name="Booking" component={AppointmentBookingScreen} options={{ title: 'Book Appointment' }} />
       <Stack.Screen name="HealthRecords" component={HealthRecordsScreen} options={{ title: 'Health Records' }} />
       <Stack.Screen name="Prescriptions" component={PrescriptionsListScreen} options={{ title: 'My Prescriptions' }} />
+      <Stack.Screen name="Pharmacy" component={MedicineMarketScreen} options={{ title: 'Cure Market', headerShown: false }} />
       <Stack.Screen name="VideoCall" component={VideoCallScreen} options={{ title: 'Instant Consultation' }} />
+      <Stack.Screen
+        name="ActiveCall"
+        component={ActiveCallScreen}
+        options={{ headerShown: false, gestureEnabled: false }}
+      />
     </Stack.Navigator>
   );
 }

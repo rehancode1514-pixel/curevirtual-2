@@ -17,7 +17,7 @@
  * ──────────────────────────────────────────────────────────────
  */
 
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -32,28 +32,22 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { AuthContext } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
+import { formatToLocalTime, formatToLocalDate } from '../../utils/timeUtils';
 
 const logo = require('../../../assets/images/logo.png');
 
 // ──────────────────────────────────────────────────────────────
 // Format appointmentDate for display
 // ──────────────────────────────────────────────────────────────
-const formatDate = (dateStr) => {
+const formatDate = (dateStr, timezone = 'auto') => {
   if (!dateStr) return 'Date TBD';
-  try {
-    return new Date(dateStr).toLocaleString('en-US', {
-      weekday: 'short', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
-  } catch {
-    return 'Date TBD';
-  }
+  return `${formatToLocalDate(dateStr, timezone)} at ${formatToLocalTime(dateStr, timezone)}`;
 };
 
-const AppointmentCard = ({ item, onPress, onEditStatus }) => {
+const AppointmentCard = ({ item, onPress, onEditStatus, onCall, isCalling, userTimezone }) => {
   // ✅ Correct path: patient.user.firstName (NOT patient.firstName)
   const patientFirst = item.patient?.user?.firstName || '';
   const patientLast = item.patient?.user?.lastName || '';
@@ -69,7 +63,7 @@ const AppointmentCard = ({ item, onPress, onEditStatus }) => {
         <View style={{ flex: 1 }}>
           <Text style={styles.patientName}>{patientName}</Text>
           {/* ✅ Correct field: appointmentDate */}
-          <Text style={styles.timeText}>{formatDate(item.appointmentDate)}</Text>
+          <Text style={styles.timeText}>{formatDate(item.appointmentDate, userTimezone)}</Text>
           <View style={styles.detailRow}>
             {item.status && (
               <View style={[styles.typeBadge, { backgroundColor: `${COLORS.brandGreen}15` }]}>
@@ -81,17 +75,32 @@ const AppointmentCard = ({ item, onPress, onEditStatus }) => {
               <Text style={styles.editText}>Edit Status</Text>
             </TouchableOpacity>
           </View>
+          {item.reason && (
+            <View style={styles.reasonRow}>
+              <Ionicons name="medical-outline" size={12} color={COLORS.textSoft} />
+              <Text style={styles.reasonText} numberOfLines={1}>{item.reason}</Text>
+            </View>
+          )}
         </View>
       </View>
-      <TouchableOpacity style={styles.callBtn} activeOpacity={0.85}>
-        <Text style={styles.callBtnText}>▶ Call</Text>
+      <TouchableOpacity 
+        style={[styles.callBtn, isCalling && { opacity: 0.6 }]} 
+        activeOpacity={0.85}
+        onPress={() => onCall(item)}
+        disabled={isCalling}
+      >
+        {isCalling ? (
+          <ActivityIndicator size="small" color={COLORS.white} />
+        ) : (
+          <Text style={styles.callBtnText}>▶ Call</Text>
+        )}
       </TouchableOpacity>
     </TouchableOpacity>
   );
 };
 
 export default function DoctorDashboard({ navigation }) {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, userTimezone } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -101,6 +110,7 @@ export default function DoctorDashboard({ navigation }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedAppt, setSelectedAppt] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [startingCallId, setStartingCallId] = useState(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -144,6 +154,62 @@ export default function DoctorDashboard({ navigation }) {
       Alert.alert("Update Failed", "Could not update appointment status. Please try again.");
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  const handleStartCall = async (appt) => {
+    if (!appt?.id) {
+      console.warn('[DoctorDashboard] ⚠️ Cannot start call: Missing appointment ID');
+      Alert.alert("Error", "Invalid appointment data.");
+      return;
+    }
+
+    try {
+      setStartingCallId(appt.id);
+      // ✅ Passing {} to ensure Content-Type application/json is handled correctly by all servers
+      const res = await api.post(`/appointments/${appt.id}/start-call`, {});
+      
+      if (res.data.success) {
+        const rawRoomId = res.data.roomName || `appointment_${appt.id}`;
+        // ZEGO requires alphanumeric IDs — strip hyphens
+        const callID = String(rawRoomId).replace(/[^a-zA-Z0-9_]/g, '_');
+        const userID = String(user?.id || Date.now()).replace(/[^a-zA-Z0-9_]/g, '_');
+        const doctorName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || 'Doctor';
+
+        console.log(`[DoctorDashboard] 📞 Navigating to ActiveCall. ID: ${callID}`);
+
+        // Navigate directly to the isolated ZEGO screen — bypasses VideoCall list entirely
+        navigation.navigate('ActiveCall', {
+          userID,
+          userName: doctorName,
+          callID,
+          isGroup: false,
+        });
+      } else {
+        const errMsg = res.data.error || "Failed to start call";
+        console.warn(`[DoctorDashboard] ❌ Start call server rejected: ${errMsg}`);
+        Alert.alert("Call Error", errMsg);
+      }
+    } catch (error) {
+      console.error('[DoctorDashboard] ❌ Start call failed:', error);
+      
+      // Detailed error breakdown
+      if (error.response) {
+        // The server responded with a status code outside the 2xx range
+        const status = error.response.status;
+        const data = error.response.data;
+        const msg = data.error || data.message || `Server error (${status})`;
+        console.log(`[DoctorDashboard] 🛑 Error Details (${status}):`, data);
+        Alert.alert("Connection Failed", msg);
+      } else if (error.request) {
+        // The request was made but no response was received
+        Alert.alert("Network Error", "No response from server. Check your connection.");
+      } else {
+        // Something happened in setting up the request
+        Alert.alert("Request Error", error.message);
+      }
+    } finally {
+      setStartingCallId(null);
     }
   };
 
@@ -225,7 +291,10 @@ export default function DoctorDashboard({ navigation }) {
         renderItem={({ item }) => (
           <AppointmentCard
             item={item}
+            userTimezone={userTimezone}
             onEditStatus={openStatusModal}
+            onCall={handleStartCall}
+            isCalling={startingCallId === item.id}
             onPress={() => navigation.navigate('PatientHistory', {
               patientId: item.patient?.id || item.patientId,
             })}
@@ -395,6 +464,23 @@ const styles = StyleSheet.create({
   typeText: { fontSize: 10, fontWeight: TYPOGRAPHY.bold },
   editBadge: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   editText: { fontSize: 10, color: COLORS.brandBlue, fontWeight: TYPOGRAPHY.semiBold },
+  reasonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+    backgroundColor: COLORS.slate50,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  reasonText: {
+    fontSize: 11,
+    color: COLORS.textSoft,
+    fontWeight: '500',
+    flexShrink: 1,
+  },
 
   callBtn: {
     backgroundColor: COLORS.brandGreen,

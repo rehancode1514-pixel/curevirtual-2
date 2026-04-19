@@ -142,7 +142,7 @@ router.delete("/:id", async (req, res) => {
 // =============================================================================
 
 // GET /api/schedule/slots?doctorId=...&date=YYYY-MM-DD
-const { formatInTimeZone, toDate } = require("date-fns-tz");
+const { formatInTimeZone, toDate, fromZonedTime, toZonedTime } = require("date-fns-tz");
 const { parseISO, addMinutes, startOfDay, endOfDay } = require("date-fns");
 
 router.get("/slots", async (req, res) => {
@@ -161,12 +161,25 @@ router.get("/slots", async (req, res) => {
 
     const doctorTz = doctorProfile.timezone || "UTC";
 
-    // 1. Get Day of Week in DOCTOR'S timezone (Literal)
-    // We interpret 'date' (YYYY-MM-DD) as a literal time.
-    const doctorDate = parseAsLocal(date);
-    const dayOfWeek = doctorDate.getUTCDay();
+    // ✅ DIAGNOSTIC: Log raw data for timezone troubleshooting
+    console.log(`\n--- [TIMEZONE DEBUG] ---`);
+    console.log(`Doctor ID: ${doctorProfile.id}`);
+    console.log(`Doctor Stored TZ: ${doctorProfile.timezone}`);
+    console.log(`Resolved TZ to use: ${doctorTz}`);
+    console.log(`Requested Date: ${date}`);
 
-    // Get Rules for this day
+    // 1. Map the selected 'date' (YYYY-MM-DD) to the start/end of that day in DOCTOR'S time
+    const startOfDoctorDayUTC = fromZonedTime(`${date} 00:00:00`, doctorTz);
+    const endOfDoctorDayUTC = fromZonedTime(`${date} 23:59:59.999`, doctorTz);
+
+    console.log(`Doctor Day (UTC Range): ${startOfDoctorDayUTC.toISOString()} -> ${endOfDoctorDayUTC.toISOString()}`);
+
+    // Get rules for this day of week in DOCTOR'S timezone
+    // toZonedTime ensures .getDay() returns the day number (0-6) relative to doc's time
+    const docLocalTime = toZonedTime(startOfDoctorDayUTC, doctorTz);
+    const dayOfWeek = docLocalTime.getDay();
+    console.log(`Resolved DayOfWeek in Doctor TZ: ${dayOfWeek}`);
+
     const rules = await prisma.doctorSchedule.findMany({
       where: {
         doctorId: doctorProfile.id,
@@ -175,37 +188,40 @@ router.get("/slots", async (req, res) => {
       },
     });
 
+    console.log(`Found ${rules.length} recurring rules for this day.`);
+
     if (rules.length === 0) return res.json({ success: true, data: [] });
 
     // Get Appointments for this day (UTC range)
-    // To be safe, look at a 48 hour window around this date to catch all possible overlaps
-    const startRange = addMinutes(doctorDate, -24 * 60);
-    const endRange = addMinutes(doctorDate, 48 * 60);
-
     const existingAppointments = await prisma.appointment.findMany({
       where: {
         doctorId: doctorProfile.id,
         appointmentDate: {
-          gte: startRange,
-          lte: endRange,
+          gte: startOfDoctorDayUTC,
+          lte: endOfDoctorDayUTC,
         },
         status: { not: "CANCELLED" },
       },
     });
 
     const bookedSet = new Set(existingAppointments.map((a) => a.appointmentDate.toISOString()));
+    console.log(`Found ${existingAppointments.length} existing appointments.`);
 
     // Generate Slots
     let slots = [];
     for (const rule of rules) {
+      console.log(`Applying rule: ${rule.startTime} - ${rule.endTime}`);
       // rule.startTime/endTime are "HH:MM" (doctor's local time)
-      const startLocal = parseAsLocal(`${date}T${rule.startTime}`);
-      const endLocal = parseAsLocal(`${date}T${rule.endTime}`);
+      // Convert these to UTC for the specific date
+      const startSlotUTC = fromZonedTime(`${date} ${rule.startTime}:00`, doctorTz);
+      const endSlotUTC = fromZonedTime(`${date} ${rule.endTime}:00`, doctorTz);
+      
+      console.log(`  -> UTC Slot Boundary: ${startSlotUTC.toISOString()} - ${endSlotUTC.toISOString()}`);
 
-      let current = startLocal;
-      while (current < endLocal) {
-        const next = addMinutes(current, 15);
-        if (next > endLocal) break;
+      let current = startSlotUTC;
+      while (current < endSlotUTC) {
+        const next = addMinutes(current, rule.slotDuration || 15);
+        if (next > endSlotUTC) break;
 
         const iso = current.toISOString();
         const isBooked = bookedSet.has(iso);
@@ -220,6 +236,9 @@ router.get("/slots", async (req, res) => {
         current = next;
       }
     }
+
+    console.log(`Generated ${slots.length} total slots.`);
+    console.log(`--- [END DEBUG] ---\n`);
 
     slots.sort((a, b) => a.startTime.localeCompare(b.startTime));
     res.json({ success: true, data: slots });
@@ -256,8 +275,10 @@ router.post("/book", async (req, res) => {
         where: { id: patientId },
       });
     if (!patientProfile) return res.status(404).json({ error: "Patient profile not found" });
-
-    const startDate = parseAsLocal(startTime);
+    
+    // startTime is a UTC ISO string from the frontend
+    const startDate = new Date(startTime);
+    if (isNaN(startDate.getTime())) return res.status(400).json({ error: "Invalid start time" });
 
     // Check if slot is still available (concurrency check)
     const conflict = await prisma.appointment.findFirst({

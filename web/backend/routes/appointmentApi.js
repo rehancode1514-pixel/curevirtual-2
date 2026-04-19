@@ -74,39 +74,59 @@ router.get("/:id", verifyToken, async (req, res) => {
    Doctor initiates a call → callStatus = "requested"
    ============================================================ */
 router.post("/:id/start-call", verifyToken, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  
+  console.log(`[AppointmentAPI] 🚀 StartCall attempt - ID: ${id}, User: ${userId}`);
+
   try {
-    const { id } = req.params;
-    const userId = req.user.id;
+    // 🛠️ VALIDATION: Ensure ID is a valid UUID format to prevent Prisma P2023 errors
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(id)) {
+      console.warn(`[AppointmentAPI] ⚠️ Invalid UUID format: ${id}`);
+      return res.status(400).json({ 
+        error: "Invalid appointment ID format.",
+        details: "Expected a valid UUID string."
+      });
+    }
 
     const appointment = await getAppointmentWithUsers(id);
 
     if (!appointment) {
+      console.warn(`[AppointmentAPI] 🔍 Appointment not found: ${id}`);
       return res.status(404).json({ error: "Appointment not found" });
     }
 
     // Only the assigned doctor can start a call
     if (appointment.doctor.user.id !== userId) {
+      console.warn(`[AppointmentAPI] 🚫 Unauthorized: User ${userId} is not assigned to appointment ${id}`);
       return res
         .status(403)
         .json({ error: "Only the assigned doctor can start this call" });
     }
 
-    // Validate call state
+    // Idempotent: if already requested, return current roomName so doctor can rejoin
     if (appointment.callStatus === "requested") {
-      return res
-        .status(400)
-        .json({
-          error: "Call already requested — waiting for patient to join",
-        });
+      return res.json({
+        success: true,
+        callStatus: appointment.callStatus,
+        roomName: appointment.roomName,
+        message: "Call already requested — joining existing room",
+      });
     }
     if (appointment.callStatus === "active") {
-      return res.status(400).json({ error: "Call already in progress" });
+      return res.json({
+        success: true,
+        callStatus: appointment.callStatus,
+        roomName: appointment.roomName,
+        message: "Call already in progress — rejoining",
+      });
     }
 
-    // Generate room name if not present
+    // Generate ZEGO-safe room name (alphanumeric only, no hyphens)
     const roomName =
       appointment.roomName ||
-      `appointment-${appointment.id}-${crypto.randomUUID().slice(0, 8)}`;
+      `appointment${appointment.id.replace(/-/g, '')}${crypto.randomUUID().slice(0, 8).replace(/-/g, '')}`;
 
     const updated = await prisma.appointment.update({
       where: { id },
@@ -116,6 +136,8 @@ router.post("/:id/start-call", verifyToken, async (req, res) => {
       },
     });
 
+    console.log(`[AppointmentAPI] ✅ Call started for ${id}, Room: ${roomName}`);
+
     return res.json({
       success: true,
       callStatus: updated.callStatus,
@@ -124,7 +146,7 @@ router.post("/:id/start-call", verifyToken, async (req, res) => {
     });
   } catch (err) {
     console.error("❌ POST /api/appointments/:id/start-call error:", err);
-    return res.status(500).json({ error: "Failed to start call" });
+    return res.status(500).json({ error: "Failed to start call", details: err.message });
   }
 });
 

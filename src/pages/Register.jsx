@@ -30,8 +30,17 @@ export default function Register() {
   const [otp, setOtp] = useState("");
   const { theme } = useTheme();
 
+  const toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+
   const handleChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    let { name, value } = e.target;
+    
+    // Prevent numbers in names
+    if (['firstName', 'middleName', 'lastName'].includes(name)) {
+      value = value.replace(/[0-9]/g, '');
+    }
+
+    setForm((f) => ({ ...f, [name]: value }));
   };
 
   const handleRegister = async (e) => {
@@ -43,8 +52,19 @@ export default function Register() {
       return;
     }
 
-    if (form.password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
+    const validateEmail = (email) => {
+      return String(email)
+        .toLowerCase()
+        .match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+    };
+
+    if (!validateEmail(form.email.trim())) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (form.password.length < 8) {
+      toast.error("Password must be at least 8 characters long.");
       return;
     }
 
@@ -65,8 +85,9 @@ export default function Register() {
         password: form.password,
         options: {
           data: {
-            firstName: form.firstName,
-            lastName: form.lastName,
+            firstName: toTitleCase(form.firstName.trim()),
+            middleName: form.middleName ? toTitleCase(form.middleName.trim()) : null,
+            lastName: toTitleCase(form.lastName.trim()),
             role: form.role,
             dateOfBirth: form.dateOfBirth,
             gender: form.gender,
@@ -101,7 +122,7 @@ export default function Register() {
       const { data, error } = await supabase.auth.verifyOtp({
         email: form.email.trim().toLowerCase(),
         token: otp,
-        type: 'signup'
+        type: "signup",
       });
 
       if (error) throw error;
@@ -110,8 +131,9 @@ export default function Register() {
       await api.post("/auth/register-success", {
         supabaseId: data.user.id,
         email: form.email.trim().toLowerCase(),
-        firstName: form.firstName,
-        lastName: form.lastName,
+        firstName: toTitleCase(form.firstName.trim()),
+        middleName: form.middleName ? toTitleCase(form.middleName.trim()) : null,
+        lastName: toTitleCase(form.lastName.trim()),
         role: form.role,
         dateOfBirth: form.dateOfBirth,
         gender: form.gender,
@@ -239,7 +261,8 @@ export default function Register() {
                   <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    Verify Account <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                    Verify Account{" "}
+                    <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
@@ -252,272 +275,274 @@ export default function Register() {
               </button>
             </div>
           ) : (
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-2">
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  First Name
-                </label>
-                <input
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
-                  placeholder="First"
-                  required
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Middle Name
-                </label>
-                <input
-                  name="middleName"
-                  value={form.middleName}
-                  onChange={handleChange}
-                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
-                  placeholder="(Opt)"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Last Name
-                </label>
-                <input
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
-                  placeholder="Last"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  name="dateOfBirth"
-                  value={form.dateOfBirth}
-                  onChange={handleChange}
-                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                  required
-                />
-              </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Gender
-                </label>
-                <select
-                  name="gender"
-                  value={form.gender}
-                  onChange={handleChange}
-                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
-                >
-                  <option value="MALE">Male</option>
-                  <option value="FEMALE">Female</option>
-                  <option value="OTHER">Other</option>
-                  <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-0">
-                  Marital Status
-                </label>
-                <select
-                  name="maritalStatus"
-                  value={form.maritalStatus}
-                  onChange={handleChange}
-                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
-                >
-                  <option value="SINGLE">Single</option>
-                  <option value="MARRIED">Married</option>
-                </select>
-              </div>
-            </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                Email Address
-              </label>
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
-                  <FiMail />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                  placeholder="address@meta"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Password
-                </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
-                    <FiLock />
-                  </div>
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-2">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                    First Name
+                  </label>
                   <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={form.password}
+                    name="firstName"
+                    value={form.firstName}
                     onChange={handleChange}
-                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-12 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                    placeholder="••••••••"
-                    minLength={6}
+                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
+                    placeholder="First"
+                    required
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                    Middle Name
+                  </label>
+                  <input
+                    name="middleName"
+                    value={form.middleName}
+                    onChange={handleChange}
+                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
+                    placeholder="(Opt)"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                    Last Name
+                  </label>
+                  <input
+                    name="lastName"
+                    value={form.lastName}
+                    onChange={handleChange}
+                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
+                    placeholder="Last"
                     required
                   />
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                    Date of Birth
+                  </label>
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={form.dateOfBirth}
+                    onChange={handleChange}
+                    max={new Date().toISOString().split('T')[0]}
+                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                      Gender
+                    </label>
+                    <select
+                      name="gender"
+                      value={form.gender}
+                      onChange={handleChange}
+                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
+                    >
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
+                      <option value="OTHER">Other</option>
+                      <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-0">
+                      Marital Status
+                    </label>
+                    <select
+                      name="maritalStatus"
+                      value={form.maritalStatus}
+                      onChange={handleChange}
+                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
+                    >
+                      <option value="SINGLE">Single</option>
+                      <option value="MARRIED">Married</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Confirm Password
+                  Email Address
                 </label>
                 <div className="relative group">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
-                    <FiLock />
+                    <FiMail />
                   </div>
                   <input
-                    type={showPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    value={form.confirmPassword}
+                    type="email"
+                    name="email"
+                    value={form.email}
                     onChange={handleChange}
                     className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                    placeholder="••••••••"
+                    placeholder=" "
                     required
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
-                  >
-                    {showPassword ? <FiEyeOff /> : <FiEye />}
-                  </button>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                I am a...
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {[
-                  {
-                    id: "PATIENT",
-                    label: "PATIENT",
-                    color: "var(--brand-orange)",
-                  },
-                  {
-                    id: "DOCTOR",
-                    label: "DOCTOR",
-                    color: "var(--brand-green)",
-                  },
-                  {
-                    id: "PHARMACY",
-                    label: "PHARMACIST",
-                    color: "var(--brand-blue)",
-                  },
-                ].map((role) => (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => setForm((f) => ({ ...f, role: role.id }))}
-                    className={`py-3 rounded-2xl border-2 text-[9px] font-black uppercase tracking-widest transition-all ${
-                      form.role === role.id
-                        ? `bg-white text-black shadow-xl`
-                        : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--text-main)]"
-                    }`}
-                    style={form.role === role.id ? { borderColor: role.color } : {}}
-                  >
-                    {role.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {form.role === "DOCTOR" && (
-              <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Medical Specialization
-                </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]">
-                    <FaStethoscope />
-                  </div>
-                  <select
-                    name="specialization"
-                    value={form.specialization}
-                    onChange={handleChange}
-                    className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
-                    required
-                  >
-                    <option value="">Select Specialization</option>
-                    <option value="General Medicine">General Medicine</option>
-                    <option value="Cardiology">Cardiology</option>
-                    <option value="Dermatology">Dermatology</option>
-                    <option value="Neurology">Neurology</option>
-                    <option value="Pediatrics">Pediatrics</option>
-                    <option value="Psychiatry">Psychiatry</option>
-                    <option value="Orthopedics">Orthopedics</option>
-                    <option value="Gynecology">Gynecology</option>
-                    <option value="Ophthalmology">Ophthalmology</option>
-                    <option value="Dentistry">Dentistry</option>
-                    <option value="ENT">ENT</option>
-                    <option value="Urology">Urology</option>
-                    <option value="Oncology">Oncology</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
-
-                {form.specialization === "Other" && (
-                  <div className="relative group mt-3 animate-in fade-in slide-in-from-top-1">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]">
-                      <FaStethoscope />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                    Password
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
+                      <FiLock />
                     </div>
                     <input
-                      name="customProfession"
-                      value={form.customProfession || ""}
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={form.password}
                       onChange={handleChange}
-                      className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                      placeholder="Specify your profession..."
+                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-12 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
+                      placeholder="••••••••"
+                      minLength={6}
                       required
                     />
                   </div>
-                )}
-              </div>
-            )}
+                </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="btn btn-secondary w-full !py-4.5 !rounded-2xl text-xs flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 mt-4 group"
-            >
-              {submitting ? (
-                <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  Submit <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
-                </>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                    Confirm Password
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
+                      <FiLock />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={form.confirmPassword}
+                      onChange={handleChange}
+                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
+                      placeholder="••••••••"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
+                    >
+                      {showPassword ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                  I am a...
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    {
+                      id: "PATIENT",
+                      label: "PATIENT",
+                      color: "var(--brand-orange)",
+                    },
+                    {
+                      id: "DOCTOR",
+                      label: "DOCTOR",
+                      color: "var(--brand-green)",
+                    },
+                    {
+                      id: "PHARMACY",
+                      label: "PHARMACIST",
+                      color: "var(--brand-blue)",
+                    },
+                  ].map((role) => (
+                    <button
+                      key={role.id}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, role: role.id }))}
+                      className={`py-3 rounded-2xl border-2 text-[9px] font-black uppercase tracking-widest transition-all ${
+                        form.role === role.id
+                          ? `bg-white text-black shadow-xl`
+                          : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--text-main)]"
+                      }`}
+                      style={form.role === role.id ? { borderColor: role.color } : {}}
+                    >
+                      {role.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {form.role === "DOCTOR" && (
+                <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
+                    Medical Specialization
+                  </label>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]">
+                      <FaStethoscope />
+                    </div>
+                    <select
+                      name="specialization"
+                      value={form.specialization}
+                      onChange={handleChange}
+                      className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
+                      required
+                    >
+                      <option value="">Select Specialization</option>
+                      <option value="General Medicine">General Medicine</option>
+                      <option value="Cardiology">Cardiology</option>
+                      <option value="Dermatology">Dermatology</option>
+                      <option value="Neurology">Neurology</option>
+                      <option value="Pediatrics">Pediatrics</option>
+                      <option value="Psychiatry">Psychiatry</option>
+                      <option value="Orthopedics">Orthopedics</option>
+                      <option value="Gynecology">Gynecology</option>
+                      <option value="Ophthalmology">Ophthalmology</option>
+                      <option value="Dentistry">Dentistry</option>
+                      <option value="ENT">ENT</option>
+                      <option value="Urology">Urology</option>
+                      <option value="Oncology">Oncology</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  {form.specialization === "Other" && (
+                    <div className="relative group mt-3 animate-in fade-in slide-in-from-top-1">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]">
+                        <FaStethoscope />
+                      </div>
+                      <input
+                        name="customProfession"
+                        value={form.customProfession || ""}
+                        onChange={handleChange}
+                        className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
+                        placeholder="Specify your profession..."
+                        required
+                      />
+                    </div>
+                  )}
+                </div>
               )}
-            </button>
-          </form>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn btn-secondary w-full !py-4.5 !rounded-2xl text-xs flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 mt-4 group"
+              >
+                {submitting ? (
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    Submit{" "}
+                    <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </button>
+            </form>
           )}
 
           <footer className="mt-8 text-center border-t border-[var(--border)] pt-8">

@@ -1,18 +1,16 @@
-import React, { useEffect, useState, useContext, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList, ActivityIndicator, PermissionsAndroid, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { AuthContext } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
 import { useSocket } from '../../hooks/useSocket';
+import { formatToLocalTime, formatToLocalDate } from '../../utils/timeUtils';
 
 export default function VideoCallScreen({ navigation, route }) {
-  const { user } = useContext(AuthContext);
+  const { user, userTimezone } = useAuth();
   const [consultations, setConsultations] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // State for active mock call
-  const [activeCall, setActiveCall] = useState(null);
 
   // Hook into socket events
   const { emit } = useSocket({
@@ -23,6 +21,20 @@ export default function VideoCallScreen({ navigation, route }) {
       console.log('Call accepted by counterparty:', data);
     }
   });
+
+  const checkPermissions = useCallback(async () => {
+    if (Platform.OS === 'android') {
+      await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      ]);
+    }
+  }, []);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'Date TBD';
+    return `${formatToLocalDate(dateStr, userTimezone)} at ${formatToLocalTime(dateStr, userTimezone)}`;
+  };
 
   const fetchConsultations = useCallback(async () => {
     if (!user?.id) return;
@@ -42,66 +54,49 @@ export default function VideoCallScreen({ navigation, route }) {
 
   useEffect(() => {
     fetchConsultations();
-  }, [fetchConsultations]);
+    checkPermissions();
+  }, [fetchConsultations, checkPermissions]);
 
-  const endCall = () => {
-    if (activeCall) {
-      emit('leave_room', activeCall.meetingUrl || `consult-${activeCall.id}`);
-      emit('end_session', { roomId: activeCall.meetingUrl || `consult-${activeCall.id}` });
+  const startCall = useCallback(async (consult) => {
+    // ✅ PRIORITY: If this is a standard appointment, use the backend-generated roomName
+    const rawRoomId = consult.roomName || consult.meetingUrl || `consult_${consult.id}`;
+    
+    // Zego IDs must be alphanumeric
+    const sanitize = (id) => String(id || '').replace(/[^a-zA-Z0-9_]/g, '_');
+    
+    const callID = sanitize(rawRoomId);
+    const userID = sanitize(user?.id || Date.now());
+    const displayName = user?.name || (user?.role === 'DOCTOR' ? 'Doctor' : 'Patient');
+
+    console.log(`[VideoCall] 🚀 Joining Room: ${rawRoomId} as ${callID}`);
+
+    if (consult.isAppointment) {
+      // For standard appointments, hit the join-call endpoint to update callStatus to "active"
+      try {
+        await api.post(`/appointments/${consult.id}/join-call`);
+      } catch (err) {
+        console.warn('[VideoCall] Could not sync join-call state with backend:', err.message);
+      }
+    } else {
+      // Notify legacy videocall system
+      emit('join_room', { roomId: rawRoomId, appointmentId: consult.appointmentId || consult.id });
+      emit('start_session', {
+        roomId: rawRoomId,
+        doctorName: user?.name,
+        patientId: user?.role === 'DOCTOR' ? consult.patientId : user?.id,
+        appointmentId: consult.id
+      });
     }
-    setActiveCall(null);
-  };
 
-  const startCall = (consult) => {
-    const roomId = consult.meetingUrl || `consult-${consult.id}`;
-    // Notify server we are ready
-    emit('join_room', { 
-      roomId, 
-      appointmentId: consult.appointmentId || consult.id // Adjust based on data structure
+    // Navigate to the fully isolated call screen
+    navigation.navigate('ActiveCall', {
+      userID,
+      userName: displayName,
+      callID,
+      isGroup: consult.isGroup || false,
     });
-    
-    // Broadcast generic session start
-    emit('start_session', {
-      roomId,
-      doctorName: user?.name,
-      patientId: user?.role === 'DOCTOR' ? consult.patientId : user?.id,
-      appointmentId: consult.id
-    });
-    
-    setActiveCall(consult);
-  };
+  }, [user, emit, navigation]);
 
-
-  if (activeCall) {
-    return (
-      <SafeAreaView style={styles.callContainer}>
-        <View style={styles.videoHeader}>
-          <Text style={styles.videoRoomText}>Room: {activeCall.meetingUrl || `consult-${activeCall.id}`}</Text>
-        </View>
-        <View style={styles.videoContainer}>
-          <Text style={styles.placeholderText}>Waiting for {user?.role === 'PATIENT' ? 'Doctor' : 'Patient'} to join...</Text>
-          <View style={styles.localVideo}>
-            <Ionicons name="person" size={40} color="#94a3b8" />
-            <Text style={styles.localText}>You</Text>
-          </View>
-        </View>
-
-        <View style={styles.controlsContainer}>
-          <TouchableOpacity style={styles.controlButton}>
-            <Ionicons name="mic-off" size={28} color="#fff" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={[styles.controlButton, styles.endCallButton]} onPress={endCall}>
-            <Ionicons name="call" size={28} color="#fff" />
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.controlButton}>
-            <Ionicons name="videocam-off" size={28} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   const renderItem = ({ item }) => {
     const isScheduled = item.status === 'SCHEDULED' || item.status === 'ONGOING';
@@ -136,8 +131,14 @@ export default function VideoCallScreen({ navigation, route }) {
         <View style={styles.cardBody}>
           <View style={styles.infoRow}>
             <Ionicons name="time-outline" size={14} color={COLORS.textSoft} />
-            <Text style={styles.infoText}>Time: {new Date(item.scheduledAt).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</Text>
+            <Text style={styles.infoText}>Time: {formatDate(item.scheduledAt || item.appointmentDate)}</Text>
           </View>
+          {item.reason && (
+            <View style={styles.infoRow}>
+              <Ionicons name="medical-outline" size={14} color={COLORS.brandOrange} />
+              <Text style={styles.infoText}>Condition: {item.reason}</Text>
+            </View>
+          )}
           <View style={styles.infoRow}>
             <Ionicons name="hourglass-outline" size={14} color={COLORS.textSoft} />
             <Text style={styles.infoText}>Duration: {item.durationMins || 30} mins</Text>
@@ -218,7 +219,10 @@ const styles = StyleSheet.create({
   videoHeader: { padding: SPACING.md, backgroundColor: '#1e293b', alignItems: 'center' },
   videoRoomText: { color: '#cbd5e1', fontSize: TYPOGRAPHY.sm, fontWeight: 'bold' },
   videoContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'relative' },
-  placeholderText: { color: '#64748b', fontSize: 18, fontWeight: 'bold' },
+  placeholderText: { color: '#64748b', fontSize: 16, fontWeight: 'semiBold', marginTop: 20 },
+  patientContext: { alignItems: 'center', marginBottom: 20 },
+  patientWaitName: { color: COLORS.white, fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
+  patientWaitReason: { color: COLORS.brandOrange, fontSize: 14, fontWeight: '500', opacity: 0.9 },
   localVideo: { position: 'absolute', bottom: 24, right: 24, width: 100, height: 150, backgroundColor: '#334155', borderRadius: 12, justifyContent: 'center', alignItems: 'center', elevation: 6 },
   localText: { color: '#94a3b8', fontSize: 14, marginTop: 8 },
   controlsContainer: { height: 100, backgroundColor: '#020617', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' },

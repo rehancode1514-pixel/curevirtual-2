@@ -12,6 +12,7 @@ import PatientHistoryScreen from '../screens/Doctor/PatientHistoryScreen';
 import MyPatientsScreen from '../screens/Doctor/MyPatientsScreen';
 import SchedulesScreen from '../screens/Doctor/SchedulesScreen';
 import VideoCallScreen from '../screens/Shared/VideoCallScreen';
+import ActiveCallScreen from '../screens/Shared/ActiveCallScreen';
 import ChatbotScreen from '../screens/Shared/ChatbotScreen';
 import PrescriptionsListScreen from '../screens/Shared/PrescriptionsListScreen';
 import MessagesScreen from '../screens/Shared/MessagesScreen';
@@ -43,6 +44,11 @@ function HomeStack() {
       <Stack.Screen name="Prescriptions" component={PrescriptionsListScreen} options={{ title: 'Prescriptions' }} />
       <Stack.Screen name="Chatbot" component={ChatbotScreen} options={{ title: 'AI Health Assistant' }} />
       <Stack.Screen name="VideoCall" component={VideoCallScreen} options={{ title: 'Instant Consultation' }} />
+      <Stack.Screen
+        name="ActiveCall"
+        component={ActiveCallScreen}
+        options={{ headerShown: false, gestureEnabled: false }}
+      />
     </Stack.Navigator>
   );
 }

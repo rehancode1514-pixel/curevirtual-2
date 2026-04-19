@@ -26,7 +26,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '../../services/api';
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
 
-const DoctorCard = ({ item, onBook }) => {
+const DoctorCard = ({ item, onBook, onAsk }) => {
   // ✅ /doctor/list response: { id: DoctorProfile.id, user: { firstName, lastName }, specialization }
   const firstName = item.user?.firstName || item.firstName || '';
   const lastName = item.user?.lastName || item.lastName || '';
@@ -50,9 +50,14 @@ const DoctorCard = ({ item, onBook }) => {
           )}
         </View>
       </View>
-      <TouchableOpacity style={styles.bookBtn} onPress={onBook} activeOpacity={0.85}>
-        <Text style={styles.bookBtnText}>Book</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonGroup}>
+        <TouchableOpacity style={styles.askBtn} onPress={onAsk} activeOpacity={0.85}>
+          <Text style={styles.askBtnText}>Ask</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.bookBtn} onPress={onBook} activeOpacity={0.85}>
+          <Text style={styles.bookBtnText}>Book</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -127,11 +132,21 @@ export default function DoctorsListScreen({ navigation }) {
           renderItem={({ item }) => (
             <DoctorCard
               item={item}
-              onBook={() => navigation.navigate('AppointmentBooking', {
+              onBook={() => navigation.navigate('Booking', {
                 // ✅ Pass DoctorProfile.id (not User.id) — required by POST /patient/appointments
                 doctorId: item.id,
                 doctor: item,
               })}
+              onAsk={() => {
+                const docName = `Dr. ${item.user?.firstName || item.firstName || ''} ${item.user?.lastName || item.lastName || ''}`.trim();
+                navigation.navigate('MessagesTab', {
+                  screen: 'Chat',
+                  params: {
+                    targetId: item.user?.id || item.userId,
+                    targetName: docName,
+                  },
+                });
+              }}
             />
           )}
           contentContainerStyle={styles.listContent}
@@ -210,8 +225,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.base,
     borderRadius: RADIUS.md,
     ...SHADOWS.green,
+    minWidth: 70,
+    alignItems: 'center',
   },
   bookBtnText: { color: COLORS.white, fontWeight: TYPOGRAPHY.bold, fontSize: TYPOGRAPHY.sm },
+  askBtn: {
+    backgroundColor: COLORS.white,
+    paddingVertical: SPACING.sm - 1,
+    paddingHorizontal: SPACING.base,
+    borderRadius: RADIUS.md,
+    borderWidth: 1.5,
+    borderColor: COLORS.brandBlue,
+    minWidth: 70,
+    alignItems: 'center',
+  },
+  askBtnText: { color: COLORS.brandBlue, fontWeight: TYPOGRAPHY.bold, fontSize: TYPOGRAPHY.sm },
+  buttonGroup: {
+    flexDirection: 'row',
+    gap: SPACING.sm,
+    alignItems: 'center',
+  },
   emptyContainer: { alignItems: 'center', paddingVertical: SPACING.xxxl },
   emptyIcon: { fontSize: 40, marginBottom: SPACING.md },
   emptyText: { fontSize: TYPOGRAPHY.md, fontWeight: TYPOGRAPHY.semiBold, color: COLORS.textMuted },

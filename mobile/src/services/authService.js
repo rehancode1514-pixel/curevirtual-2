@@ -88,9 +88,10 @@ export const loginWithEmail = async (email, password) => {
 // ─────────────────────────────────────────────────────────────
 export const registerUser = async (userData) => {
   const { firstName, middleName, lastName, email, password, role, dateOfBirth, gender, specialization, maritalStatus } = userData;
-
+  console.log('[Auth] Attempting Supabase signUp for:', email.trim().toLowerCase());
+  
   // Uses Supabase email templating to send a 6-digit OTP code to the user.
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: email.trim().toLowerCase(),
     password,
     options: {
@@ -108,10 +109,16 @@ export const registerUser = async (userData) => {
   });
 
   if (error) {
+    console.error('[Auth] Supabase signUp error:', error.message, error.status);
     throw new Error(error.message || 'Registration failed. Please try again.');
   }
 
-  console.log('[Auth] OTP Initiation successful for:', email);
+  console.log('[Auth] Supabase signUp success. User created:', data?.user?.id);
+  console.log('[Auth] User identities:', data?.user?.identities);
+  
+  if (!data?.user?.identities || data.user.identities.length === 0) {
+    console.warn('[Auth] No identities returned. This usually means the email is already in use.');
+  }
 
   // Return truthy to specify that OTP screen must be shown.
   return {
@@ -153,6 +160,19 @@ export const verifySignupOTP = async (email, otp, userData) => {
     token: response.data.token,
     requiresVerification: false,
   };
+};
+
+export const resendOTP = async (email) => {
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: email.trim().toLowerCase(),
+  });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to resend OTP.');
+  }
+
+  return { success: true };
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -197,6 +217,9 @@ export const updateUserProfile = async (userId, data, role) => {
       method = 'put';
     } else if (role === 'DOCTOR') {
       endpoint = '/doctor/profile';
+      method = 'put';
+    } else if (role === 'PHARMACY') {
+      endpoint = '/pharmacy/profile';
       method = 'put';
     }
 

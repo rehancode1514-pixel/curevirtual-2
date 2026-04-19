@@ -16,13 +16,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../context/AuthContext';
 import scheduleService from '../../services/scheduleService';
 import { COLORS, SPACING, TYPOGRAPHY, RADIUS, SHADOWS } from '../../../theme/designSystem';
+import { resolveUserTimezone } from '../../utils/timeUtils';
 
 const DAYS = [
   'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 ];
 
-export default function SchedulesScreen() {
-  const { user } = useAuth();
+export default function SchedulesScreen({ navigation }) {
+  const { user, userTimezone, updateUserTimezone } = useAuth();
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -118,7 +119,7 @@ export default function SchedulesScreen() {
               setLoading(true);
               await scheduleService.deleteScheduleSlot(id);
               fetchSchedule();
-            } catch (error) {
+            } catch (_err) {
               Alert.alert('Error', 'Failed to delete slot.');
               setLoading(false);
             }
@@ -172,9 +173,42 @@ export default function SchedulesScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>My Schedule</Text>
-        <Text style={styles.subtitle}>Define your weekly consultation hours here.</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <View>
+            <Text style={styles.title}>My Schedule</Text>
+            <Text style={styles.subtitle}>Define your weekly consultation hours here.</Text>
+          </View>
+          <View style={styles.tzBadge}>
+             <Ionicons name="globe-outline" size={12} color={COLORS.brandGreen} />
+             <Text style={styles.tzBadgeText}>{resolveUserTimezone(userTimezone)}</Text>
+          </View>
+        </View>
       </View>
+
+      {/* 🕒 TIMEZONE CONFLICT WARNING */}
+      {resolveUserTimezone(userTimezone) === 'UTC' && (
+        <View style={styles.warningBanner}>
+          <Ionicons name="warning" size={20} color={COLORS.brandOrange} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.warningTitle}>Check your timezone!</Text>
+            <Text style={styles.warningText}>
+              Your profile is currently set to UTC. Your slots might appear shifted to patients. 
+              Please update your timezone in the Profile settings.
+            </Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.warningAction}
+            onPress={async () => {
+              const { getDeviceTimezone } = require('../../utils/timezones');
+              const deviceTz = getDeviceTimezone();
+              await updateUserTimezone(deviceTz);
+              Alert.alert('Success', `Timezone synced to ${deviceTz}`);
+            }}
+          >
+            <Text style={styles.warningActionText}>Sync Now</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {loading && !refreshing ? (
         <View style={styles.centered}>
@@ -333,4 +367,54 @@ const styles = StyleSheet.create({
   cancelBtnText: { color: COLORS.textSoft, fontWeight: 'bold' },
   saveBtn: { backgroundColor: COLORS.brandGreen },
   saveBtnText: { color: COLORS.white, fontWeight: 'bold' },
+  tzBadge: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 4, 
+    backgroundColor: `${COLORS.brandGreen}15`, 
+    paddingHorizontal: 8, 
+    paddingVertical: 4, 
+    borderRadius: RADIUS.sm 
+  },
+  tzBadgeText: { 
+    fontSize: 10, 
+    fontWeight: 'bold', 
+    color: COLORS.brandGreen, 
+    textTransform: 'uppercase' 
+  },
+  warningBanner: {
+    backgroundColor: `${COLORS.brandOrange}15`,
+    margin: SPACING.lg,
+    marginTop: 0,
+    padding: SPACING.md,
+    borderRadius: RADIUS.base,
+    borderWidth: 1,
+    borderColor: `${COLORS.brandOrange}30`,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.md,
+  },
+  warningTitle: {
+    fontSize: TYPOGRAPHY.xs,
+    fontWeight: TYPOGRAPHY.black,
+    color: COLORS.brandOrange,
+    textTransform: 'uppercase',
+  },
+  warningText: {
+    fontSize: 11,
+    color: COLORS.textSoft,
+    lineHeight: 16,
+    marginTop: 2,
+  },
+  warningAction: {
+    backgroundColor: COLORS.brandOrange,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: RADIUS.sm,
+  },
+  warningActionText: {
+    color: COLORS.white,
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
 });

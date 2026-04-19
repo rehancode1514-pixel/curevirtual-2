@@ -222,13 +222,15 @@ router.put("/profile", async (req, res) => {
 
     if (!userId) return res.status(400).json({ error: "userId is required" });
 
-    // ✅ Update User fields (Name, Phone)
+    console.log(`[ProfileUpdate] Request received for userId: ${userId}, role: DOCTOR, timezone: ${timezone}`);
+
+    // ✅ Update User fields (Name, Phone, MaritalStatus)
     const userData = {
-      ...(firstName ? { firstName } : {}),
-      ...(middleName ? { middleName } : {}),
-      ...(lastName ? { lastName } : {}),
-      ...(phone ? { phone } : {}),
-      ...(maritalStatus ? { maritalStatus } : {}),
+      ...(firstName !== undefined && { firstName }),
+      ...(middleName !== undefined && { middleName }),
+      ...(lastName !== undefined && { lastName }),
+      ...(phone !== undefined && { phone }),
+      ...(req.body.maritalStatus !== undefined && { maritalStatus: req.body.maritalStatus }),
     };
 
     if (Object.keys(userData).length > 0) {
@@ -238,47 +240,32 @@ router.put("/profile", async (req, res) => {
       });
     }
 
+    const doctorData = {
+      ...(specialization !== undefined && { specialization }),
+      ...(customProfession !== undefined && { customProfession }),
+      ...(qualifications !== undefined && { qualifications }),
+      ...(licenseNumber !== undefined && { licenseNumber }),
+      ...(hospitalAffiliation !== undefined && { hospitalAffiliation }),
+      ...(yearsOfExperience !== undefined && { yearsOfExperience: Number(yearsOfExperience) || 0 }),
+      ...(consultationFee !== undefined && { consultationFee: Number(consultationFee) || 0 }),
+      ...(availability !== undefined && { availability: typeof availability === 'string' ? availability : JSON.stringify(availability) }),
+      ...(timezone !== undefined && { timezone }),
+      ...(bio !== undefined && { bio }),
+      ...(languages !== undefined && { languages: Array.isArray(languages) ? JSON.stringify(languages) : languages }),
+      ...(emergencyContact !== undefined && { emergencyContact }),
+      ...(emergencyContactName !== undefined && { emergencyContactName }),
+      ...(emergencyContactEmail !== undefined && { emergencyContactEmail }),
+    };
+
     const updated = await prisma.doctorProfile.upsert({
       where: { userId },
-      update: {
-        specialization: specialization ?? "General Medicine",
-        customProfession: customProfession || undefined,
-        qualifications: qualifications ?? "MBBS",
-        // only set license if provided in update; otherwise keep existing
-        ...(licenseNumber ? { licenseNumber } : {}),
-        hospitalAffiliation: hospitalAffiliation ?? "",
-        yearsOfExperience: yearsOfExperience ?? 0,
-        consultationFee: consultationFee ?? 0,
-        availability:
-          typeof availability === "string" ? availability : JSON.stringify(availability || {}),
-        timezone: timezone ?? "UTC",
-        bio: bio ?? "",
-        languages: Array.isArray(languages)
-          ? JSON.stringify(languages)
-          : (languages ?? JSON.stringify(["English"])),
-        emergencyContact: emergencyContact ?? "",
-        emergencyContactName: emergencyContactName ?? "",
-        emergencyContactEmail: emergencyContactEmail ?? "",
-      },
+      update: doctorData,
       create: {
         userId,
-        specialization: specialization ?? "General Medicine",
-        customProfession: customProfession || null,
-        qualifications: qualifications ?? "MBBS",
+        specialization: specialization || "General Medicine",
+        qualifications: qualifications || "MBBS",
         licenseNumber: licenseNumber || `LIC-${userId.slice(0, 8).toUpperCase()}`,
-        hospitalAffiliation: hospitalAffiliation ?? "",
-        yearsOfExperience: yearsOfExperience ?? 0,
-        consultationFee: consultationFee ?? 0,
-        availability:
-          typeof availability === "string" ? availability : JSON.stringify(availability || {}),
-        timezone: timezone ?? "UTC",
-        bio: bio ?? "",
-        languages: Array.isArray(languages)
-          ? JSON.stringify(languages)
-          : (languages ?? JSON.stringify(["English"])),
-        emergencyContact: emergencyContact ?? "",
-        emergencyContactName: emergencyContactName ?? "",
-        emergencyContactEmail: emergencyContactEmail ?? "",
+        ...doctorData, // Override defaults with provided data
       },
     });
 

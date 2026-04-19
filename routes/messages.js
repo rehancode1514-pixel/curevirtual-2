@@ -74,9 +74,14 @@ router.patch("/:id/read", verifyToken, async (req, res) => {
 router.get("/inbox", verifyToken, async (req, res) => {
   try {
     const userId = req.user.id;
+    // ⚠️ PostgreSQL Fix: Prisma `distinct` requires `orderBy` to match the distinct fields first.
+    // We fetch the latest message per conversationId, ordered by conversationId.
     const messages = await prisma.message.findMany({
       where: { OR: [{ senderId: userId }, { receiverId: userId }] },
-      orderBy: { createdAt: "desc" },
+      orderBy: [
+        { conversationId: "asc" },
+        { createdAt: "desc" }
+      ],
       distinct: ["conversationId"],
       include: {
         sender: { select: { id: true, firstName: true, lastName: true, role: true, email: true } },
@@ -99,6 +104,9 @@ router.get("/inbox", verifyToken, async (req, res) => {
         isOutgoing,
       };
     });
+
+    // ✅ Sort by latest message globally (since distinct forced 'conversationId' sorting)
+    formatted.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return res.json({ data: formatted });
   } catch (err) {

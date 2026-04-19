@@ -3,16 +3,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../Lib/api";
 import ZegoVideoCall from "../components/ZegoVideoCall";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { toast } from "react-toastify";
 
 /**
  * CallPage — The main video call interface for appointments.
  * Route: /call/:appointmentId
- *
- * Access control:
- * - Only accessible when callStatus is "requested" or "active"
- * - Blocked when callStatus is "idle" (doctor hasn't started)
- * - Calls end-call API on hangup
  */
 const CallPage = () => {
   const { appointmentId } = useParams();
@@ -28,12 +22,9 @@ const CallPage = () => {
         const res = await api.get(`/appointments/${appointmentId}`);
         const data = res.data;
 
-        // Enforce callStatus access control
         const callStatus = (data.callStatus || "idle").toLowerCase();
         if (callStatus === "idle") {
-          setError(
-            "The doctor has not started this call yet. Please wait for the doctor to initiate the session."
-          );
+          setError("The doctor has not started this call yet. Please wait.");
           return;
         }
         if (callStatus === "ended") {
@@ -44,90 +35,86 @@ const CallPage = () => {
         setAppointment(data);
       } catch (err) {
         console.error("❌ Failed to fetch appointment:", err);
-        const msg = err.response?.data?.error || "Failed to load appointment details";
-        setError(msg);
-        toast.error(msg);
+        setError(err.response?.data?.error || "Failed to load appointment details");
       } finally {
         setLoading(false);
       }
     };
 
-    if (appointmentId) {
-      fetchAppointment();
-    }
+    if (appointmentId) fetchAppointment();
   }, [appointmentId]);
 
   const handleClose = async () => {
-    // End the call via API
     try {
       await api.post(`/appointments/${appointmentId}/end-call`);
-      toast.info("Call ended");
     } catch (err) {
       console.error("Failed to end call:", err);
-      // Continue navigation even if end-call fails
     }
-
-    // Navigate back based on role
+    
     const role = localStorage.getItem("role") || localStorage.getItem("userRole");
-    if (role === "DOCTOR") {
-      navigate("/doctor/appointments");
-    } else {
-      navigate("/patient/my-appointments");
-    }
+    navigate(role === "DOCTOR" ? "/doctor/appointments" : "/patient/my-appointments");
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#050505] text-white">
         <LoadingSpinner />
-        <p className="ml-4 text-white font-semibold">Preparing your secure session...</p>
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <p className="font-headline text-xl font-bold tracking-tight">Initializing SecuLink™</p>
+          <p className="text-white/40 text-sm font-medium uppercase tracking-[0.3em]">End-to-End Encrypted</p>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error || !appointment?.roomName) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-6">
-        <div className="bg-red-900/20 p-8 rounded-2xl border border-red-500/50 max-w-md w-full text-center">
-          <div className="text-4xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-          <p className="text-gray-400 mb-6">{error}</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#050505] p-6 text-center">
+        <div className="card-premium !bg-surface-container-highest/20 !border-error/30 max-w-md w-full !p-12 space-y-6">
+          <div className="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center mx-auto">
+            <span className="material-symbols-outlined text-error text-4xl">warning</span>
+          </div>
+          <div>
+            <h1 className="text-2xl font-black text-on-surface uppercase tracking-tight">Access Restricted</h1>
+            <p className="text-on-surface-variant font-medium mt-2 leading-relaxed opacity-70">
+              {error || "This appointment is not configured for video calling."}
+            </p>
+          </div>
           <button
-            onClick={() => {
-              const role = localStorage.getItem("role") || localStorage.getItem("userRole");
-              navigate(role === "DOCTOR" ? "/doctor/appointments" : "/patient/my-appointments");
-            }}
-            className="px-6 py-2 bg-white text-black rounded-lg font-bold hover:bg-gray-200 transition-colors"
+            onClick={() => navigate("/")}
+            className="w-full py-4 bg-on-surface text-surface-container-lowest rounded-2xl font-black uppercase tracking-widest text-xs"
           >
-            Go Back
+            Return to Portal
           </button>
         </div>
       </div>
     );
   }
 
-  if (!appointment?.roomName) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-6 text-center">
-        <h1 className="text-2xl font-bold mb-4">Room Not Found</h1>
-        <p className="text-gray-400 mb-6">This appointment is not configured for video calling.</p>
-        <button
-          onClick={handleClose}
-          className="px-6 py-2 bg-white text-black rounded-lg font-bold"
-        >
-          Go Back
-        </button>
-      </div>
-    );
-  }
-
   const role = localStorage.getItem("role") || localStorage.getItem("userRole");
-  const displayName =
-    role === "DOCTOR" ? appointment.doctorName || "Doctor" : appointment.patientName || "Patient";
-  const userId = localStorage.getItem("userId") || `dummy-${Date.now()}`;
+  const displayName = role === "DOCTOR" ? appointment.doctorName || "Doctor" : appointment.patientName || "Patient";
+  const userId = localStorage.getItem("userId") || `user-${Date.now()}`;
 
   return (
-    <div className="w-full h-screen overflow-hidden bg-black">
+    <div className="w-full h-screen overflow-hidden bg-black relative">
+      {/* Premium HUD Overlay */}
+      <div className="absolute top-0 left-0 w-full p-6 z-[100] pointer-events-none flex justify-between items-start">
+        <div className="flex flex-col gap-1">
+          <div className="glass-panel px-4 py-2 border-white/10 flex items-center gap-3">
+             <div className="w-2 h-2 rounded-full bg-error animate-pulse" />
+             <span className="text-[10px] font-black text-white uppercase tracking-widest">Live Clinical Session</span>
+          </div>
+          <p className="text-white/60 text-[10px] font-bold uppercase tracking-[0.2em] ml-2">ID: {appointmentId}</p>
+        </div>
+
+        <div className="flex flex-col items-end gap-2">
+          <div className="glass-panel px-4 py-2 border-white/10 flex items-center gap-3">
+             <span className="material-symbols-outlined text-primary text-sm">lock</span>
+             <span className="text-[10px] font-black text-white uppercase tracking-widest">SecuLink™ Active</span>
+          </div>
+        </div>
+      </div>
+
       <ZegoVideoCall
         roomName={appointment.roomName}
         userName={displayName}

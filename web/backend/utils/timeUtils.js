@@ -11,6 +11,16 @@
  * @param {string} dateStr - The date-time string from the frontend.
  * @returns {Date}
  */
+const { fromZonedTime, toZonedTime } = require("date-fns-tz");
+
+/**
+ * Parses a date string and returns a Date object.
+ * To implement the "Literal Time" strategy, we treat the local time
+ * from the frontend (e.g. 13:00) as if it were UTC (13:00 Z).
+ * This prevents the server (which might be in UTC) from shifting it.
+ * @param {string} dateStr - The date-time string from the frontend.
+ * @returns {Date}
+ */
 function parseAsLocal(dateStr) {
   if (!dateStr) return null;
 
@@ -42,6 +52,16 @@ function parseAsLocal(dateStr) {
 }
 
 /**
+ * Converts a local time string (YYYY-MM-DD HH:mm) + Timezone name
+ * into a proper UTC Date object.
+ */
+function zonedTimeToUTC(dateStr, timeStr, timezone = "UTC") {
+  const combined = `${dateStr} ${timeStr}`;
+  // Interpret the "combined" time as being in "timezone"
+  return fromZonedTime(combined, timezone);
+}
+
+/**
  * Formats a Date object to a string for display that ignores the browser/server timezone.
  * Useful for logging and sending back to frontend.
  * @param {Date} date
@@ -62,5 +82,6 @@ function formatLocal(date) {
 
 module.exports = {
   parseAsLocal,
+  zonedTimeToUTC,
   formatLocal,
 };

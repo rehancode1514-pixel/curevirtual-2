@@ -3,15 +3,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../Lib/api";
 import DashboardLayout from "../../layouts/DashboardLayout";
-import {
-  FaCalendarAlt,
-  FaPrescription,
-  FaVideo,
-  FaUserMd,
-  FaHeartbeat,
-  FaArrowRight,
-  FaCheckCircle,
-} from "react-icons/fa";
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
@@ -42,102 +33,112 @@ export default function PatientDashboard() {
 
   return (
     <DashboardLayout role="PATIENT">
-      <div className="space-y-8 h-full">
-        {/* Compact Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-[10px] font-black text-[var(--brand-orange)] uppercase tracking-[0.3em] mb-1">
-              Dashboard
-            </h2>
-            <h1 className="text-3xl lg:text-4xl font-black text-[var(--text-main)] tracking-tighter leading-none">
-              Hello, {userName.split(" ")[0]}
+      <div className="space-y-12">
+        {/* Hero Section */}
+        <section>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tighter">
+              Welcome back, {userName.split(" ")[0]}
             </h1>
+            <p className="text-on-surface-variant text-lg font-medium opacity-80">
+              Your sanctuary is ready. Here's your health overview for today.
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="px-4 py-2 rounded-2xl glass border-orange-500/20 flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-[var(--text-soft)]">
-              <FaHeartbeat className="text-[var(--brand-orange)]" />
-              Vitals Nominal
+        </section>
+
+        {/* Daily Statistics - Horizontal Scroll */}
+        <section className="space-y-6">
+          <div className="flex justify-between items-end">
+            <h2 className="font-headline text-2xl font-bold text-on-surface">Daily Statistics</h2>
+            <button className="text-secondary font-bold text-sm hover:underline">View History</button>
+          </div>
+          
+          <div className="flex overflow-x-auto gap-6 no-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <StatsCard 
+              icon="calendar_today" 
+              value={stats.totalAppointments} 
+              label="Visits" 
+              sub="Scheduled Visits" 
+              color="primary"
+            />
+            <StatsCard 
+              icon="prescriptions" 
+              value={stats.totalPrescriptions} 
+              label="Scripts" 
+              sub="Active Prescriptions" 
+              color="secondary"
+            />
+            <StatsCard 
+              icon="videocam" 
+              value={stats.totalConsultations} 
+              label="Calls" 
+              sub="Video Sessions" 
+              color="tertiary"
+            />
+            <StatsCard 
+              icon="group" 
+              value={stats.totalDoctors} 
+              label="Team" 
+              sub="Active Doctors" 
+              color="primary"
+            />
+          </div>
+        </section>
+
+        {/* Content Split: Consultations & Quick Actions */}
+        <div className="grid lg:grid-cols-12 gap-10">
+          {/* Main Column: Consultations */}
+          <div className="lg:col-span-8 space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="font-headline text-2xl font-bold text-on-surface">Upcoming Consultations</h2>
+              <button 
+                onClick={() => navigate("/patient/my-appointments")}
+                className="text-secondary font-bold text-sm hover:underline"
+              >
+                Schedule New
+              </button>
             </div>
-          </div>
-        </div>
-
-        {/* Dense Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard
-            title="Scheduled Visits"
-            value={stats.totalAppointments}
-            icon={<FaCalendarAlt />}
-            color="--brand-green"
-            subtext="Track sessions"
-            onClick={() => navigate("/patient/my-appointments")}
-          />
-          <StatCard
-            title="Active Scripts"
-            value={stats.totalPrescriptions}
-            icon={<FaPrescription />}
-            color="--brand-blue"
-            subtext="Records"
-            onClick={() => navigate("/patient/prescriptions")}
-          />
-          <StatCard
-            title="Video Sessions"
-            value={stats.totalConsultations}
-            icon={<FaVideo />}
-            color="--brand-orange"
-            subtext="History"
-            onClick={() => navigate("/patient/video-consultation")}
-          />
-          <StatCard
-            title="Medical Team"
-            value={stats.totalDoctors}
-            icon={<FaUserMd />}
-            color="--brand-green"
-            subtext="Active"
-            onClick={() => navigate("/patient/doctors/my")}
-          />
-        </div>
-
-        {/* Action Center - Unified Panels */}
-        <div className="grid lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-8 card !p-6">
-            <h3 className="text-sm font-black text-[var(--text-main)] mb-6 flex items-center gap-3 uppercase tracking-widest">
-              <div className="h-1.5 w-1.5 rounded-full bg-[var(--brand-green)]"></div>
-              Intelligent Navigation
-            </h3>
-            <div className="grid sm:grid-cols-2 gap-4">
-              <QuickLink
-                icon={<FaUserMd className="text-[var(--brand-green)]" />}
-                title="Find Specialist"
-                desc="Licensed doctors by category"
-                onClick={() => navigate("/patient/doctors/list")}
-              />
-              <QuickLink
-                icon={<FaVideo className="text-[var(--brand-blue)]" />}
-                title="Join Consult"
-                desc="Encrypted high-speed video"
-                onClick={() => navigate("/patient/video-consultation")}
-              />
-            </div>
-          </div>
-
-          <div className="lg:col-span-4 card !bg-gradient-to-br from-[var(--brand-blue)] to-[var(--brand-green)] text-[var(--text-main)] !p-8 h-full border-0 shadow-green-500/20 flex flex-col justify-between">
+            
             <div className="space-y-4">
-              <div className="h-12 w-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner">
-                <FaCheckCircle />
-              </div>
-              <div>
-                <h4 className="font-black text-lg tracking-tight">Premium Care</h4>
-                <p className="text-[var(--text-main)]/70 text-[11px] font-bold leading-relaxed italic">
-                  Systems normalized. Healthcare optimized for efficiency.
-                </p>
-              </div>
+              <ConsultationItem 
+                name="Dr. Sarah Jenkins" 
+                specialty="General Check-up" 
+                type="Virtual Call" 
+                time="10:30 AM" 
+                status="In 15 Mins"
+                avatar="https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&q=80&w=150"
+                isPrimary
+              />
+              <ConsultationItem 
+                name="Dr. Marcus Thornton" 
+                specialty="Lab Results Review" 
+                type="Audio Call" 
+                time="01:45 PM" 
+                status="Today"
+                avatar="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&q=80&w=150"
+              />
             </div>
-            <button
-              onClick={() => navigate("/patient/support")}
-              className="w-full bg-white text-[var(--brand-blue)] font-black uppercase tracking-widest text-[10px] py-4 rounded-2xl hover:bg-gray-100 transition-all shadow-xl mt-6"
-            >
-              Help Desk
-            </button>
+          </div>
+
+          {/* Side Column: Quick Actions & Promo */}
+          <div className="lg:col-span-4 space-y-8">
+            <div className="card-premium h-full flex flex-col justify-between bg-gradient-to-br from-primary to-primary-container text-white border-none shadow-2xl shadow-primary/20">
+              <div className="space-y-4 text-center">
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                  <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-headline text-2xl font-bold">Ready to start?</h3>
+                  <p className="text-white/80 font-medium text-sm px-4 leading-relaxed">Connect with your health specialist instantly via our secure lobby.</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => navigate("/patient/video-consultation")}
+                className="w-full bg-white text-primary font-black uppercase tracking-widest text-xs py-4 rounded-2xl shadow-xl hover:scale-[1.02] transition-transform mt-8"
+              >
+                Join Waiting Room
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -145,52 +146,45 @@ export default function PatientDashboard() {
   );
 }
 
-function StatCard({ title, value, icon, color, subtext, onClick }) {
+function StatsCard({ icon, value, label, sub, color }) {
+  const colorMap = {
+    primary: "bg-primary-container/10 text-primary",
+    secondary: "bg-secondary-container/10 text-secondary",
+    tertiary: "bg-tertiary-fixed/30 text-tertiary",
+    error: "bg-error-container/30 text-error"
+  };
+
   return (
-    <div
-      onClick={onClick}
-      className="card !p-6 group hover:-translate-y-1 transition-all cursor-pointer border-l-4 relative overflow-hidden"
-      style={{ borderLeftColor: `var(${color})` }}
-    >
-      <div className="flex justify-between items-start">
-        <div className="space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
-            {title}
-          </p>
-          <p className="text-3xl font-black text-[var(--text-main)] tracking-tighter">{value}</p>
-        </div>
-        <div
-          className="h-10 w-10 rounded-xl flex items-center justify-center text-xl shadow-inner bg-[var(--bg-main)]"
-          style={{ color: `var(${color})` }}
-        >
-          {icon}
-        </div>
+    <div className="flex-shrink-0 w-48 card-premium flex flex-col justify-between shadow-black/5">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-6 ${colorMap[color]}`}>
+        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>{icon}</span>
       </div>
-      <div className="flex items-center justify-between mt-4">
-        <span className="text-[10px] font-bold text-[var(--text-soft)]">{subtext}</span>
-        <FaArrowRight className="text-[10px] text-[var(--text-muted)] group-hover:text-[var(--brand-green)] group-hover:translate-x-1 transition-all" />
+      <div className="flex flex-col">
+        <div className="flex items-baseline gap-1">
+          <span className="font-headline text-4xl font-extrabold text-on-surface leading-none">{value}</span>
+          <span className="text-on-surface-variant text-xs font-bold uppercase tracking-wider">{label}</span>
+        </div>
+        <span className="text-on-surface-variant text-[10px] mt-4 font-bold opacity-60 uppercase tracking-widest leading-none">{sub}</span>
       </div>
-      <div
-        className="absolute -top-12 -right-12 h-24 w-24 rounded-full blur-3xl opacity-10 pointer-events-none"
-        style={{ backgroundColor: `var(${color})` }}
-      ></div>
     </div>
   );
 }
 
-function QuickLink({ icon, title, desc, onClick }) {
+function ConsultationItem({ name, specialty, type, time, status, avatar, isPrimary }) {
   return (
-    <div
-      onClick={onClick}
-      className="flex items-center gap-4 p-5 rounded-3xl bg-[var(--bg-main)]/50 border border-[var(--border)] hover:border-[var(--brand-green)] cursor-pointer transition-all group"
-    >
-      <div className="h-10 w-10 rounded-xl bg-[var(--bg-card)] flex items-center justify-center text-lg shadow-inner group-hover:scale-110 transition-transform">
-        {icon}
+    <div className="group relative flex items-center p-5 rounded-[28px] bg-surface-container-lowest hover:bg-surface-container-low transition-all duration-300 shadow-[0_8px_24px_-4px_rgba(0,108,10,0.04)] border border-transparent hover:border-primary/10">
+      <div className="w-16 h-16 rounded-2xl overflow-hidden bg-surface-container-high mr-5 shadow-sm">
+        <img src={avatar} alt={name} className="w-full h-full object-cover" />
       </div>
-      <div className="overflow-hidden">
-        <p className="font-black text-[var(--text-main)] text-xs mb-0.5">{title}</p>
-        <p className="text-[10px] font-bold text-[var(--text-muted)] truncate">{desc}</p>
+      <div className="flex-grow">
+        <h3 className="font-bold text-on-surface text-lg leading-none mb-1">{name}</h3>
+        <p className="text-on-surface-variant text-sm font-medium opacity-70">{specialty} • {type}</p>
+      </div>
+      <div className="text-right flex flex-col items-end">
+        <span className={`font-bold font-headline text-lg leading-none ${isPrimary ? "text-primary" : "text-on-surface"}`}>{time}</span>
+        <span className="text-on-surface-variant text-[10px] font-bold uppercase tracking-widest mt-1 opacity-60">{status}</span>
       </div>
     </div>
   );
 }
+

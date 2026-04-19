@@ -133,6 +133,8 @@ router.put("/profile", async (req, res) => {
       medicalRecordNumber,
       insuranceProvider,
       insuranceMemberId,
+      disabilityStatus,
+      timezone,
     } = req.body;
 
     // Fallback: If no userId provided, use the logged-in user's ID
@@ -140,14 +142,19 @@ router.put("/profile", async (req, res) => {
       userId = req.user.id;
     }
 
+    console.log(`[RBAC] Incoming Profile Update - UserID: ${userId}, TokenID: ${req.user.id}, Role: ${req.user.role}, Timezone: ${timezone}`);
+
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
     }
 
-    // Ensure only the user themselves or an admin can update
-    // (This is a simplified check; ideally use verifyOwnerOrAdmin middleware)
-    if (req.user.role === "PATIENT" && req.user.id !== userId) {
-      return res.status(403).json({ error: "Unauthorized update attempt" });
+    // 🛡️ SECURITY FIX: Explicitly compare with the TOKEN identity instead of just the body's shadowing ID
+    if (req.user.role === "PATIENT" && String(req.user.id) !== String(userId)) {
+      console.warn(`[RBAC] 🛡️ Blocked profile update attempt. Request ID: ${userId}, Token ID: ${req.user.id}`);
+      return res.status(403).json({ 
+        error: "Forbidden", 
+        message: "You are not authorized to update this profile." 
+      });
     }
 
     // Validate Date of Birth
@@ -206,6 +213,8 @@ router.put("/profile", async (req, res) => {
         medicalRecordNumber: medicalRecordNumber || null,
         insuranceProvider: insuranceProvider || null,
         insuranceMemberId: insuranceMemberId || null,
+        disabilityStatus: disabilityStatus || null,
+        timezone: timezone || undefined, // Only update if provided
       },
       create: {
         userId,
@@ -224,6 +233,8 @@ router.put("/profile", async (req, res) => {
         medicalRecordNumber: medicalRecordNumber || null,
         insuranceProvider: insuranceProvider || null,
         insuranceMemberId: insuranceMemberId || null,
+        disabilityStatus: disabilityStatus || null,
+        timezone: timezone || "UTC",
       },
       include: {
         user: {
@@ -354,8 +365,16 @@ router.get("/stats", async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("❌ /api/patient/stats error:", err);
-    return res.status(500).json({ success: false, error: "Failed to fetch patient stats" });
+    console.error("❌ [/api/patient/stats] Critical error:", {
+      message: err.message,
+      stack: err.stack,
+      context: {
+        userId: req.user?.id,
+        patientId: req.query.patientId,
+        timestamp: new Date().toISOString()
+      }
+    });
+    return res.status(500).json({ success: false, error: "Failed to fetch patient stats due to internal error" });
   }
 });
 

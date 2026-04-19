@@ -1,24 +1,33 @@
 // CureVirtual Brand Colors — aligned with web app design system
 export const Colors = {
-  // Primary brand colors (matches web --brand-* CSS variables)
-  brandGreen: '#008f11',   // PRIMARY — used for CTAs, active states
-  brandBlue: '#006aff',    // SECONDARY — links, secondary buttons
-  brandOrange: '#ff7b00',  // ACCENT — warnings, highlights
-
-  // Backgrounds
-  bgMain: '#ffffff',
-  bgCard: '#ffffff',
-  bgMuted: '#f8fafc',
-  bgInput: '#f1f5f9',
-
-  // Text
-  textMain: '#1a1a1a',
-  textSoft: '#333333',
-  textMuted: '#666666',
+  // Primary brand palette (Material 3 inspired)
+  primary: '#006c0a',        // Deep Green
+  onPrimary: '#ffffff',
+  primaryContainer: '#99f894',
+  
+  secondary: '#0054cc',      // Royal Blue
+  onSecondary: '#ffffff',
+  secondaryContainer: '#d8e2ff',
+  
+  tertiary: '#386567',
+  onTertiary: '#ffffff',
+  
+  // Neutral / Surface containers
+  surface: '#f7fbf1',
+  onSurface: '#191d17',
+  surfaceContainerLowest: '#ffffff',
+  surfaceContainerLow: '#f1f5eb',
+  surfaceContainer: '#ecf0e5',
+  surfaceContainerHigh: '#e6ebe0',
+  surfaceContainerHighest: '#e0e5da',
 
   // Semantic
   success: '#059669',
-  danger: '#dc2626',
-  dangerLight: '#fee2e2',
+  error: '#ba1a1a',
   warning: '#d97706',
+  
+  // Legacy mappings for backward compatibility
+  brandGreen: '#006c0a',
+  brandBlue: '#0054cc',
+  brandOrange: '#386567',
 };

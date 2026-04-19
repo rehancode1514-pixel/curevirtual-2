@@ -304,6 +304,11 @@ model PharmacyProfile {
 
   openingHours  String? @db.Text
   services      String? @db.Text
+  timezone      String  @default("UTC")
+
+  emergencyContact      String? @db.Text
+  emergencyContactName  String?
+  emergencyContactEmail String?
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -343,6 +348,7 @@ model PatientProfile {
   
   riskLevel             String?
   chronicConditions     String?  @db.Text
+  timezone              String   @default("UTC")
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -578,6 +584,7 @@ model Message {
   senderId   String?
   receiverId String?
   content    String
+  conversationId String?
   createdAt  DateTime  @default(now())
   readAt     DateTime?
 
