@@ -24,9 +24,10 @@ class SocketService {
       console.log(`[Socket] Initializing connection to ${SOCKET_URL}...`);
       this.socket = io(SOCKET_URL, {
         auth: { token },
+        transports: ['websocket'], // Force WebSocket to avoid polling issues
         reconnection: true,
-        reconnectionAttempts: 7, // Increased from 5
-        timeout: 20000, // Increased from 10s to 20s for mobile stability
+        reconnectionAttempts: 7,
+        timeout: 20000,
       });
 
       this.socket.on('connect', () => {

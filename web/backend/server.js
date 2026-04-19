@@ -30,6 +30,7 @@ const allowedOrigins = [
 
 const server = http.createServer(app);
 const io = new Server(server, {
+  transports: ["websocket", "polling"], // Allow both, but 'websocket' is preferred for mobile
   cors: {
     origin: (origin, callback) => {
       // allow requests with no origin (like mobile apps or curl requests)
@@ -40,6 +41,7 @@ const io = new Server(server, {
       ) {
         callback(null, true);
       } else {
+        console.warn(`[Socket CORS] Origin blocked: ${origin}`);
         callback(new Error("Not allowed by CORS"));
       }
     },
