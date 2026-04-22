@@ -15,11 +15,8 @@ const api = axios.create({
 });
 
 /* ============================================================
-   🔒 2. Attach JWT Token Automatically & Refresh if Expired
+   🔒 2. Attach JWT Token Automatically
    ============================================================ */
-
-
-
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -43,45 +40,10 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const originalRequest = error.config;
-
-    // Only retry once, and only for 401 errors
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
-        const res = await axios.post(`${apiBaseUrl}/auth/refresh`, {}, { 
-          withCredentials: true // needed if using HttpOnly cookie
-        });
-        
-        const newToken = res.data.accessToken;
-        localStorage.setItem("token", newToken);
-        originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-        
-        // update api instance defaults just in case
-        api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
-
-        return api(originalRequest); // retry original request
-
-      } catch (refreshError) {
-        // Refresh failed — log out user cleanly
-        localStorage.removeItem("token");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("role");
-        window.location.href = "/login";
-        return Promise.reject(refreshError);
-      }
-    }
-
-    // For 404 on refresh itself — don't retry, just logout
-    if (error.response?.status === 404 && 
-        error.config.url.includes("/auth/refresh")) {
-      console.error("Refresh endpoint not found. Check backend routes.");
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
-      localStorage.removeItem("role");
-      window.location.href = "/login";
+    // Handle expired tokens globally
+    if (error.response.status === 401) {
+      console.warn("🔒 Token expired — preserving auth data");
+      // Do not clear localStorage or redirect; allow app to handle it gracefully
     }
 
     return Promise.reject(error);

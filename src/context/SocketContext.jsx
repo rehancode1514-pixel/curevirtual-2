@@ -3,16 +3,16 @@ import { io } from "socket.io-client";
 
 import { SocketContext } from "./useSocket";
 
-// Derive socket URL from API base URL (strip /api suffix)
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
-const backendUrl = apiBaseUrl.replace(/\/api\/?$/, "");
-
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [connectionState, setConnectionState] = useState("disconnected"); // 'disconnected' | 'connecting' | 'connected' | 'reconnecting'
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
+
+  // Derive socket URL from API base URL (strip /api suffix)
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
+  const backendUrl = apiBaseUrl.replace(/\/api\/?$/, "");
 
   useEffect(() => {
     // Get user info from localStorage
@@ -32,8 +32,8 @@ export const SocketProvider = ({ children }) => {
     const newSocket = io(backendUrl, {
       withCredentials: true,
       transports: ["websocket"], // 👈 FORCE WEBSOCKET
-      auth: (cb) => {
-        cb({ token: localStorage.getItem("token") });
+      auth: {
+        token: token, // JWT authentication
       },
       reconnection: true,
       reconnectionDelay: 1000,
@@ -57,48 +57,10 @@ export const SocketProvider = ({ children }) => {
     });
 
     // Connection error
-    newSocket.on("connect_error", async (error) => {
+    newSocket.on("connect_error", (error) => {
       console.error("❌ Socket connection error:", error.message);
-      
-      // If authentication failed (e.g. jwt expired), try to refresh token
-      if (error.message.includes("jwt expired") || error.message.includes("Authentication failed")) {
-        console.warn("🔐 Socket Auth Failed: Token is likely expired or invalid. Attempting refresh.");
-        newSocket.io.opts.reconnection = false; // stop auto reconnect
-        newSocket.disconnect(); // cleanly stop before refresh
-        
-        try {
-          const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            credentials: "include" 
-          });
-
-          if (!response.ok) {
-            throw new Error("Refresh failed");
-          }
-
-          const data = await response.json();
-          const newToken = data.accessToken || data.token; // Handle both
-          
-          if (newToken) {
-            console.log("✅ Token successfully refreshed for socket reconnect.");
-            localStorage.setItem("token", newToken);
-            newSocket.io.opts.reconnection = true;
-            newSocket.connect();
-          } else {
-            throw new Error("No token in refresh response");
-          }
-        } catch (refreshError) {
-          console.error("❌ Token refresh failed. Socket stopping reconnection.", refreshError);
-          setIsConnected(false);
-          setConnectionState("disconnected");
-        }
-      } else {
-        setIsConnected(false);
-        setConnectionState("reconnecting");
-      }
+      setIsConnected(false);
+      setConnectionState("reconnecting");
     });
 
     // Reconnect attempt
@@ -149,7 +111,7 @@ export const SocketProvider = ({ children }) => {
         newSocket.disconnect();
       }
     };
-  }, []);
+  }, [backendUrl]);
 
   const contextValue = {
     socket,
