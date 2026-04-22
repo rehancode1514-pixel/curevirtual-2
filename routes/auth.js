@@ -7,7 +7,30 @@ const { supabaseAdmin } = require("../lib/supabaseAdmin");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_SECRET || (JWT_SECRET + "_refresh");
 
+const generateTokensAndSetCookies = (res, user) => {
+  const token = jwt.sign(
+    { id: user.id, role: user.role, type: "USER" },
+    JWT_SECRET,
+    { expiresIn: "15m" },
+  );
+
+  const refreshToken = jwt.sign(
+    { id: user.id },
+    REFRESH_SECRET,
+    { expiresIn: "7d" },
+  );
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+
+  return token;
+};
 // -------------------------
 // Register (Admin Bypass API)
 // -------------------------
@@ -93,11 +116,7 @@ router.post("/register", async (req, res) => {
     }
 
     // 4. Generate JWT
-    const token = jwt.sign(
-      { id: user.id, role: user.role, type: "USER" },
-      JWT_SECRET,
-      { expiresIn: "1d" },
-    );
+    const token = generateTokensAndSetCookies(res, user);
 
     return res.status(201).json({
       message: "Registration successful",
@@ -190,11 +209,7 @@ router.post("/register-success", async (req, res) => {
     }
 
     // Create legacy JWT for backend API
-    const token = jwt.sign(
-      { id: existingUser.id, role: existingUser.role, type: "USER" },
-      JWT_SECRET,
-      { expiresIn: "1d" },
-    );
+    const token = generateTokensAndSetCookies(res, existingUser);
 
     return res.status(201).json({
       message: "User synchronized successfully",
@@ -254,11 +269,7 @@ router.post("/login-sync", async (req, res) => {
     }
 
     // Create Legacy JWT for backend API
-    const token = jwt.sign(
-      { id: account.id, role: account.role, type: "USER" },
-      JWT_SECRET,
-      { expiresIn: "1d" },
-    );
+    const token = generateTokensAndSetCookies(res, account);
 
     return res.json({
       token,
@@ -352,11 +363,7 @@ router.post("/verify-otp-login", async (req, res) => {
     }
 
     // Create JWT
-    const token = jwt.sign(
-      { id: user.id, role: user.role, type: "USER" },
-      JWT_SECRET,
-      { expiresIn: "1d" },
-    );
+    const token = generateTokensAndSetCookies(res, user);
 
     return res.json({
       token,
@@ -371,6 +378,39 @@ router.post("/verify-otp-login", async (req, res) => {
   } catch (err) {
     console.error("OTP Verification Error:", err);
     return res.status(500).json({ error: "Verification failed" });
+  }
+});
+
+// -------------------------
+// Refresh Token
+// -------------------------
+router.post("/refresh", async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken || (req.body && req.body.refreshToken);
+    if (!refreshToken) {
+      return res.status(401).json({ error: "No refresh token" });
+    }
+
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const newAccessToken = jwt.sign(
+      { id: user.id, role: user.role, type: "USER" },
+      JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.json({ token: newAccessToken });
+  } catch (err) {
+    console.error("Token Refresh Error:", err.message);
+    res.status(403).json({ error: "Refresh token expired or invalid" });
   }
 });
 

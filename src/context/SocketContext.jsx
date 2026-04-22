@@ -32,8 +32,8 @@ export const SocketProvider = ({ children }) => {
     const newSocket = io(backendUrl, {
       withCredentials: true,
       transports: ["websocket"], // 👈 FORCE WEBSOCKET
-      auth: {
-        token: token, // JWT authentication
+      auth: (cb) => {
+        cb({ token: localStorage.getItem("token") });
       },
       reconnection: true,
       reconnectionDelay: 1000,
@@ -57,15 +57,43 @@ export const SocketProvider = ({ children }) => {
     });
 
     // Connection error
-    newSocket.on("connect_error", (error) => {
+    newSocket.on("connect_error", async (error) => {
       console.error("❌ Socket connection error:", error.message);
       
-      // If authentication failed (e.g. jwt expired), don't keep trying infinitely
-      if (error.message.includes("Authentication failed")) {
-        console.warn("🔐 Socket Auth Failed: Token is likely expired or invalid. Stopping reconnection.");
-        newSocket.disconnect(); 
-        setIsConnected(false);
-        setConnectionState("disconnected");
+      // If authentication failed (e.g. jwt expired), try to refresh token
+      if (error.message.includes("jwt expired") || error.message.includes("Authentication failed")) {
+        console.warn("🔐 Socket Auth Failed: Token is likely expired or invalid. Attempting refresh.");
+        newSocket.io.opts.reconnection = false; // stop auto reconnect
+        
+        try {
+          const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            credentials: "include" 
+          });
+
+          if (!response.ok) {
+            throw new Error("Refresh failed");
+          }
+
+          const data = await response.json();
+          const newToken = data.token;
+          
+          if (newToken) {
+            console.log("✅ Token successfully refreshed for socket reconnect.");
+            localStorage.setItem("token", newToken);
+            newSocket.io.opts.reconnection = true;
+            newSocket.connect();
+          } else {
+            throw new Error("No token in refresh response");
+          }
+        } catch (refreshError) {
+          console.error("❌ Token refresh failed. Socket stopping reconnection.", refreshError);
+          setIsConnected(false);
+          setConnectionState("disconnected");
+        }
       } else {
         setIsConnected(false);
         setConnectionState("reconnecting");
@@ -120,7 +148,7 @@ export const SocketProvider = ({ children }) => {
         newSocket.disconnect();
       }
     };
-  }, [backendUrl]);
+  }, [backendUrl, apiBaseUrl]);
 
   const contextValue = {
     socket,

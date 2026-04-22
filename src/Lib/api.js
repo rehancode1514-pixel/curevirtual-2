@@ -15,11 +15,74 @@ const api = axios.create({
 });
 
 /* ============================================================
-   🔒 2. Attach JWT Token Automatically
+   🔒 2. Attach JWT Token Automatically & Refresh if Expired
    ============================================================ */
+
+function isTokenExpired(token) {
+  try {
+    const { exp } = JSON.parse(atob(token.split(".")[1]));
+    // Add a small buffer (e.g., 10 seconds) before actual expiry
+    return Date.now() >= (exp * 1000) - 10000;
+  } catch {
+    return true;
+  }
+}
+
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+const subscribeTokenRefresh = (cb) => {
+  refreshSubscribers.push(cb);
+};
+
+const onRefreshed = (token) => {
+  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers = [];
+};
+
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
+  async (config) => {
+    let token = localStorage.getItem("token");
+
+    if (token && isTokenExpired(token)) {
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
+          const response = await fetch(`${apiBaseUrl}/auth/refresh`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            credentials: "include" 
+          });
+
+          if (!response.ok) {
+            throw new Error("Refresh failed");
+          }
+
+          const data = await response.json();
+          token = data.token;
+          if (token) {
+            localStorage.setItem("token", token);
+          }
+          isRefreshing = false;
+          onRefreshed(token);
+        } catch (error) {
+          console.error("Token refresh failed in API interceptor", error);
+          isRefreshing = false;
+          // Optionally handle forced logout here
+        }
+      } else {
+        // Wait for the ongoing refresh to complete
+        token = await new Promise((resolve) => {
+          subscribeTokenRefresh((newToken) => {
+            resolve(newToken);
+          });
+        });
+      }
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

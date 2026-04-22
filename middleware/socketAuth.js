@@ -25,7 +25,7 @@ module.exports = (socket, next) => {
     // Validate token expiry
     if (decoded.exp && decoded.exp < Date.now() / 1000) {
       console.warn(`⚠️ Expired token for socket: ${socket.id}`);
-      return next(new Error("Token expired"));
+      return next(new Error("Authentication failed: jwt expired"));
     }
 
     // Attach user info to socket for authorization checks
@@ -38,7 +38,11 @@ module.exports = (socket, next) => {
     );
     next();
   } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      console.warn(`⚠️ Socket auth token expired: ${socket.id}`);
+      return next(new Error("Authentication failed: jwt expired"));
+    }
     console.error(`❌ Socket authentication failed:`, err.message);
-    next(new Error("Invalid token"));
+    next(new Error("Authentication failed: invalid token"));
   }
 };

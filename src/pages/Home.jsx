@@ -205,7 +205,9 @@ export default function Home() {
                 src="/images/logo/Asset3.png"
                 alt="Telemedicine"
                 className="rounded-[2.5rem] w-full h-[600px] object-cover opacity-90 hover:scale-105 transition-transform duration-700"
+                style="background-color: rgb(214, 234, 255);"
               />
+
             </div>
             {/* Status Floating Widget */}
             <div className="absolute -left-8 top-1/2 -translate-y-1/2 glass !p-6 !rounded-3xl shadow-2xl border-[var(--border)] animate-bounce-slow backdrop-blur-3xl">
