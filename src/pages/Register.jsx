@@ -165,7 +165,7 @@ export default function Register() {
 
       <div className="w-full max-w-[1100px] flex flex-col md:flex-row glass overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 rounded-[3rem] border border-[var(--border)]">
         {/* Left Side: Onboarding Panel */}
-        <div className="hidden md:flex flex-col justify-between w-2/5 p-12 text-[var(--text-main)] relative overflow-hidden bg-gradient-to-tr from-[#0f172a] to-[#1e293b]">
+        <div className="hidden md:flex flex-col justify-between w-2/5 p-12 text-[var(--text-main)] relative overflow-hidden bg-gradient-to-tr from-[#a2beff] to-[#7da0d8]">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_left,var(--brand-blue),transparent)]"></div>
             <div className="absolute bottom-10 right-0 w-full h-full bg-[radial-gradient(circle_at_bottom_right,var(--brand-orange),transparent)]"></div>

@@ -154,7 +154,7 @@ export default function Login() {
 
       <div className="w-full max-w-[1000px] flex flex-col md:flex-row glass overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-700 rounded-[3rem] border border-[var(--border)]">
         {/* Left Side: Branding */}
-        <div className="hidden md:flex flex-col justify-between w-2/5 p-12 text-[var(--text-main)] relative overflow-hidden bg-gradient-to-br from-[#1e293b] to-[#0f172a]">
+        <div className="hidden md:flex flex-col justify-between w-2/5 p-12 text-[var(--text-main)] relative overflow-hidden bg-gradient-to-br from-[#bcd6ff] to-[#dee6f7]">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,var(--brand-orange),transparent)]"></div>
             <div className="absolute bottom-0 left-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,var(--brand-green),transparent)]"></div>

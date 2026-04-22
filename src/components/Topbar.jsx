@@ -84,7 +84,7 @@ export default function Topbar({ userName: propUserName, isMobileMenuOpen, setIs
     <header
       className={`sticky top-0 z-50 h-[70px] md:h-[80px] flex items-center justify-between px-4 md:px-8 backdrop-blur-xl border-b border-white/20 shadow-sm ${
         theme === "light"
-          ? "bg-gradient-to-r from-green-700 via-emerald-800 to-green-900"
+          ? "bg-gradient-to-r from-green-900 via-emerald-900 to-green-900"
           : "bg-[var(--bg-glass)]"
       }`}
     >
