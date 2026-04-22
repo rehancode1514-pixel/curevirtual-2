@@ -32,13 +32,17 @@ export default function Home() {
     >
       {/* Refined Fixed Navbar */}
       <nav className="fixed w-full z-50 backdrop-blur-3xl border-b border-[var(--border)] px-4 md:px-6 py-3 bg-[var(--bg-glass)]/80 transition-all duration-300">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="page-container flex items-center justify-between h-16 md:h-20">
           <div
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => navigate("/")}
           >
-            <div className="bg-[var(--bg-glass)] p-2 rounded-xl group-hover:rotate-12 transition-transform shadow-sm">
-              <img src="/images/logo/Asset3.png" alt="Logo" className="w-8 h-8 md:w-9 md:h-9" />
+            <div className="bg-[var(--bg-glass)] p-1.5 rounded-xl group-hover:rotate-12 transition-transform shadow-sm flex items-center">
+              <img 
+                src="/images/logo/Asset3.png" 
+                alt="Logo" 
+                className="h-8 md:h-10 w-auto object-contain" 
+              />
             </div>
             <span className="text-lg md:text-xl font-black tracking-tighter text-[var(--text-main)] uppercase">
               CURE<span className="text-[var(--brand-blue)]">VIRTUAL</span>
@@ -144,20 +148,15 @@ export default function Home() {
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[var(--brand-blue)]/5 to-transparent -z-10 blur-[120px]"></div>
         <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-[var(--brand-green)]/5 to-transparent -z-10 blur-[120px]"></div>
 
-        <div className="page-container grid lg:grid-cols-2 gap-10 md:gap-12 items-center">
-          <div className="text-center lg:text-left space-y-6 md:space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-[var(--border)] text-[var(--brand-orange)] text-[10px] font-black uppercase tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="page-container grid md:grid-cols-2 gap-10 md:gap-12 items-center">
+          <div className="text-center md:text-left space-y-6 md:space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-[var(--border)] text-[var(--brand-orange)] text-[10px] font-black uppercase tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-700 mx-auto md:mx-0">
               <span className="h-2 w-2 rounded-full bg-[var(--brand-orange)] animate-pulse"></span>
               Online Healthcare
             </div>
 
             <div className="space-y-4 md:space-y-5">
-              <img
-                src="/images/logo/Asset3.png"
-                alt="CureVirtual Logo"
-                className="w-24 md:w-28 h-auto mx-auto lg:mx-0 drop-shadow-2xl animate-in zoom-in duration-500"
-              />
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[var(--text-main)] leading-[1.0] tracking-tighter uppercase whitespace-nowrap lg:whitespace-normal">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[var(--text-main)] leading-[1.1] tracking-tighter uppercase">
                 CURE <br className="hidden lg:block" />
                 <span className="text-gradient">VIRTUAL</span>
               </h1>
@@ -166,49 +165,49 @@ export default function Home() {
               </p>
             </div>
 
-            <p className="text-base md:text-lg text-[var(--text-soft)] max-w-xl leading-relaxed font-medium mx-auto lg:mx-0 opacity-80">
+            <p className="text-base md:text-lg text-[var(--text-soft)] max-w-xl leading-relaxed font-medium mx-auto md:mx-0 opacity-80">
               Experience medical consultation with zero boundaries. Connect with world-class
               specialists instantly through our high-performance virtual clinic.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4 md:pt-6">
+            <div className="flex flex-row gap-4 items-center justify-center md:justify-start pt-4 md:pt-6">
               <button
                 onClick={() => navigate("/register")}
-                className="btn btn-primary !py-4 md:!py-5 !px-8 md:!px-12 text-sm shadow-green-500/20 w-full sm:w-auto"
+                className="btn btn-primary px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm shadow-green-500/20 whitespace-nowrap"
               >
-                Start Consultation <FaArrowRight />
+                Start Consultation <FaArrowRight className="inline-block ml-1" />
               </button>
               <button
                 onClick={() => navigate("/login")}
-                className="btn btn-glass !py-4 md:!py-5 !px-8 md:!px-12 text-sm text-[var(--text-main)] w-full sm:w-auto border-2 border-[var(--brand-green)] hover:bg-[var(--brand-green)] hover:text-white"
+                className="btn btn-glass px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm text-[var(--text-main)] border-2 border-[var(--brand-green)] hover:bg-[var(--brand-green)] hover:text-white whitespace-nowrap"
               >
                 Login to Portal
               </button>
             </div>
 
-            <div className="flex items-center justify-center lg:justify-start gap-8 md:gap-12 pt-8 md:pt-10 opacity-70">
-              <div className="text-center">
+            <div className="flex items-center justify-center md:justify-start gap-10 md:gap-12 pt-8 md:pt-10 opacity-70">
+              <div className="text-left">
                 <p className="text-2xl md:text-3xl font-black text-[var(--brand-blue)]">24/7</p>
                 <p className="text-[10px] font-black uppercase tracking-widest">Support</p>
               </div>
               <div className="w-px h-10 bg-[var(--border)]"></div>
-              <div className="text-center">
+              <div className="text-left">
                 <p className="text-2xl md:text-3xl font-black text-[var(--brand-green)]">Privacy</p>
                 <p className="text-[10px] font-black uppercase tracking-widest">Protected</p>
               </div>
             </div>
           </div>
 
-          <div className="relative hidden lg:block">
-            <div className="glass !p-4 !rounded-[3rem] overflow-hidden border-[var(--border)] shadow-2xl animate-float">
+          <div className="relative mt-12 md:mt-0">
+            <div className="glass !p-3 md:!p-4 !rounded-[2rem] md:!rounded-[3rem] overflow-hidden border-[var(--border)] shadow-2xl animate-float">
               <img
                 src="/images/logo/Asset3.png"
                 alt="Telemedicine"
-                className="rounded-[2.5rem] w-full h-[600px] object-cover opacity-90 hover:scale-105 transition-transform duration-700"
+                className="rounded-[1.5rem] md:rounded-[2.5rem] w-full h-[300px] md:h-[600px] object-cover opacity-90 hover:scale-105 transition-transform duration-700"
               />
             </div>
             {/* Status Floating Widget */}
-            <div className="absolute -left-8 top-1/2 -translate-y-1/2 glass !p-6 !rounded-3xl shadow-2xl border-[var(--border)] animate-bounce-slow backdrop-blur-3xl">
+            <div className="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 glass !p-4 md:!p-6 !rounded-2xl md:!rounded-3xl shadow-2xl border-[var(--border)] animate-bounce-slow backdrop-blur-3xl">
               <div className="flex items-center gap-5">
                 <div className="h-14 w-14 rounded-2xl bg-[var(--brand-green)]/10 flex items-center justify-center text-[var(--brand-green)] text-3xl">
                   <FaVideo />

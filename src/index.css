@@ -68,6 +68,16 @@
   }
 
   /* Layout Utilities */
+  .page-container {
+    @apply max-w-[1200px] mx-auto px-6 w-full;
+  }
+
+  @media (max-width: 640px) {
+    .page-container {
+      @apply px-4;
+    }
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
