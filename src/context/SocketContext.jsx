@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 
 import { SocketContext } from "./useSocket";
+import api from "../Lib/api";
+import { supabase } from "../Lib/supabase";
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -57,8 +59,52 @@ export const SocketProvider = ({ children }) => {
     });
 
     // Connection error
-    newSocket.on("connect_error", (error) => {
+    newSocket.on("connect_error", async (error) => {
       console.error("❌ Socket connection error:", error.message);
+
+      // Handle JWT Expiration
+      if (error.message === "jwt expired" || error.message === "Authentication required") {
+        console.log("🔄 Socket token expired, attempting refresh...");
+
+        try {
+          // 1. Get fresh Supabase session
+          const {
+            data: { session },
+            error: sessionError,
+          } = await supabase.auth.getSession();
+
+          if (sessionError || !session) {
+            console.error("❌ Supabase session lost. Redirecting to login.");
+            localStorage.clear();
+            window.location.href = "/login";
+            return;
+          }
+
+          // 2. Sync with backend to get a new legacy JWT
+          const userEmail = localStorage.getItem("email");
+          const res = await api.post("/auth/login-sync", {
+            email: userEmail,
+            supabaseId: session.user.id,
+            supabaseAccessToken: session.access_token,
+          });
+
+          const newToken = res.data.token;
+
+          if (newToken) {
+            console.log("✅ Socket token refreshed successfully. Reconnecting...");
+            localStorage.setItem("token", newToken);
+
+            // 3. Update socket auth and manually reconnect
+            newSocket.auth.token = newToken;
+            newSocket.connect();
+            return; // Exit to avoid setting state to reconnecting prematurely
+          }
+        } catch (refreshErr) {
+          console.error("❌ Failed to refresh socket token:", refreshErr);
+          // If refresh fails, we might want to logout
+        }
+      }
+
       setIsConnected(false);
       setConnectionState("reconnecting");
     });

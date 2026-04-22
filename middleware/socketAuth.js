@@ -38,6 +38,10 @@ module.exports = (socket, next) => {
     );
     next();
   } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      console.warn(`⚠️ Expired token for socket: ${socket.id}`);
+      return next(new Error("jwt expired"));
+    }
     console.error(`❌ Socket authentication failed:`, err.message);
     next(new Error("Invalid token"));
   }
