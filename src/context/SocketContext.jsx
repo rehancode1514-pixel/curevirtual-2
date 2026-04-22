@@ -59,8 +59,17 @@ export const SocketProvider = ({ children }) => {
     // Connection error
     newSocket.on("connect_error", (error) => {
       console.error("❌ Socket connection error:", error.message);
-      setIsConnected(false);
-      setConnectionState("reconnecting");
+      
+      // If authentication failed (e.g. jwt expired), don't keep trying infinitely
+      if (error.message.includes("Authentication failed")) {
+        console.warn("🔐 Socket Auth Failed: Token is likely expired or invalid. Stopping reconnection.");
+        newSocket.disconnect(); 
+        setIsConnected(false);
+        setConnectionState("disconnected");
+      } else {
+        setIsConnected(false);
+        setConnectionState("reconnecting");
+      }
     });
 
     // Reconnect attempt

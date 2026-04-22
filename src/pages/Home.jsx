@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <div
       className={`min-h-screen transition-all duration-300 ${
-        theme === "dark" ? "bg-[var(--bg-main)]" : "bg-[var(--bg-main)]"
+        theme === "dark" ? "bg-transparent" : "bg-transparent"
       }`}
     >
       {/* Refined Fixed Navbar */}

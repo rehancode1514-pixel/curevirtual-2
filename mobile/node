@@ -1,0 +1,6 @@
+#!/bin/bash
+if [[ "$*" == "-v" ]] || [[ "$*" == "--version" ]]; then
+  echo "v20.10.0"
+else
+  /Users/rehan/flutter/bin/node "$@"
+fi

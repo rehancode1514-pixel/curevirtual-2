@@ -1,0 +1,10 @@
+--------- beginning of main
+04-12 01:51:00.014  1512  1973 I AiAiEcho: Predicting[0]: 
+04-12 01:51:00.014  1512  1973 I AiAiEcho: EchoTargets: 
+04-12 01:51:00.014  1512  1973 I AiAiEcho: Filtered by AiAi flag check: 
+04-12 01:51:00.014  1512  1973 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+04-12 01:51:00.017  1512  1973 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0 (types=[])
+04-12 01:51:00.021   750   750 W PageIndicator: Total number of pages invalid: 0. Assuming 1 page.
+04-12 01:51:00.052   750   874 D EGL_emulation: app_time_stats: avg=6695.02ms min=6695.02ms max=6695.02ms count=1
+04-12 01:51:01.514   737   737 I wpa_supplicant: wlan0: CTRL-EVENT-BEACON-LOSS 
+04-12 01:51:03.332   750   750 D StatusBarIconController: ignoring old pipeline callbacks, because the new mobile icons are enabled

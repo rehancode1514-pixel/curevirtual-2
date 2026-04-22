@@ -1,0 +1,1014 @@
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/b3e3f0b9ad0fd2781f8c0974a1af0d77/results.bin b/node_modules/zego-express-engine-reactnative/android/build/.transforms/b3e3f0b9ad0fd2781f8c0974a1af0d77/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/.transforms/b3e3f0b9ad0fd2781f8c0974a1af0d77/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/b3e3f0b9ad0fd2781f8c0974a1af0d77/transformed/classes/classes_dex/classes.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/b3e3f0b9ad0fd2781f8c0974a1af0d77/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..f1f969a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/b3e3f0b9ad0fd2781f8c0974a1af0d77/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/results.bin b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/BuildConfig.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/BuildConfig.dex
+new file mode 100644
+index 0000000..67b298d
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/BuildConfig.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.dex
+new file mode 100644
+index 0000000..d1c2290
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.dex
+new file mode 100644
+index 0000000..8b09097
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.dex
+new file mode 100644
+index 0000000..64dd4ff
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressEnginePackage.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressEnginePackage.dex
+new file mode 100644
+index 0000000..457b775
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressEnginePackage.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$1.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$1.dex
+new file mode 100644
+index 0000000..a852f0e
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$1.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$10.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$10.dex
+new file mode 100644
+index 0000000..fce1b6e
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$10.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$11.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$11.dex
+new file mode 100644
+index 0000000..05fcaf0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$11.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$12.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$12.dex
+new file mode 100644
+index 0000000..f195873
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$12.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$14.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$14.dex
+new file mode 100644
+index 0000000..7b07735
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$14.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$15.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$15.dex
+new file mode 100644
+index 0000000..d996193
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$15.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$16.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$16.dex
+new file mode 100644
+index 0000000..8a1710a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$16.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$17.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$17.dex
+new file mode 100644
+index 0000000..d761aef
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$17.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$18.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$18.dex
+new file mode 100644
+index 0000000..902d8ec
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$18.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$19.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$19.dex
+new file mode 100644
+index 0000000..3384856
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$19.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$2.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$2.dex
+new file mode 100644
+index 0000000..3a97d6c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$2.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$21.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$21.dex
+new file mode 100644
+index 0000000..a53ad2d
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$21.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$22.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$22.dex
+new file mode 100644
+index 0000000..4c20a76
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$22.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$23.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$23.dex
+new file mode 100644
+index 0000000..2144b2f
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$23.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$24.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$24.dex
+new file mode 100644
+index 0000000..8c5b7fe
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$24.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$25.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$25.dex
+new file mode 100644
+index 0000000..cebca1a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$25.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$26.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$26.dex
+new file mode 100644
+index 0000000..499d9c6
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$26.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$27.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$27.dex
+new file mode 100644
+index 0000000..1fe11fe
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$27.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$28.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$28.dex
+new file mode 100644
+index 0000000..24fd62e
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$28.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$29.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$29.dex
+new file mode 100644
+index 0000000..9071bae
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$29.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$3.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$3.dex
+new file mode 100644
+index 0000000..25cac60
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$3.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$30.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$30.dex
+new file mode 100644
+index 0000000..4bbc6fd
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$30.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$31.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$31.dex
+new file mode 100644
+index 0000000..dddc498
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$31.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$32.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$32.dex
+new file mode 100644
+index 0000000..251aa74
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$32.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$33.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$33.dex
+new file mode 100644
+index 0000000..1ac2b1b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$33.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$34.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$34.dex
+new file mode 100644
+index 0000000..30e47ec
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$34.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$35.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$35.dex
+new file mode 100644
+index 0000000..7c5cf55
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$35.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$36.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$36.dex
+new file mode 100644
+index 0000000..db58558
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$36.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$37.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$37.dex
+new file mode 100644
+index 0000000..9a576af
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$37.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$38.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$38.dex
+new file mode 100644
+index 0000000..33d7742
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$38.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$39.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$39.dex
+new file mode 100644
+index 0000000..018ea31
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$39.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$4.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$4.dex
+new file mode 100644
+index 0000000..d1771fe
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$4.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$40.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$40.dex
+new file mode 100644
+index 0000000..a7ac14c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$40.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$41.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$41.dex
+new file mode 100644
+index 0000000..874035a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$41.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$5.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$5.dex
+new file mode 100644
+index 0000000..d0aa064
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$5.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$6.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$6.dex
+new file mode 100644
+index 0000000..000ce3b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$6.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$7.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$7.dex
+new file mode 100644
+index 0000000..09696ec
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$7.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$9.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$9.dex
+new file mode 100644
+index 0000000..b209c9e
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule$9.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule.dex
+new file mode 100644
+index 0000000..4f6127a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoExpressNativeModule.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoSurfaceViewManager.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoSurfaceViewManager.dex
+new file mode 100644
+index 0000000..10d1740
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoSurfaceViewManager.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoTextureViewManager.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoTextureViewManager.dex
+new file mode 100644
+index 0000000..eff19b5
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/RCTZegoTextureViewManager.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomAudioProcessManager.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomAudioProcessManager.dex
+new file mode 100644
+index 0000000..1247404
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomAudioProcessManager.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoCaptureManager.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoCaptureManager.dex
+new file mode 100644
+index 0000000..c185273
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoCaptureManager.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoProcessManager$1.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoProcessManager$1.dex
+new file mode 100644
+index 0000000..91e124e
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoProcessManager$1.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoProcessManager.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoProcessManager.dex
+new file mode 100644
+index 0000000..a6e4823
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoCustomVideoProcessManager.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoSurfaceView.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoSurfaceView.dex
+new file mode 100644
+index 0000000..af5fefb
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoSurfaceView.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoUtils.dex b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoUtils.dex
+new file mode 100644
+index 0000000..fdce1cf
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/im/zego/reactnative/ZegoUtils.dex differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..32aac93
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/.transforms/ba27e89aed94fb04edee95a64e09a280/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/generated/source/buildConfig/debug/im/zego/reactnative/BuildConfig.java b/node_modules/zego-express-engine-reactnative/android/build/generated/source/buildConfig/debug/im/zego/reactnative/BuildConfig.java
+new file mode 100644
+index 0000000..520da26
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/generated/source/buildConfig/debug/im/zego/reactnative/BuildConfig.java
+@@ -0,0 +1,12 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package im.zego.reactnative;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "im.zego.reactnative";
++  public static final String BUILD_TYPE = "debug";
++  // Field from default config.
++  public static final boolean IS_NEW_ARCHITECTURE_ENABLED = true;
++}
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..c2075fc
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,28 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="im.zego.reactnative" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
++
++    <application>
++        <activity
++            android:name="im.zego.internal.screencapture.ZegoScreenCaptureManager$ZegoScreenCaptureAssistantActivity"
++            android:configChanges="screenSize|orientation"
++            android:exported="false"
++            android:screenOrientation="fullUser"
++            android:theme="@android:style/Theme.Translucent" />
++
++        <service
++            android:name="im.zego.internal.screencapture.ZegoScreenCaptureService"
++            android:enabled="true"
++            android:exported="false"
++            android:foregroundServiceType="mediaProjection" >
++            <intent-filter>
++                <action android:name="android.intent.action.screenshare" />
++            </intent-filter>
++        </service>
++    </application>
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..45f9503
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "im.zego.reactnative",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/aar_main_jar/debug/syncDebugLibJars/classes.jar b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aar_main_jar/debug/syncDebugLibJars/classes.jar
+new file mode 100644
+index 0000000..68b947f
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aar_main_jar/debug/syncDebugLibJars/classes.jar differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/zego-express-engine-reactnative/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/annotations_typedef_file/debug/extractDebugAnnotations/typedefs.txt b/node_modules/zego-express-engine-reactnative/android/build/intermediates/annotations_typedef_file/debug/extractDebugAnnotations/typedefs.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..c28fafe
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..8c49df2
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/zego-express-engine-reactnative/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e69de29
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug-mergeJavaRes/merge-state b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug-mergeJavaRes/merge-state
+new file mode 100644
+index 0000000..1c983fc
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug-mergeJavaRes/merge-state differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..541dc5b
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1 @@
++#Sun Apr 12 00:50:16 PKT 2026
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..6c52b4a
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugAssets/merger.xml b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+new file mode 100644
+index 0000000..5e1b1ce
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..9fb4433
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..84c5696
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/BuildConfig.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/BuildConfig.class
+new file mode 100644
+index 0000000..fce280b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/BuildConfig.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.class
+new file mode 100644
+index 0000000..7edef42
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.class
+new file mode 100644
+index 0000000..a5076fe
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.class
+new file mode 100644
+index 0000000..b30187a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressEnginePackage.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressEnginePackage.class
+new file mode 100644
+index 0000000..f33bd3b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressEnginePackage.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$1.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$1.class
+new file mode 100644
+index 0000000..83cd65f
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$1.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$10.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$10.class
+new file mode 100644
+index 0000000..035b3b0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$10.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$11.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$11.class
+new file mode 100644
+index 0000000..ee3944c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$11.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$12.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$12.class
+new file mode 100644
+index 0000000..787a271
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$12.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$14.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$14.class
+new file mode 100644
+index 0000000..d77c3ff
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$14.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$15.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$15.class
+new file mode 100644
+index 0000000..2d2ddab
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$15.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$16.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$16.class
+new file mode 100644
+index 0000000..16ef2b2
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$16.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$17.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$17.class
+new file mode 100644
+index 0000000..a396ab2
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$17.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$18.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$18.class
+new file mode 100644
+index 0000000..3cfca6d
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$18.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$19.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$19.class
+new file mode 100644
+index 0000000..d936a5d
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$19.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$2.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$2.class
+new file mode 100644
+index 0000000..ad5a028
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$2.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$21.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$21.class
+new file mode 100644
+index 0000000..c137905
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$21.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$22.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$22.class
+new file mode 100644
+index 0000000..afaaa2c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$22.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$23.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$23.class
+new file mode 100644
+index 0000000..b59a547
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$23.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$24.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$24.class
+new file mode 100644
+index 0000000..60075eb
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$24.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$25.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$25.class
+new file mode 100644
+index 0000000..ebb4834
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$25.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$26.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$26.class
+new file mode 100644
+index 0000000..75916cb
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$26.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$27.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$27.class
+new file mode 100644
+index 0000000..346b2da
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$27.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$28.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$28.class
+new file mode 100644
+index 0000000..27ddcf5
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$28.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$29.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$29.class
+new file mode 100644
+index 0000000..c705238
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$29.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$3.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$3.class
+new file mode 100644
+index 0000000..4f64f01
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$3.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$30.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$30.class
+new file mode 100644
+index 0000000..426a9e0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$30.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$31.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$31.class
+new file mode 100644
+index 0000000..29d696c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$31.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$32.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$32.class
+new file mode 100644
+index 0000000..b8333c5
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$32.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$33.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$33.class
+new file mode 100644
+index 0000000..4ccf076
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$33.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$34.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$34.class
+new file mode 100644
+index 0000000..8a1314b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$34.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$35.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$35.class
+new file mode 100644
+index 0000000..95ca313
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$35.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$36.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$36.class
+new file mode 100644
+index 0000000..d231269
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$36.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$37.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$37.class
+new file mode 100644
+index 0000000..a21ee43
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$37.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$38.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$38.class
+new file mode 100644
+index 0000000..abf518c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$38.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$39.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$39.class
+new file mode 100644
+index 0000000..092a2ab
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$39.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$4.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$4.class
+new file mode 100644
+index 0000000..debaf2b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$4.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$40.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$40.class
+new file mode 100644
+index 0000000..aac52eb
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$40.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$41.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$41.class
+new file mode 100644
+index 0000000..07acc83
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$41.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$5.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$5.class
+new file mode 100644
+index 0000000..82669ac
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$5.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$6.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$6.class
+new file mode 100644
+index 0000000..c2aecd0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$6.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$7.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$7.class
+new file mode 100644
+index 0000000..f8c6eb9
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$7.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$9.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$9.class
+new file mode 100644
+index 0000000..0248cbf
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule$9.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule.class
+new file mode 100644
+index 0000000..47efce0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoExpressNativeModule.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoSurfaceViewManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoSurfaceViewManager.class
+new file mode 100644
+index 0000000..d2660d3
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoSurfaceViewManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoTextureViewManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoTextureViewManager.class
+new file mode 100644
+index 0000000..2bdfa17
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/RCTZegoTextureViewManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomAudioProcessManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomAudioProcessManager.class
+new file mode 100644
+index 0000000..b820ae5
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomAudioProcessManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoCaptureManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoCaptureManager.class
+new file mode 100644
+index 0000000..ad2f9d9
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoCaptureManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoProcessManager$1.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoProcessManager$1.class
+new file mode 100644
+index 0000000..6d14e53
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoProcessManager$1.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoProcessManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoProcessManager.class
+new file mode 100644
+index 0000000..8fc78f9
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoCustomVideoProcessManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoSurfaceView.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoSurfaceView.class
+new file mode 100644
+index 0000000..5811a9f
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoSurfaceView.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoUtils.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoUtils.class
+new file mode 100644
+index 0000000..1dcb716
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/im/zego/reactnative/ZegoUtils.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/zego-express-engine-reactnative/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..78ac5b8
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,2 @@
++R_DEF: Internal format may change without notice
++local
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/zego-express-engine-reactnative/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..e1df7e3
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,45 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="im.zego.reactnative" >
++4
++5    <uses-sdk android:minSdkVersion="24" />
++6
++7    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
++7-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:4:5-76
++7-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:4:22-74
++8
++9    <application>
++9-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:6:5-22:19
++10        <activity
++10-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:7:9-12:64
++11            android:name="im.zego.internal.screencapture.ZegoScreenCaptureManager$ZegoScreenCaptureAssistantActivity"
++11-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:8:13-118
++12            android:configChanges="screenSize|orientation"
++12-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:10:13-59
++13            android:exported="false"
++13-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:9:13-37
++14            android:screenOrientation="fullUser"
++14-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:11:13-49
++15            android:theme="@android:style/Theme.Translucent" />
++15-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:12:13-61
++16
++17        <service
++17-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:13:9-21:19
++18            android:name="im.zego.internal.screencapture.ZegoScreenCaptureService"
++18-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:14:13-83
++19            android:enabled="true"
++19-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:15:13-35
++20            android:exported="false"
++20-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:16:13-37
++21            android:foregroundServiceType="mediaProjection" >
++21-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:17:13-60
++22            <intent-filter>
++22-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:18:13-20:29
++23                <action android:name="android.intent.action.screenshare" />
++23-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:19:17-76
++23-->/Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:19:25-73
++24            </intent-filter>
++25        </service>
++26    </application>
++27
++28</manifest>
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/merged_java_res/debug/mergeDebugJavaResource/feature-zego-express-engine-reactnative.jar b/node_modules/zego-express-engine-reactnative/android/build/intermediates/merged_java_res/debug/mergeDebugJavaResource/feature-zego-express-engine-reactnative.jar
+new file mode 100644
+index 0000000..15cb0ec
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/merged_java_res/debug/mergeDebugJavaResource/feature-zego-express-engine-reactnative.jar differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/zego-express-engine-reactnative/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..c2075fc
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,28 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="im.zego.reactnative" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
++
++    <application>
++        <activity
++            android:name="im.zego.internal.screencapture.ZegoScreenCaptureManager$ZegoScreenCaptureAssistantActivity"
++            android:configChanges="screenSize|orientation"
++            android:exported="false"
++            android:screenOrientation="fullUser"
++            android:theme="@android:style/Theme.Translucent" />
++
++        <service
++            android:name="im.zego.internal.screencapture.ZegoScreenCaptureService"
++            android:enabled="true"
++            android:exported="false"
++            android:foregroundServiceType="mediaProjection" >
++            <intent-filter>
++                <action android:name="android.intent.action.screenshare" />
++            </intent-filter>
++        </service>
++    </application>
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/zego-express-engine-reactnative/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/zego-express-engine-reactnative/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/BuildConfig.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/BuildConfig.class
+new file mode 100644
+index 0000000..fce280b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/BuildConfig.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.class
+new file mode 100644
+index 0000000..7edef42
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomAudioProcessHandler.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.class
+new file mode 100644
+index 0000000..a5076fe
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomVideoCaptureHandler.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.class
+new file mode 100644
+index 0000000..b30187a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/IZegoReactNativeCustomVideoProcessHandler.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressEnginePackage.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressEnginePackage.class
+new file mode 100644
+index 0000000..f33bd3b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressEnginePackage.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$1.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$1.class
+new file mode 100644
+index 0000000..83cd65f
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$1.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$10.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$10.class
+new file mode 100644
+index 0000000..035b3b0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$10.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$11.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$11.class
+new file mode 100644
+index 0000000..ee3944c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$11.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$12.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$12.class
+new file mode 100644
+index 0000000..787a271
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$12.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$14.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$14.class
+new file mode 100644
+index 0000000..d77c3ff
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$14.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$15.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$15.class
+new file mode 100644
+index 0000000..2d2ddab
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$15.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$16.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$16.class
+new file mode 100644
+index 0000000..16ef2b2
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$16.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$17.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$17.class
+new file mode 100644
+index 0000000..a396ab2
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$17.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$18.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$18.class
+new file mode 100644
+index 0000000..3cfca6d
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$18.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$19.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$19.class
+new file mode 100644
+index 0000000..d936a5d
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$19.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$2.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$2.class
+new file mode 100644
+index 0000000..ad5a028
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$2.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$21.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$21.class
+new file mode 100644
+index 0000000..c137905
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$21.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$22.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$22.class
+new file mode 100644
+index 0000000..afaaa2c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$22.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$23.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$23.class
+new file mode 100644
+index 0000000..b59a547
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$23.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$24.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$24.class
+new file mode 100644
+index 0000000..60075eb
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$24.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$25.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$25.class
+new file mode 100644
+index 0000000..ebb4834
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$25.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$26.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$26.class
+new file mode 100644
+index 0000000..75916cb
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$26.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$27.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$27.class
+new file mode 100644
+index 0000000..346b2da
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$27.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$28.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$28.class
+new file mode 100644
+index 0000000..27ddcf5
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$28.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$29.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$29.class
+new file mode 100644
+index 0000000..c705238
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$29.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$3.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$3.class
+new file mode 100644
+index 0000000..4f64f01
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$3.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$30.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$30.class
+new file mode 100644
+index 0000000..426a9e0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$30.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$31.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$31.class
+new file mode 100644
+index 0000000..29d696c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$31.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$32.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$32.class
+new file mode 100644
+index 0000000..b8333c5
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$32.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$33.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$33.class
+new file mode 100644
+index 0000000..4ccf076
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$33.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$34.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$34.class
+new file mode 100644
+index 0000000..8a1314b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$34.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$35.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$35.class
+new file mode 100644
+index 0000000..95ca313
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$35.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$36.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$36.class
+new file mode 100644
+index 0000000..d231269
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$36.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$37.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$37.class
+new file mode 100644
+index 0000000..a21ee43
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$37.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$38.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$38.class
+new file mode 100644
+index 0000000..abf518c
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$38.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$39.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$39.class
+new file mode 100644
+index 0000000..092a2ab
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$39.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$4.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$4.class
+new file mode 100644
+index 0000000..debaf2b
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$4.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$40.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$40.class
+new file mode 100644
+index 0000000..aac52eb
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$40.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$41.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$41.class
+new file mode 100644
+index 0000000..07acc83
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$41.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$5.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$5.class
+new file mode 100644
+index 0000000..82669ac
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$5.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$6.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$6.class
+new file mode 100644
+index 0000000..c2aecd0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$6.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$7.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$7.class
+new file mode 100644
+index 0000000..f8c6eb9
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$7.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$9.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$9.class
+new file mode 100644
+index 0000000..0248cbf
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule$9.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule.class
+new file mode 100644
+index 0000000..47efce0
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoExpressNativeModule.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoSurfaceViewManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoSurfaceViewManager.class
+new file mode 100644
+index 0000000..d2660d3
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoSurfaceViewManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoTextureViewManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoTextureViewManager.class
+new file mode 100644
+index 0000000..2bdfa17
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/RCTZegoTextureViewManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomAudioProcessManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomAudioProcessManager.class
+new file mode 100644
+index 0000000..b820ae5
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomAudioProcessManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoCaptureManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoCaptureManager.class
+new file mode 100644
+index 0000000..ad2f9d9
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoCaptureManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoProcessManager$1.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoProcessManager$1.class
+new file mode 100644
+index 0000000..6d14e53
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoProcessManager$1.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoProcessManager.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoProcessManager.class
+new file mode 100644
+index 0000000..8fc78f9
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoCustomVideoProcessManager.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoSurfaceView.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoSurfaceView.class
+new file mode 100644
+index 0000000..5811a9f
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoSurfaceView.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoUtils.class b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoUtils.class
+new file mode 100644
+index 0000000..1dcb716
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/im/zego/reactnative/ZegoUtils.class differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..2caca8a
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/zego-express-engine-reactnative/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..3a37011
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1 @@
++im.zego.reactnative
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/outputs/aar/zego-express-engine-reactnative-debug.aar b/node_modules/zego-express-engine-reactnative/android/build/outputs/aar/zego-express-engine-reactnative-debug.aar
+new file mode 100644
+index 0000000..b089bcd
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/outputs/aar/zego-express-engine-reactnative-debug.aar differ
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/zego-express-engine-reactnative/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..3f5357f
+--- /dev/null
++++ b/node_modules/zego-express-engine-reactnative/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,51 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:1:1-23:12
++INJECTED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:1:1-23:12
++	package
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:2:11-40
++		INJECTED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:1:11-69
++uses-permission#android.permission.FOREGROUND_SERVICE
++ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:4:5-76
++	android:name
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:4:22-74
++application
++ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:6:5-22:19
++activity#im.zego.internal.screencapture.ZegoScreenCaptureManager$ZegoScreenCaptureAssistantActivity
++ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:7:9-12:64
++	android:screenOrientation
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:11:13-49
++	android:exported
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:9:13-37
++	android:configChanges
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:10:13-59
++	android:theme
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:12:13-61
++	android:name
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:8:13-118
++service#im.zego.internal.screencapture.ZegoScreenCaptureService
++ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:13:9-21:19
++	android:enabled
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:15:13-35
++	android:exported
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:16:13-37
++	android:foregroundServiceType
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:17:13-60
++	android:name
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:14:13-83
++intent-filter#action:name:android.intent.action.screenshare
++ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:18:13-20:29
++action#android.intent.action.screenshare
++ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:19:17-76
++	android:name
++		ADDED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml:19:25-73
++uses-sdk
++INJECTED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml
++INJECTED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/rehan/Projects/CureVirtual-2-3e5f771dde82b2caa5812e5154eac43a1c78d747/mobile/node_modules/zego-express-engine-reactnative/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/zego-express-engine-reactnative/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/zego-express-engine-reactnative/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..0b22e84
+Binary files /dev/null and b/node_modules/zego-express-engine-reactnative/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/zego-express-engine-reactnative/lib/impl/ZegoExpressEngineImpl.js b/node_modules/zego-express-engine-reactnative/lib/impl/ZegoExpressEngineImpl.js
+index 08b3dd1..466857d 100644
+--- a/node_modules/zego-express-engine-reactnative/lib/impl/ZegoExpressEngineImpl.js
++++ b/node_modules/zego-express-engine-reactnative/lib/impl/ZegoExpressEngineImpl.js
+@@ -2,8 +2,8 @@
+ import { NativeModules, NativeEventEmitter } from 'react-native'
+ import * as zego from '../ZegoExpressDefines'
+ const { ZegoExpressNativeModule } = NativeModules
+-const Prefix = ZegoExpressNativeModule.prefix
+-const ZegoEvent = new NativeEventEmitter(ZegoExpressNativeModule)
++const Prefix = ZegoExpressNativeModule?.prefix || ''
++const ZegoEvent = ZegoExpressNativeModule ? new NativeEventEmitter(ZegoExpressNativeModule) : null
+ let engine
+ export class ZegoExpressEngineImpl {
+   static _listeners = new Map()
