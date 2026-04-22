@@ -292,7 +292,7 @@ export default function Home() {
           </div>
           <div className="lg:w-1/2 w-full">
             <img
-              src="/images/about.jpeg"
+              src="/dist/images/about.jpeg"
               className="rounded-[2.5rem] md:rounded-[3.5rem] shadow-2xl border border-[var(--border)] w-full object-cover h-[400px] md:h-[600px] hover:scale-[1.02] transition-transform duration-700"
               alt="Modern Hospital"
             />
