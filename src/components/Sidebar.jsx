@@ -98,7 +98,7 @@ export default function Sidebar({ role: propRole, isMobileMenuOpen, setIsMobileM
       {isMobileMenuOpen && (
         <div className="fixed inset-0 bg-black/40 z-[55] lg:hidden backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
       )}
-      <aside className={`h-screen border-r border-outline-variant/30 transition-all duration-500 ease-in-out flex flex-col z-[60] bg-surface-container-lowest fixed lg:sticky top-0 left-0 ${open ? "w-72" : "w-24"} ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+      <aside className={`h-screen border-r border-[var(--border)] transition-all duration-500 ease-in-out flex flex-col z-[60] bg-[var(--bg-glass)] backdrop-blur-3xl fixed lg:sticky top-0 left-0 ${open ? "w-72" : "w-24"} ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         <div className="p-6 mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="bg-primary/10 p-2 rounded-2xl cursor-pointer" onClick={() => setOpen(!open)}>

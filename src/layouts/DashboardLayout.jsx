@@ -12,7 +12,7 @@ export default function DashboardLayout({ children, role, user }) {
   const userAvatar = user?.avatar_url || localStorage.getItem("userAvatar");
 
   return (
-    <div className={`flex min-h-screen bg-background transition-colors duration-500 ${theme}`}>
+    <div className={`flex min-h-screen bg-transparent transition-colors duration-500 ${theme}`}>
       {/* Sidebar - Hidden on mobile for Patients but potentially visible for others */}
       <Sidebar
         role={role}

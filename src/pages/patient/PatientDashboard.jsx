@@ -122,7 +122,7 @@ export default function PatientDashboard() {
 
           {/* Side Column: Quick Actions & Promo */}
           <div className="lg:col-span-4 space-y-8">
-            <div className="card-premium h-full flex flex-col justify-between bg-gradient-to-br from-primary to-primary-container text-white border-none shadow-2xl shadow-primary/20">
+            <div className="card-premium h-full flex flex-col justify-between bg-gradient-to-br from-[var(--brand-blue)] via-[var(--brand-purple)] to-[var(--brand-blue)] bg-[length:200%_200%] animate-gradient text-white border-none shadow-2xl shadow-blue-500/20">
               <div className="space-y-4 text-center">
                 <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
                   <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
@@ -148,10 +148,10 @@ export default function PatientDashboard() {
 
 function StatsCard({ icon, value, label, sub, color }) {
   const colorMap = {
-    primary: "bg-primary-container/10 text-primary",
-    secondary: "bg-secondary-container/10 text-secondary",
-    tertiary: "bg-tertiary-fixed/30 text-tertiary",
-    error: "bg-error-container/30 text-error"
+    primary: "bg-[var(--brand-blue)]/10 text-[var(--brand-blue)]",
+    secondary: "bg-[var(--brand-green)]/10 text-[var(--brand-green)]",
+    tertiary: "bg-[var(--brand-purple)]/10 text-[var(--brand-purple)]",
+    error: "bg-red-500/10 text-red-500"
   };
 
   return (
