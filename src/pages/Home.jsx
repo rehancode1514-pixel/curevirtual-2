@@ -150,8 +150,8 @@ export default function Home() {
 
         <div className="page-container grid md:grid-cols-2 gap-10 md:gap-12 items-center">
           <div className="text-center md:text-left space-y-6 md:space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-[var(--border)] text-[var(--brand-orange)] text-[10px] font-black uppercase tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-700 mx-auto md:mx-0">
-              <span className="h-2 w-2 rounded-full bg-[var(--brand-orange)] animate-pulse"></span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-[var(--border)] text-[var(--brand-purple)] text-[10px] font-black uppercase tracking-[0.2em] animate-in fade-in slide-in-from-bottom-4 duration-700 mx-auto md:mx-0">
+              <span className="h-2 w-2 rounded-full bg-[var(--brand-purple)] animate-pulse"></span>
               Online Healthcare
             </div>
 
@@ -160,7 +160,7 @@ export default function Home() {
                 CURE <br className="hidden lg:block" />
                 <span className="text-gradient">VIRTUAL</span>
               </h1>
-              <p className="text-lg sm:text-xl md:text-2xl font-black text-[var(--brand-orange)] tracking-[0.05em] uppercase italic opacity-90">
+              <p className="text-lg sm:text-xl md:text-2xl font-black text-[var(--brand-purple)] tracking-[0.05em] uppercase italic opacity-90">
                 Healthcare Simplified to You
               </p>
             </div>
@@ -228,7 +228,7 @@ export default function Home() {
       <section id="features" className="py-20 md:py-24 relative bg-[var(--bg-main)]">
         <div className="page-container">
           <div className="text-center mb-12 md:mb-20 space-y-4 md:space-y-6">
-            <h2 className="text-xs font-black text-[var(--brand-orange)] uppercase tracking-[0.4em] animate-pulse">
+            <h2 className="text-xs font-black text-[var(--brand-purple)] uppercase tracking-[0.4em] animate-pulse">
               Our Capabilities
             </h2>
             <h3 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-none">
@@ -249,10 +249,10 @@ export default function Home() {
               color="blue"
             />
             <FeatureCard
-              icon={<FaVideo className="text-[var(--brand-orange)]" />}
+              icon={<FaVideo className="text-[var(--brand-purple)]" />}
               title="HD Consult"
               text="Encrypted, crystal-clear video calls for deep-dive medical sessions."
-              color="orange"
+              color="purple"
             />
           </div>
         </div>
@@ -328,7 +328,7 @@ export default function Home() {
             <a href="#about" className="hover:text-[var(--brand-blue)] transition-colors">
               About Us
             </a>
-            <a href="#contact" className="hover:text-[var(--brand-orange)] transition-colors">
+            <a href="#contact" className="hover:text-[var(--brand-purple)] transition-colors">
               Contact
             </a>
           </div>
@@ -353,7 +353,7 @@ function FeatureCard({ icon, title, text, color }) {
   const dynamicColor = {
     green: "hover:border-[var(--brand-green)] hover:bg-[var(--brand-green)]/5",
     blue: "hover:border-[var(--brand-blue)] hover:bg-[var(--brand-blue)]/5",
-    orange: "hover:border-[var(--brand-orange)] hover:bg-[var(--brand-orange)]/5",
+    purple: "hover:border-[var(--brand-purple)] hover:bg-[var(--brand-purple)]/5",
   }[color];
 
   return (
