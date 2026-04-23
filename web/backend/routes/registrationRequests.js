@@ -82,14 +82,17 @@ async function enrichWithFreshUrl(record) {
    ============================================================ */
 router.post(
   '/submit',
-  verifyToken,
   submitRateLimit,
   upload.single('licenseFile'),
   async (req, res) => {
     try {
-      const { role, submittedData } = req.body;
+      const { role, submittedData, userId: bodyUserId } = req.body;
       const licenseFile = req.file;
-      const userId = req.user.id;
+      const userId = bodyUserId || req.user?.id;
+
+      if (!userId) {
+        return res.status(400).json({ error: 'User ID is required for submission.' });
+      }
 
       // ── 1. Validate inputs ──────────────────────────────────────────────────
       if (!licenseFile) {

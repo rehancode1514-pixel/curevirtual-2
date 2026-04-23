@@ -19,9 +19,23 @@ const api = axios.create({
    ============================================================ */
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // List of public endpoints that SHOULD NOT have a token attached
+    // especially if the token might be expired (e.g., during registration)
+    const publicEndpoints = [
+      "/auth/register",
+      "/auth/verify-otp",
+      "/auth/request-otp-login",
+      "/auth/verify-otp-login",
+      "/registration-requests/submit"
+    ];
+
+    const isPublic = publicEndpoints.some(endpoint => config.url.includes(endpoint));
+
+    if (!isPublic) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
@@ -44,8 +58,22 @@ api.interceptors.response.use(
 
     // Handle expired tokens globally
     if (error.response.status === 401) {
-      console.warn("🔒 Token expired — preserving auth data");
-      // Do not clear localStorage or redirect; allow app to handle it gracefully
+      // Check if it's an actual expiration error
+      const isExpired = error.response.data?.isExpired || error.response.data?.message?.includes("expired");
+      
+      if (isExpired) {
+        console.warn("🔒 Token expired — clearing auth data and redirecting");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        
+        // Redirect to login only if not already on a public page
+        const publicPages = ["/login", "/register", "/verify-otp"];
+        if (!publicPages.includes(window.location.pathname)) {
+          window.location.href = "/login?expired=true";
+        }
+      } else {
+        console.warn("🔒 Unauthorized access — preserving auth data for retry");
+      }
     }
 
     return Promise.reject(error);

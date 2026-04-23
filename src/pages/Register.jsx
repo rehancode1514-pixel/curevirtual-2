@@ -134,10 +134,10 @@ export default function Register() {
         setIsUploading(true);
         toast.info("Setting up your account...");
 
-        const token = localStorage.getItem("token") || data.session?.access_token;
         const formData = new FormData();
         formData.append("licenseFile", licenseFile);
         formData.append("role", form.role);
+        formData.append("userId", data.user.id); // Explicitly pass userId
         formData.append("submittedData", JSON.stringify({
           firstName: toTitleCase(form.firstName.trim()),
           middleName: form.middleName ? toTitleCase(form.middleName.trim()) : null,
@@ -151,7 +151,7 @@ export default function Register() {
         await api.post("/registration-requests/submit", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            // No Authorization header needed here anymore as endpoint is public
           },
         });
 
