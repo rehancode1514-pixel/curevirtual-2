@@ -39,14 +39,18 @@ export const SocketProvider = ({ children }) => {
     // Initialize socket connection with JWT auth
     const newSocket = io(backendUrl, {
       withCredentials: true,
-      transports: ["websocket"], // 👈 FORCE WEBSOCKET
+      // Use polling as fallback during Railway cold starts.
+      // Socket.io tries WebSocket first, falls back to long-polling if the
+      // server isn't fully awake yet, then auto-upgrades once stable.
+      transports: ["websocket", "polling"],
       auth: {
         token: token, // JWT authentication
       },
       reconnection: true,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
-      reconnectionAttempts: maxReconnectAttempts,
+      reconnectionDelay: 2000,
+      reconnectionDelayMax: 10000,
+      reconnectionAttempts: 10,
+      timeout: 20000,
     });
 
     // Connection successful
