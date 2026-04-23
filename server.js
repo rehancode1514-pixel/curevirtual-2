@@ -30,8 +30,25 @@ const allowedOrigins = [
 
 const server = http.createServer(app);
 const io = new Server(server, {
+  transports: ["polling", "websocket"], // Polling first for better compatibility, upgrade to websocket
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  allowEIO3: true,
   cors: {
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // allow requests with no origin (like mobile apps or curl requests)
+      // also allow literal "null" origin which is common in some mobile environments
+      if (!origin || origin === "null") return callback(null, true);
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        allowedOrigins.some((o) => origin.startsWith(o))
+      ) {
+        callback(null, true);
+      } else {
+        console.warn(`[Socket CORS] Origin blocked: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -103,18 +120,19 @@ app.use("/api/videocall", videocallRoutes);
 app.use("/api/otp", otpRoutes);
 
 // ----------------------------
-// ✅ SUPERADMIN ROUTES
+// ✅ SUPERADMIN / SHARED ADMIN ROUTES
 // ----------------------------
+const reportsRoutes = require("./routes/reports");
+app.use("/api/superadmin/reports", reportsRoutes);
+
 const superadminRoutes = require("./routes/superadmin");
 const settingsRoutes = require("./routes/settings");
-const reportsRoutes = require("./routes/reports");
 const logsRoutes = require("./routes/logs");
 const activityLogsRoutes = require("./routes/activityLogs");
 
 app.use("/api/superadmin", superadminRoutes);
 app.use("/api/superadmin/settings", settingsRoutes);
 app.use("/api/settings", settingsRoutes);
-app.use("/api/superadmin/reports", reportsRoutes);
 app.use("/api/superadmin/logs", logsRoutes);
 app.use("/api/superadmin/activity-logs", activityLogsRoutes);
 
@@ -227,19 +245,30 @@ app.get("/api/doctor/test", (req, res) => {
 
 // ✅ Global Error Handler (Must be last)
 app.use((err, req, res, _next) => {
-  console.error("❌ Unhandled Error:", err);
+  // 3. Structured Error Logging
+  console.error("❌ [Global Error Handler] Unhandled exception:", {
+    message: err.message,
+    stack: err.stack,
+    context: {
+      method: req.method,
+      url: req.originalUrl,
+      userId: req.user?.id,
+      timestamp: new Date().toISOString()
+    }
+  });
 
   // Custom response for CORS or other well-known errors
   if (err.message === "Not allowed by CORS") {
-    return res.status(403).json({ success: false, message: "CORS policy violation" });
+    return res.status(403).json({ success: false, message: "Security violation: Origin not allowed by CORS policy." });
   }
 
   res.status(err.status || 500).json({
     success: false,
     message:
       process.env.NODE_ENV === "production"
-        ? "Internal server error"
+        ? "An internal server error occurred"
         : err.message || "An unexpected error occurred",
+    errorId: Date.now() // Simple way to correlate client reports with server logs
   });
 });
 
