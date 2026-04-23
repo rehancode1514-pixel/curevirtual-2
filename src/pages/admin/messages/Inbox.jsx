@@ -23,7 +23,7 @@ export default function Inbox() {
     try {
       // Use unified messaging endpoint
       const res = await api.get("/messages/inbox");
-      setMessages(res.data || []);
+      setMessages(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Failed to fetch inbox:', err);
     } finally {
