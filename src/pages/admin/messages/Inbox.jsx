@@ -21,9 +21,15 @@ export default function Inbox() {
   const fetchInbox = useCallback(async () => {
     if (!userId) return;
     try {
-      // Use unified messaging endpoint
+      // Backend returns { data: [...] } — extract the nested array
       const res = await api.get("/messages/inbox");
-      setMessages(Array.isArray(res.data) ? res.data : []);
+      const payload = res.data;
+      const messageList = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+          ? payload.data
+          : [];
+      setMessages(messageList);
     } catch (err) {
       console.error('Failed to fetch inbox:', err);
     } finally {
@@ -31,11 +37,12 @@ export default function Inbox() {
     }
 
     try {
-      // Use updated bulk read endpoint
-      await api.post('/messages/mark-read', { userId, folder: 'inbox' });
+      // Mark all inbox messages as read for this user
+      await api.post('/messages/mark-read', { conversationId: null, userId });
       window.dispatchEvent(new CustomEvent('messages:read'));
     } catch (err) {
-      console.error('Failed to mark messages as read:', err);
+      // Non-fatal — unread count may be stale but inbox still loads
+      console.warn('mark-read failed (non-fatal):', err?.response?.status, err?.message);
     }
   }, [userId]);
 

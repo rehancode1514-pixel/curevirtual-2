@@ -200,6 +200,35 @@ router.post(
 );
 
 /* ============================================================
+   GET /api/registration-requests/stats
+   Admin only. Quick stats counts.
+   ⚠️  MUST be defined before GET /:id and before GET / to ensure
+       Express does not treat "stats" as a dynamic :id segment.
+   ============================================================ */
+router.get('/stats', verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [pending, approvedToday, totalRejected, totalDoctors, totalPharmacies] =
+      await Promise.all([
+        prisma.registrationRequest.count({ where: { status: 'PENDING' } }),
+        prisma.registrationRequest.count({
+          where: { status: 'APPROVED', reviewedAt: { gte: today } },
+        }),
+        prisma.registrationRequest.count({ where: { status: 'REJECTED' } }),
+        prisma.registrationRequest.count({ where: { role: 'DOCTOR' } }),
+        prisma.registrationRequest.count({ where: { role: 'PHARMACY' } }),
+      ]);
+
+    return res.json({ pending, approvedToday, totalRejected, totalDoctors, totalPharmacies });
+  } catch (err) {
+    console.error('❌ GET registration stats error:', err);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
+/* ============================================================
    GET /api/registration-requests
    Admin only. Paginated list of all requests.
    Query: ?status=PENDING|APPROVED|REJECTED&role=DOCTOR|PHARMACY&page=1&limit=10
@@ -255,33 +284,6 @@ router.get('/', verifyToken, requireAdmin, async (req, res) => {
     });
   } catch (err) {
     console.error('❌ GET registration requests error:', err);
-    return res.status(500).json({ error: 'Internal server error.' });
-  }
-});
-
-/* ============================================================
-   GET /api/registration-requests/stats
-   Admin only. Quick stats counts.
-   ============================================================ */
-router.get('/stats', verifyToken, requireAdmin, async (req, res) => {
-  try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const [pending, approvedToday, totalRejected, totalDoctors, totalPharmacies] =
-      await Promise.all([
-        prisma.registrationRequest.count({ where: { status: 'PENDING' } }),
-        prisma.registrationRequest.count({
-          where: { status: 'APPROVED', reviewedAt: { gte: today } },
-        }),
-        prisma.registrationRequest.count({ where: { status: 'REJECTED' } }),
-        prisma.registrationRequest.count({ where: { role: 'DOCTOR' } }),
-        prisma.registrationRequest.count({ where: { role: 'PHARMACY' } }),
-      ]);
-
-    return res.json({ pending, approvedToday, totalRejected, totalDoctors, totalPharmacies });
-  } catch (err) {
-    console.error('❌ GET registration stats error:', err);
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });

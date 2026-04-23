@@ -186,6 +186,45 @@ router.post("/send", verifyToken, async (req, res) => {
   }
 });
 
+// POST /api/messages/mark-read
+// Marks messages as read by conversationId (bulk) or by specific messageIds.
+// Both fields are optional — if neither is provided the call is a no-op (200).
+router.post("/mark-read", verifyToken, async (req, res) => {
+  try {
+    const { conversationId, messageIds } = req.body;
+    const userId = req.user.id;
+
+    if (conversationId) {
+      // Mark all unread messages in this conversation where the current user is the receiver
+      await prisma.message.updateMany({
+        where: {
+          conversationId,
+          receiverId: userId,
+          readAt: null, // Only update truly unread messages (null = unread per schema)
+        },
+        data: { readAt: new Date() },
+      });
+    }
+
+    if (Array.isArray(messageIds) && messageIds.length > 0) {
+      // Mark specific messages as read — only if the current user is the receiver
+      await prisma.message.updateMany({
+        where: {
+          id: { in: messageIds },
+          receiverId: userId,
+          readAt: null,
+        },
+        data: { readAt: new Date() },
+      });
+    }
+
+    return res.json({ success: true, message: "Messages marked as read" });
+  } catch (err) {
+    console.error("❌ mark-read error:", err);
+    return res.status(500).json({ error: "Failed to mark messages as read" });
+  }
+});
+
 // Existing Folder-based routes (Legacy support)
 router.get("/folder/:folder", verifyToken, async (req, res) => {
   return res.status(200).json({ data: [], message: "Use /inbox or /history for unified messaging" });

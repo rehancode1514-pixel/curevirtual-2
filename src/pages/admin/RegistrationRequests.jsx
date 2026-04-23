@@ -1,9 +1,19 @@
 // FILE: src/pages/admin/RegistrationRequests.jsx
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
-import { 
-  FiCheck, FiX, FiEye, FiRefreshCw, FiDownload, FiSearch, 
-  FiFilter, FiShield, FiFileText, FiCalendar, FiUser
+import {
+  FiCheck,
+  FiX,
+  FiEye,
+  FiRefreshCw,
+  FiDownload,
+  FiSearch,
+  FiFilter,
+  FiShield,
+  FiFileText,
+  FiCalendar,
+  FiUser,
+  FiArrowRight,
 } from "react-icons/fi";
 import { FaUserMd, FaClinicMedical } from "react-icons/fa";
 import { useSocket } from "../../context/useSocket";
@@ -45,10 +55,15 @@ export default function RegistrationRequests() {
     try {
       const { data } = await api.get("/registration-requests/stats");
       setStats(data);
-    } catch { /* silent */ }
+    } catch {
+      /* silent */
+    }
   }, []);
 
-  useEffect(() => { fetchRequests(); fetchStats(); }, [fetchRequests, fetchStats]);
+  useEffect(() => {
+    fetchRequests();
+    fetchStats();
+  }, [fetchRequests, fetchStats]);
 
   useEffect(() => {
     if (!socket) return;
@@ -68,7 +83,9 @@ export default function RegistrationRequests() {
       setSelected(data);
       setRejecting(false);
       setRejectionReason("");
-    } catch { toast.error("Failed to load details."); }
+    } catch {
+      toast.error("Failed to load details.");
+    }
   };
 
   const submitReview = async (action) => {
@@ -94,12 +111,12 @@ export default function RegistrationRequests() {
   };
 
   const submittedData = selected?.submittedData || {};
-  const isPdf = selected?.licenseImageUrl?.includes(".pdf") || selected?.licenseFilePath?.endsWith(".pdf");
+  const isPdf =
+    selected?.licenseImageUrl?.includes(".pdf") || selected?.licenseFilePath?.endsWith(".pdf");
 
   return (
     <DashboardLayout role={role} user={{ name: userName }}>
       <div className="space-y-8 pb-10">
-        
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-1">
@@ -111,8 +128,13 @@ export default function RegistrationRequests() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => { fetchRequests(); fetchStats(); }}
-              className="btn btn-glass !py-3 !px-6 text-[10px] text-[var(--text-main)] flex items-center gap-2">
+            <button
+              onClick={() => {
+                fetchRequests();
+                fetchStats();
+              }}
+              className="btn btn-glass !py-3 !px-6 text-[10px] text-[var(--text-main)] flex items-center gap-2"
+            >
               <FiRefreshCw className={loading ? "animate-spin" : ""} /> Sync Requests
             </button>
           </div>
@@ -120,25 +142,58 @@ export default function RegistrationRequests() {
 
         {/* Operational Statistics */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="Pending Review" value={stats.pending} icon={<FiFileText />} color="var(--brand-orange)" />
-          <StatCard label="Approved Today" value={stats.approvedToday} icon={<FiCheck />} color="var(--brand-green)" />
-          <StatCard label="Total Rejected" value={stats.totalRejected} icon={<FiX />} color="var(--brand-red, #ef4444)" />
-          <StatCard label="Live Providers" value={stats.totalDoctors ? `${stats.totalDoctors + (stats.totalPharmacies || 0)}` : "—"} icon={<FiUser />} color="var(--brand-blue)" />
+          <StatCard
+            label="Pending Review"
+            value={stats.pending}
+            icon={<FiFileText />}
+            color="var(--brand-orange)"
+          />
+          <StatCard
+            label="Approved Today"
+            value={stats.approvedToday}
+            icon={<FiCheck />}
+            color="var(--brand-green)"
+          />
+          <StatCard
+            label="Total Rejected"
+            value={stats.totalRejected}
+            icon={<FiX />}
+            color="var(--brand-red, #ef4444)"
+          />
+          <StatCard
+            label="Live Providers"
+            value={
+              stats.totalDoctors ? `${stats.totalDoctors + (stats.totalPharmacies || 0)}` : "—"
+            }
+            icon={<FiUser />}
+            color="var(--brand-blue)"
+          />
         </div>
 
         {/* Filtering and Search */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-            {[["PENDING", "Pending"], ["APPROVED", "Approved"], ["REJECTED", "Rejected"], ["", "History"]].map(([val, label]) => (
-              <button key={label} onClick={() => setFilters(f => ({ ...f, status: val, page: 1 }))}
-                className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filters.status === val ? "bg-[var(--brand-blue)] text-white shadow-lg" : "bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)] hover:border-[var(--brand-blue)]/50"}`}>
+            {[
+              ["PENDING", "Pending"],
+              ["APPROVED", "Approved"],
+              ["REJECTED", "Rejected"],
+              ["", "History"],
+            ].map(([val, label]) => (
+              <button
+                key={label}
+                onClick={() => setFilters((f) => ({ ...f, status: val, page: 1 }))}
+                className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filters.status === val ? "bg-[var(--brand-blue)] text-white shadow-lg" : "bg-[var(--bg-card)] text-[var(--text-muted)] border border-[var(--border)] hover:border-[var(--brand-blue)]/50"}`}
+              >
                 {label}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <select value={filters.role} onChange={(e) => setFilters(f => ({ ...f, role: e.target.value, page: 1 }))}
-              className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-[var(--text-main)] outline-none focus:border-[var(--brand-blue)] transition-all">
+            <select
+              value={filters.role}
+              onChange={(e) => setFilters((f) => ({ ...f, role: e.target.value, page: 1 }))}
+              className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-[var(--text-main)] outline-none focus:border-[var(--brand-blue)] transition-all"
+            >
               <option value="">All Roles</option>
               <option value="DOCTOR">Doctors</option>
               <option value="PHARMACY">Pharmacies</option>
@@ -152,50 +207,81 @@ export default function RegistrationRequests() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-[var(--bg-main)]/50 border-b border-[var(--border)]">
-                  {["Provider", "Role", "Submission Date", "Status", "Action"].map(h => (
-                    <th key={h} className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">{h}</th>
+                  {["Provider", "Role", "Submission Date", "Status", "Action"].map((h) => (
+                    <th
+                      key={h}
+                      className="px-6 py-5 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]"
+                    >
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
                 {loading ? (
-                  <tr><td colSpan={5} className="py-20 text-center"><div className="h-8 w-8 border-2 border-[var(--brand-blue)] border-t-transparent rounded-full animate-spin mx-auto" /></td></tr>
+                  <tr>
+                    <td colSpan={5} className="py-20 text-center">
+                      <div className="h-8 w-8 border-2 border-[var(--brand-blue)] border-t-transparent rounded-full animate-spin mx-auto" />
+                    </td>
+                  </tr>
                 ) : requests.length === 0 ? (
-                  <tr><td colSpan={5} className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">No verification requests found</td></tr>
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="py-20 text-center text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]"
+                    >
+                      No verification requests found
+                    </td>
+                  </tr>
                 ) : (
-                  requests.map(req => (
+                  requests.map((req) => (
                     <tr key={req.id} className="hover:bg-[var(--bg-main)]/30 transition-all group">
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-xl bg-[var(--bg-main)] flex items-center justify-center text-[var(--brand-blue)] border border-[var(--border)] font-black uppercase">
-                            {req.user?.firstName?.[0]}{req.user?.lastName?.[0]}
+                            {req.user?.firstName?.[0]}
+                            {req.user?.lastName?.[0]}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-[var(--text-main)]">{req.user?.firstName} {req.user?.lastName}</p>
-                            <p className="text-[10px] font-bold text-[var(--text-muted)]">{req.user?.email}</p>
+                            <p className="text-sm font-black text-[var(--text-main)]">
+                              {req.user?.firstName} {req.user?.lastName}
+                            </p>
+                            <p className="text-[10px] font-bold text-[var(--text-muted)]">
+                              {req.user?.email}
+                            </p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <span className={`px-3 py-1 rounded-lg text-[9px] font-black tracking-widest uppercase ${req.role === "DOCTOR" ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" : "bg-purple-500/10 text-purple-400 border border-purple-500/20"}`}>
+                        <span
+                          className={`px-3 py-1 rounded-lg text-[9px] font-black tracking-widest uppercase ${req.role === "DOCTOR" ? "bg-blue-500/10 text-blue-400 border border-blue-500/20" : "bg-purple-500/10 text-purple-400 border border-purple-500/20"}`}
+                        >
                           {req.role}
                         </span>
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2 text-[var(--text-soft)]">
                           <FiCalendar className="text-[10px]" />
-                          <span className="text-xs font-bold">{new Date(req.createdAt).toLocaleDateString()}</span>
+                          <span className="text-xs font-bold">
+                            {new Date(req.createdAt).toLocaleDateString()}
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
-                          <div className={`h-1.5 w-1.5 rounded-full ${req.status === "PENDING" ? "bg-amber-400 animate-pulse" : req.status === "APPROVED" ? "bg-emerald-400" : "bg-red-400"}`} />
-                          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-main)]">{req.status}</span>
+                          <div
+                            className={`h-1.5 w-1.5 rounded-full ${req.status === "PENDING" ? "bg-amber-400 animate-pulse" : req.status === "APPROVED" ? "bg-emerald-400" : "bg-red-400"}`}
+                          />
+                          <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-main)]">
+                            {req.status}
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <button onClick={() => openDetail(req)}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-[var(--brand-blue)] bg-[var(--brand-blue)]/5 border border-[var(--brand-blue)]/20 hover:bg-[var(--brand-blue)] hover:text-white transition-all">
+                        <button
+                          onClick={() => openDetail(req)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-[var(--brand-blue)] bg-[var(--brand-blue)]/5 border border-[var(--brand-blue)]/20 hover:bg-[var(--brand-blue)] hover:text-white transition-all"
+                        >
                           <FiEye /> Review
                         </button>
                       </td>
@@ -205,7 +291,7 @@ export default function RegistrationRequests() {
               </tbody>
             </table>
           </div>
-          
+
           {/* Pagination */}
           {meta.totalPages > 1 && (
             <div className="px-6 py-4 bg-[var(--bg-main)]/30 flex items-center justify-between">
@@ -213,13 +299,21 @@ export default function RegistrationRequests() {
                 Showing {requests.length} of {meta.total} applications
               </p>
               <div className="flex items-center gap-2">
-                <button disabled={filters.page <= 1} onClick={() => setFilters(f => ({ ...f, page: f.page - 1 }))}
-                  className="p-2 rounded-xl border border-[var(--border)] text-[var(--text-muted)] disabled:opacity-30 hover:bg-[var(--bg-card)]">
+                <button
+                  disabled={filters.page <= 1}
+                  onClick={() => setFilters((f) => ({ ...f, page: f.page - 1 }))}
+                  className="p-2 rounded-xl border border-[var(--border)] text-[var(--text-muted)] disabled:opacity-30 hover:bg-[var(--bg-card)]"
+                >
                   <FiArrowRight className="rotate-180" />
                 </button>
-                <span className="text-[10px] font-black text-[var(--text-main)] px-4">PAGE {filters.page}</span>
-                <button disabled={filters.page >= meta.totalPages} onClick={() => setFilters(f => ({ ...f, page: f.page + 1 }))}
-                  className="p-2 rounded-xl border border-[var(--border)] text-[var(--text-muted)] disabled:opacity-30 hover:bg-[var(--bg-card)]">
+                <span className="text-[10px] font-black text-[var(--text-main)] px-4">
+                  PAGE {filters.page}
+                </span>
+                <button
+                  disabled={filters.page >= meta.totalPages}
+                  onClick={() => setFilters((f) => ({ ...f, page: f.page + 1 }))}
+                  className="p-2 rounded-xl border border-[var(--border)] text-[var(--text-muted)] disabled:opacity-30 hover:bg-[var(--bg-card)]"
+                >
                   <FiArrowRight />
                 </button>
               </div>
@@ -247,7 +341,10 @@ export default function RegistrationRequests() {
                   </p>
                 </div>
               </div>
-              <button onClick={() => setSelected(null)} className="h-10 w-10 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-main)] transition-all">
+              <button
+                onClick={() => setSelected(null)}
+                className="h-10 w-10 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-main)] transition-all"
+              >
                 <FiX className="text-xl" />
               </button>
             </div>
@@ -257,11 +354,28 @@ export default function RegistrationRequests() {
               <div className="p-8 space-y-6 border-r border-[var(--border)]">
                 <SectionLabel label="Identity Information" />
                 <div className="grid grid-cols-2 gap-y-4">
-                  <DataPoint label="Full Name" value={`${selected.user?.firstName} ${selected.user?.lastName}`} />
+                  <DataPoint
+                    label="Full Name"
+                    value={`${selected.user?.firstName} ${selected.user?.lastName}`}
+                  />
                   <DataPoint label="Email Address" value={selected.user?.email} />
-                  {Object.entries(submittedData).filter(([k]) => !["password","confirmPassword","firstName","lastName","email"].includes(k)).map(([key, val]) => val && (
-                    <DataPoint key={key} label={key.replace(/([A-Z])/g, ' $1')} value={String(val)} />
-                  ))}
+                  {Object.entries(submittedData)
+                    .filter(
+                      ([k]) =>
+                        !["password", "confirmPassword", "firstName", "lastName", "email"].includes(
+                          k
+                        )
+                    )
+                    .map(
+                      ([key, val]) =>
+                        val && (
+                          <DataPoint
+                            key={key}
+                            label={key.replace(/([A-Z])/g, " $1")}
+                            value={String(val)}
+                          />
+                        )
+                    )}
                 </div>
               </div>
 
@@ -274,19 +388,34 @@ export default function RegistrationRequests() {
                       {isPdf ? (
                         <div className="h-48 flex flex-col items-center justify-center gap-3 text-[var(--text-muted)]">
                           <FiShield className="text-4xl text-[var(--brand-blue)]" />
-                          <p className="text-[10px] font-black uppercase tracking-widest">PDF Documentation</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest">
+                            PDF Documentation
+                          </p>
                         </div>
                       ) : (
-                        <img src={selected.licenseImageUrl} alt="License" className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <img
+                          src={selected.licenseImageUrl}
+                          alt="License"
+                          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
                       )}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                         <a href={selected.licenseImageUrl} target="_blank" rel="noreferrer" className="btn btn-primary !py-2 !px-4 text-[9px]">
-                            <FiDownload /> View Full Size
-                         </a>
+                        <a
+                          href={selected.licenseImageUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn btn-primary !py-2 !px-4 text-[9px]"
+                        >
+                          <FiDownload /> View Full Size
+                        </a>
                       </div>
                     </div>
-                    <a href={selected.licenseImageUrl} target="_blank" rel="noreferrer"
-                      className="w-full btn btn-glass !py-3 text-[10px] text-[var(--text-main)]">
+                    <a
+                      href={selected.licenseImageUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full btn btn-glass !py-3 text-[10px] text-[var(--text-main)]"
+                    >
                       <FiEye /> Inspect Original Document
                     </a>
                   </div>
@@ -303,25 +432,50 @@ export default function RegistrationRequests() {
               {selected.status === "PENDING" ? (
                 !rejecting ? (
                   <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => submitReview("APPROVED")} disabled={actionLoading}
-                      className="btn btn-secondary !py-4 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] shadow-emerald-500/10">
-                      {actionLoading ? <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <><FiCheck /> Approve Provider</>}
+                    <button
+                      onClick={() => submitReview("APPROVED")}
+                      disabled={actionLoading}
+                      className="btn btn-secondary !py-4 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] shadow-emerald-500/10"
+                    >
+                      {actionLoading ? (
+                        <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <>
+                          <FiCheck /> Approve Provider
+                        </>
+                      )}
                     </button>
-                    <button onClick={() => setRejecting(true)}
-                      className="btn btn-glass !py-4 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] text-red-400 hover:bg-red-500/5">
+                    <button
+                      onClick={() => setRejecting(true)}
+                      className="btn btn-glass !py-4 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] text-red-400 hover:bg-red-500/5"
+                    >
                       <FiX /> Reject Application
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-4 animate-in slide-in-from-bottom-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.4em] text-red-400">Specify Rejection Reason</label>
-                    <textarea value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} rows={3}
+                    <label className="text-[10px] font-black uppercase tracking-[0.4em] text-red-400">
+                      Specify Rejection Reason
+                    </label>
+                    <textarea
+                      value={rejectionReason}
+                      onChange={(e) => setRejectionReason(e.target.value)}
+                      rows={3}
                       placeholder="e.g., Image too blurry, expired license, name mismatch..."
-                      className="w-full bg-[var(--bg-main)] border border-red-500/30 rounded-2xl p-4 text-sm font-bold text-[var(--text-main)] outline-none focus:border-red-500 transition-all shadow-inner" />
+                      className="w-full bg-[var(--bg-main)] border border-red-500/30 rounded-2xl p-4 text-sm font-bold text-[var(--text-main)] outline-none focus:border-red-500 transition-all shadow-inner"
+                    />
                     <div className="flex justify-end gap-3">
-                      <button onClick={() => setRejecting(false)} className="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">Cancel</button>
-                      <button onClick={() => submitReview("REJECTED")} disabled={actionLoading || !rejectionReason.trim()}
-                        className="btn btn-primary !bg-red-500 !py-3 !px-8 text-[10px] uppercase tracking-widest shadow-red-500/20">
+                      <button
+                        onClick={() => setRejecting(false)}
+                        className="px-6 py-3 text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => submitReview("REJECTED")}
+                        disabled={actionLoading || !rejectionReason.trim()}
+                        className="btn btn-primary !bg-red-500 !py-3 !px-8 text-[10px] uppercase tracking-widest shadow-red-500/20"
+                      >
                         {actionLoading ? "..." : "Confirm Rejection"}
                       </button>
                     </div>
@@ -329,9 +483,11 @@ export default function RegistrationRequests() {
                 )
               ) : (
                 <div className="text-center py-2">
-                   <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">
-                     This request was {selected.status.toLowerCase()} by {selected.reviewedBy || 'system'} on {new Date(selected.reviewedAt).toLocaleString()}
-                   </p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">
+                    This request was {selected.status.toLowerCase()} by{" "}
+                    {selected.reviewedBy || "system"} on{" "}
+                    {new Date(selected.reviewedAt).toLocaleString()}
+                  </p>
                 </div>
               )}
             </div>
@@ -346,12 +502,19 @@ function StatCard({ label, value, icon, color }) {
   return (
     <div className="card !p-5 bg-[var(--bg-card)] border-l-4" style={{ borderLeftColor: color }}>
       <div className="flex justify-between items-center">
-        <div className="h-10 w-10 rounded-xl bg-[var(--bg-main)] flex items-center justify-center text-lg text-[var(--text-muted)]" style={{ color: `${color}cc` }}>
+        <div
+          className="h-10 w-10 rounded-xl bg-[var(--bg-main)] flex items-center justify-center text-lg text-[var(--text-muted)]"
+          style={{ color: `${color}cc` }}
+        >
           {icon}
         </div>
         <div className="text-right">
-          <p className="text-2xl font-black text-[var(--text-main)] tracking-tighter">{value ?? 0}</p>
-          <p className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">{label}</p>
+          <p className="text-2xl font-black text-[var(--text-main)] tracking-tighter">
+            {value ?? 0}
+          </p>
+          <p className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+            {label}
+          </p>
         </div>
       </div>
     </div>
@@ -362,7 +525,9 @@ function SectionLabel({ label }) {
   return (
     <div className="flex items-center gap-2 mb-4">
       <div className="h-1 w-4 bg-[var(--brand-blue)] rounded-full" />
-      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">{label}</span>
+      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)]">
+        {label}
+      </span>
     </div>
   );
 }
@@ -370,7 +535,9 @@ function SectionLabel({ label }) {
 function DataPoint({ label, value }) {
   return (
     <div className="space-y-1 overflow-hidden">
-      <p className="text-[8px] font-black uppercase tracking-widest text-[var(--text-muted)]">{label}</p>
+      <p className="text-[8px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+        {label}
+      </p>
       <p className="text-[11px] font-bold text-[var(--text-main)] truncate">{value || "—"}</p>
     </div>
   );
