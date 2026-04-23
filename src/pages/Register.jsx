@@ -150,8 +150,7 @@ export default function Register() {
 
         await api.post("/registration-requests/submit", formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
-            // No Authorization header needed here anymore as endpoint is public
+            // Let Axios set the correct Content-Type with boundary for FormData
           },
         });
 

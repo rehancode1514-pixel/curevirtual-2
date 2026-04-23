@@ -86,6 +86,9 @@ router.post(
   upload.single('licenseFile'),
   async (req, res) => {
     try {
+      console.log('📦 Registration Submit: Received body:', req.body);
+      console.log('📄 Registration Submit: Received file:', req.file ? req.file.originalname : 'NONE');
+      
       const { role, submittedData, userId: bodyUserId } = req.body;
       const licenseFile = req.file;
       const userId = bodyUserId || req.user?.id;
@@ -99,6 +102,7 @@ router.post(
         return res.status(400).json({ error: 'License document file is required.' });
       }
       if (!['DOCTOR', 'PHARMACY'].includes(role)) {
+        console.warn(`⚠️ Registration Submit: Invalid role received: "${role}"`);
         return res.status(400).json({ error: 'role must be DOCTOR or PHARMACY.' });
       }
 
