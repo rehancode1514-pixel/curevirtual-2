@@ -44,6 +44,10 @@ io.use(socketAuth);
 // Initialize Socket Handler
 require("./socket/socketHandler.cjs")(io);
 
+// ✅ Inject io into registration-requests route (must run after socketHandler)
+const registrationRequestsRoute = require("./routes/registrationRequests");
+registrationRequestsRoute.setIo(io);
+
 // ✅ Global Middlewares
 // allowedOrigins is defined above
 
@@ -185,6 +189,9 @@ app.use("/api/pharmacy", pharmacyRoute);
 // SUPPORT ROUTES
 const supportRoutes = require("./routes/support");
 app.use("/api/support", supportRoutes);
+
+// ✅ REGISTRATION APPROVAL WORKFLOW (Doctor & Pharmacy)
+app.use("/api/registration-requests", registrationRequestsRoute);
 
 // ✅ NEW PAYMENTS SYSTEM
 const paymentRoutes = require("./routes/payments");

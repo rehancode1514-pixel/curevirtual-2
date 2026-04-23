@@ -16,6 +16,37 @@ if (!isValidUrl(supabaseUrl) || !supabaseAnonKey) {
   console.error('❌ Supabase configuration is invalid or missing! URL:', supabaseUrl);
 }
 
-export const supabase = (isValidUrl(supabaseUrl) && supabaseAnonKey) 
+export const supabase = (isValidUrl(supabaseUrl) && supabaseAnonKey)
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
+
+/**
+ * Upload a license document to Supabase Storage 'license-documents' bucket.
+ * Returns a 24h signed URL for admin review.
+ * NOTE: This is a client-side helper; the actual production upload path is
+ * handled server-side via /api/registration-requests/submit (multipart).
+ *
+ * @param {File}   file   - Browser File object
+ * @param {string} userId - Authenticated user ID
+ * @param {string} role   - 'DOCTOR' | 'PHARMACY'
+ * @returns {Promise<string>} signedUrl valid for 24 hours
+ */
+export async function uploadLicenseDocument(file, userId, role) {
+  if (!supabase) throw new Error('Supabase client not initialized');
+
+  const ext = file.name.split('.').pop();
+  const fileName = `${role.toLowerCase()}/${userId}/license.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('license-documents')
+    .upload(fileName, file, { upsert: true });
+
+  if (uploadError) throw uploadError;
+
+  const { data: signedData, error: signedError } = await supabase.storage
+    .from('license-documents')
+    .createSignedUrl(fileName, 86400); // 24 hours
+
+  if (signedError) throw signedError;
+  return signedData.signedUrl;
+}

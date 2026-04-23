@@ -35,6 +35,9 @@ module.exports = (io) => {
       });
       console.log(`👤 User online: ${name} (${role}) - Socket: ${socket.id}`);
 
+      // Join personal userId room for direct notifications (e.g., approval status)
+      socket.join(userId);
+
       // Broadcast to all that user is online
       socket.broadcast.emit("user_status", {
         userId,
@@ -42,6 +45,24 @@ module.exports = (io) => {
         name,
         status: "online",
       });
+    });
+
+    // ─── Admin Room ────────────────────────────────────────────────────────────
+    // Admins join a shared room to receive new registration request notifications.
+    // The userId is verified against activeUsers (already authenticated via JWT
+    // at connection time via socketAuth middleware).
+    socket.on("join_admin_room", ({ userId }) => {
+      const user = activeUsers.get(socket.id);
+      if (!user) return;
+
+      const isAdmin = ["ADMIN", "SUPERADMIN"].includes(user.role?.toUpperCase());
+      if (!isAdmin) {
+        console.warn(`🚫 Non-admin ${user.name} tried to join admin-room`);
+        return;
+      }
+
+      socket.join("admin-room");
+      console.log(`🔐 Admin ${user.name} (${userId}) joined admin-room`);
     });
 
     // Join a specific room (consultation/appointment ID)

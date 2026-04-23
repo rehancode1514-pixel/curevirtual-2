@@ -138,6 +138,7 @@ export default function Sidebar({ role: propRole, isMobileMenuOpen, setIsMobileM
                 <SubItem to="/admin/manage-users" label="Provisioning" />
                 <SubItem to="/admin/reports" label="Activity" />
               </DropdownItem>
+              <NavItem to="/admin/registration-requests" icon="verified_user" label="Approval Queue" />
               <NavItem to="/admin/messages/inbox" icon="mail" label="Inbox" badge={unreadCount} />
               <NavItem to="/admin/subscription" icon="account_balance_wallet" label="Subscriptions" />
             </>

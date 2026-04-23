@@ -108,6 +108,7 @@ export default function Login() {
     localStorage.setItem("role", user.role);
     localStorage.setItem("type", user.type || "USER");
     localStorage.setItem("email", user.email || userEmail);
+    localStorage.setItem("approvalStatus", user.approvalStatus ?? "NOT_REQUIRED");
 
     toast.success("Login successful! Redirecting...");
 

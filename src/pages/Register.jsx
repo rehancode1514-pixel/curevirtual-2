@@ -1,28 +1,23 @@
 // FILE: src/pages/Register.jsx
 import { useState } from "react";
-import { FiEye, FiEyeOff, FiMail, FiLock, FiArrowLeft, FiShield } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiMail, FiLock, FiArrowLeft, FiShield, FiUpload } from "react-icons/fi";
 import { FaArrowRight, FaStethoscope } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useTheme } from "../context/ThemeContext";
 import { supabase } from "../Lib/supabase";
 import api from "../Lib/api";
 
+const ROLES_REQUIRING_APPROVAL = ["DOCTOR", "PHARMACY"];
+
 export default function Register() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    role: "PATIENT",
-    specialization: "",
-    customProfession: "",
-    gender: "PREFER_NOT_TO_SAY",
-    dateOfBirth: "",
-    maritalStatus: "SINGLE",
+    firstName: "", middleName: "", lastName: "", email: "",
+    password: "", confirmPassword: "", role: "PATIENT",
+    specialization: "", customProfession: "",
+    gender: "PREFER_NOT_TO_SAY", dateOfBirth: "", maritalStatus: "SINGLE",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -30,57 +25,62 @@ export default function Register() {
   const [otp, setOtp] = useState("");
   const { theme } = useTheme();
 
-  const toTitleCase = (str) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+  // License file state (Doctor/Pharmacy only)
+  const [licenseFile, setLicenseFile] = useState(null);
+  const [licensePreview, setLicensePreview] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const toTitleCase = (str) =>
+    str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 
   const handleChange = (e) => {
     let { name, value } = e.target;
-    
-    // Prevent numbers in names
-    if (['firstName', 'middleName', 'lastName'].includes(name)) {
-      value = value.replace(/[0-9]/g, '');
+    if (["firstName", "middleName", "lastName"].includes(name)) {
+      value = value.replace(/[0-9]/g, "");
     }
-
     setForm((f) => ({ ...f, [name]: value }));
   };
+
+  const handleLicenseUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const ALLOWED = ["image/jpeg", "image/jpg", "image/png", "image/webp", "application/pdf"];
+    if (!ALLOWED.includes(file.type)) {
+      toast.error("Invalid file type. Use JPG, PNG, WEBP, or PDF.");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 10MB.");
+      return;
+    }
+    setLicenseFile(file);
+    if (file.type.startsWith("image/")) {
+      setLicensePreview(URL.createObjectURL(file));
+    } else {
+      setLicensePreview(null);
+    }
+  };
+
+  const needsApproval = ROLES_REQUIRING_APPROVAL.includes(form.role);
 
   const handleRegister = async (e) => {
     e.preventDefault();
     if (submitting) return;
 
-    if (form.password !== form.confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
+    if (form.password !== form.confirmPassword) { toast.error("Passwords do not match."); return; }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email.trim())) { toast.error("Please enter a valid email address."); return; }
+    if (form.password.length < 8) { toast.error("Password must be at least 8 characters long."); return; }
+    if (form.dateOfBirth && new Date(form.dateOfBirth) > new Date()) {
+      toast.error("Date of Birth cannot be in the future."); return;
     }
-
-    const validateEmail = (email) => {
-      return String(email)
-        .toLowerCase()
-        .match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-    };
-
-    if (!validateEmail(form.email.trim())) {
-      toast.error("Please enter a valid email address.");
-      return;
-    }
-
-    if (form.password.length < 8) {
-      toast.error("Password must be at least 8 characters long.");
-      return;
-    }
-
-    if (form.dateOfBirth) {
-      const birthDate = new Date(form.dateOfBirth);
-      const today = new Date();
-      if (birthDate > today) {
-        toast.error("Date of Birth cannot be in the future.");
-        return;
-      }
+    if (needsApproval && !licenseFile) {
+      toast.error("Please upload your license or degree certificate."); return;
     }
 
     setSubmitting(true);
     try {
-      // Register with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email: form.email.trim().toLowerCase(),
         password: form.password,
         options: {
@@ -88,25 +88,16 @@ export default function Register() {
             firstName: toTitleCase(form.firstName.trim()),
             middleName: form.middleName ? toTitleCase(form.middleName.trim()) : null,
             lastName: toTitleCase(form.lastName.trim()),
-            role: form.role,
-            dateOfBirth: form.dateOfBirth,
-            gender: form.gender,
-            maritalStatus: form.maritalStatus,
-            specialization:
-              form.specialization === "Other" ? form.customProfession : form.specialization,
+            role: form.role, dateOfBirth: form.dateOfBirth,
+            gender: form.gender, maritalStatus: form.maritalStatus,
+            specialization: form.specialization === "Other" ? form.customProfession : form.specialization,
           },
         },
       });
-
       if (error) throw error;
-
-      console.log("✅ Registration successful:", data);
-
-      // Show OTP verification instead of immediately syncing to backend!
       setShowOtp(true);
       toast.success("OTP sent! Please check your email.");
     } catch (err) {
-      console.error("Registration error:", err);
       toast.error(err.message || "Registration failed. Please try again.");
     } finally {
       setSubmitting(false);
@@ -116,47 +107,70 @@ export default function Register() {
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     if (submitting) return;
-
     setSubmitting(true);
+    setIsUploading(false);
+
     try {
       const { data, error } = await supabase.auth.verifyOtp({
         email: form.email.trim().toLowerCase(),
-        token: otp,
-        type: "signup",
+        token: otp, type: "signup",
       });
-
       if (error) throw error;
 
-      // Sync with backend immediately after verifying
+      // Sync user to backend
       await api.post("/auth/register-success", {
         supabaseId: data.user.id,
         email: form.email.trim().toLowerCase(),
         firstName: toTitleCase(form.firstName.trim()),
         middleName: form.middleName ? toTitleCase(form.middleName.trim()) : null,
         lastName: toTitleCase(form.lastName.trim()),
-        role: form.role,
-        dateOfBirth: form.dateOfBirth,
-        gender: form.gender,
-        maritalStatus: form.maritalStatus,
-        specialization:
-          form.specialization === "Other" ? form.customProfession : form.specialization,
+        role: form.role, dateOfBirth: form.dateOfBirth,
+        gender: form.gender, maritalStatus: form.maritalStatus,
+        specialization: form.specialization === "Other" ? form.customProfession : form.specialization,
       });
 
-      toast.success("Verification successful! Redirecting to login...");
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
+      // For DOCTOR/PHARMACY: submit approval request
+      if (needsApproval && licenseFile) {
+        setIsUploading(true);
+        toast.info("Setting up your account...");
+
+        const token = localStorage.getItem("token") || data.session?.access_token;
+        const formData = new FormData();
+        formData.append("licenseFile", licenseFile);
+        formData.append("role", form.role);
+        formData.append("submittedData", JSON.stringify({
+          firstName: toTitleCase(form.firstName.trim()),
+          middleName: form.middleName ? toTitleCase(form.middleName.trim()) : null,
+          lastName: toTitleCase(form.lastName.trim()),
+          email: form.email.trim().toLowerCase(),
+          role: form.role, dateOfBirth: form.dateOfBirth,
+          gender: form.gender, maritalStatus: form.maritalStatus,
+          specialization: form.specialization === "Other" ? form.customProfession : form.specialization,
+        }));
+
+        await api.post("/registration-requests/submit", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        });
+
+        toast.success("Account created! Pending admin review.");
+        setTimeout(() => navigate("/pending-approval"), 1500);
+      } else {
+        toast.success("Verification successful! Redirecting to login...");
+        setTimeout(() => { window.location.href = "/login"; }, 2000);
+      }
     } catch (err) {
-      console.error("OTP Verification error:", err);
-      toast.error(err.message || "Invalid OTP. Please try again.");
+      toast.error(err.response?.data?.error || err.message || "Verification failed.");
     } finally {
       setSubmitting(false);
+      setIsUploading(false);
     }
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 bg-[var(--bg-transparent)]`}>
-      {/* Triple Color Atmospheric Glow */}
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg-transparent)]">
       <div className="absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-[var(--brand-orange)] opacity-[0.05] blur-[150px] rounded-full"></div>
         <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-[var(--brand-green)] opacity-[0.05] blur-[150px] rounded-full"></div>
@@ -164,383 +178,211 @@ export default function Register() {
       </div>
 
       <div className="w-full max-w-[1100px] flex flex-col md:flex-row glass overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-700 rounded-[3rem] border border-[var(--border)]">
-        {/* Left Side: Onboarding Panel */}
+        {/* Left Panel */}
         <div className="hidden md:flex flex-col justify-between w-2/5 p-12 text-[var(--text-main)] relative overflow-hidden bg-gradient-to-tr from-[#a2beff] to-[#7da0d8]">
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_left,var(--brand-blue),transparent)]"></div>
             <div className="absolute bottom-10 right-0 w-full h-full bg-[radial-gradient(circle_at_bottom_right,var(--brand-orange),transparent)]"></div>
           </div>
-
           <div className="z-10">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 mb-12 text-emerald-300 hover:text-emerald-200 transition-all font-black text-[10px] uppercase tracking-widest group"
-            >
-              <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" />
-              Back to Home
+            <Link to="/" className="inline-flex items-center gap-2 mb-12 text-emerald-300 hover:text-emerald-200 transition-all font-black text-[10px] uppercase tracking-widest group">
+              <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back to Home
             </Link>
-
             <div className="flex items-center gap-3 bg-[var(--bg-glass)] p-3 rounded-2xl mb-8 border border-[var(--border)] shadow-2xl">
               <img src="/images/logo/Asset3.png" alt="Logo" className="w-10 h-10" />
-              <span className="text-xl font-black tracking-tighter text-[var(--text-main)] uppercase">
-                CURE<span className="text-[var(--brand-blue)]">VIRTUAL</span>
-              </span>
+              <span className="text-xl font-black tracking-tighter text-[var(--text-main)] uppercase">CURE<span className="text-[var(--brand-blue)]">VIRTUAL</span></span>
             </div>
-
-            <h2 className="text-4xl lg:text-5xl font-black tracking-tighter mb-6 leading-[0.9] uppercase text-emerald-300">
-              Create <br /> <span className="text-emerald-300">Account</span>
-            </h2>
-            <p className="text-emerald-300 text-sm leading-relaxed max-w-xs font-bold uppercase tracking-widest italic text-justify">
-              Sign up to access virtual care.
-            </p>
+            <h2 className="text-4xl lg:text-5xl font-black tracking-tighter mb-6 leading-[0.9] uppercase text-emerald-300">Create <br /><span className="text-emerald-300">Account</span></h2>
+            <p className="text-emerald-300 text-sm leading-relaxed max-w-xs font-bold uppercase tracking-widest italic text-justify">Sign up to access virtual care.</p>
           </div>
-
           <div className="z-10 space-y-4">
             <div className="flex items-center gap-4 p-4 rounded-3xl bg-[var(--bg-glass)] border border-[var(--border)] backdrop-blur-xl">
-              <div className="h-10 w-10 rounded-2xl bg-[var(--brand-green)]/20 flex items-center justify-center text-[var(--brand-green)]">
-                <FiShield className="text-xl" />
-              </div>
+              <div className="h-10 w-10 rounded-2xl bg-[var(--brand-green)]/20 flex items-center justify-center text-[var(--brand-green)]"><FiShield className="text-xl" /></div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-main)]">
-                  Secure Data
-                </p>
-                <p className="text-[9px] font-bold text-[var(--text-main)]/40 uppercase tracking-widest">
-                  Medical Grade Security
-                </p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-[var(--text-main)]">Secure Data</p>
+                <p className="text-[9px] font-bold text-[var(--text-main)]/40 uppercase tracking-widest">Medical Grade Security</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side: Registration Form */}
+        {/* Right Panel */}
         <div className="w-full md:w-3/5 bg-[var(--bg-card)] p-6 md:p-14 flex flex-col overflow-y-auto max-h-[90vh]">
           <div className="mb-6 md:mb-8">
-            {/* Mobile Branding */}
             <div className="md:hidden flex items-center gap-2 mb-6 opacity-80">
               <img src="/images/logo/Asset3.png" alt="Logo" className="w-6 h-6" />
-              <span className="text-sm font-black tracking-tighter text-[var(--text-main)] uppercase">
-                CURE<span className="text-[var(--brand-blue)]">VIRTUAL</span>
-              </span>
+              <span className="text-sm font-black tracking-tighter text-[var(--text-main)] uppercase">CURE<span className="text-[var(--brand-blue)]">VIRTUAL</span></span>
             </div>
-
-            <h1 className="text-3xl md:text-4xl font-black text-[var(--text-main)] tracking-tighter uppercase mb-2">
-              Create <span className="text-[var(--brand-green)]">Account</span>
-            </h1>
-            <p className="text-[var(--text-soft)] text-sm font-bold opacity-70">
-              Fill in your details to get started.
-            </p>
+            <h1 className="text-3xl md:text-4xl font-black text-[var(--text-main)] tracking-tighter uppercase mb-2">Create <span className="text-[var(--brand-green)]">Account</span></h1>
+            <p className="text-[var(--text-soft)] text-sm font-bold opacity-70">Fill in your details to get started.</p>
           </div>
 
           {showOtp ? (
             <div className="space-y-6">
+              {/* OTP Step */}
               <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Enter OTP sent to {form.email}
-                </label>
+                <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">Enter OTP sent to {form.email}</label>
                 <div className="relative group">
-                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
-                    <FiShield />
-                  </div>
-                  <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
+                  <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all"><FiShield /></div>
+                  <input type="text" value={otp} onChange={(e) => setOtp(e.target.value)}
                     className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-4 pl-14 pr-6 text-sm font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                    placeholder="123456"
-                    required
-                  />
+                    placeholder="123456" required />
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleVerifyOtp}
-                disabled={submitting || !otp}
-                className="btn btn-secondary w-full !py-4.5 !rounded-2xl text-xs flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 mt-4 group"
-              >
+
+              {/* License upload (Doctor/Pharmacy) */}
+              {needsApproval && (
+                <div className="space-y-3 animate-in fade-in slide-in-from-top-2 p-4 rounded-2xl border border-[var(--brand-blue)]/30 bg-[var(--brand-blue)]/5">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--brand-blue)]">
+                    License / Degree Certificate *
+                  </label>
+                  <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
+                    Upload a clear photo or scan of your medical/pharmacy license or degree certificate (JPG, PNG, PDF — max 10MB)
+                  </p>
+                  <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-dashed border-[var(--brand-blue)]/40 hover:border-[var(--brand-blue)] transition-all group">
+                    <FiUpload className="text-[var(--brand-blue)] text-lg group-hover:scale-110 transition-transform" />
+                    <span className="text-xs font-bold text-[var(--text-soft)]">
+                      {licenseFile ? licenseFile.name : "Click to choose file"}
+                    </span>
+                    <input type="file" accept=".jpg,.jpeg,.png,.webp,.pdf" onChange={handleLicenseUpload} className="hidden" />
+                  </label>
+                  {licensePreview && (
+                    <img src={licensePreview} alt="License preview" className="w-full max-h-40 object-contain rounded-xl border border-[var(--border)]" />
+                  )}
+                  {licenseFile && !licensePreview && (
+                    <p className="text-[10px] text-[var(--brand-green)] font-bold">✓ PDF selected: {licenseFile.name}</p>
+                  )}
+                </div>
+              )}
+
+              <button type="button" onClick={handleVerifyOtp} disabled={submitting || !otp || (needsApproval && !licenseFile)}
+                className="btn btn-secondary w-full !py-4.5 !rounded-2xl text-xs flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 mt-4 group">
                 {submitting ? (
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <><div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>{isUploading ? "Uploading license..." : "Verifying..."}</span></>
                 ) : (
-                  <>
-                    Verify Account{" "}
-                    <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
-                  </>
+                  <>Verify Account <FaArrowRight className="group-hover:translate-x-1 transition-transform" /></>
                 )}
               </button>
-              <button
-                type="button"
-                onClick={() => setShowOtp(false)}
-                className="w-full text-[10px] font-black text-[var(--brand-blue)] uppercase tracking-widest hover:underline text-center mt-2 group"
-              >
+              <button type="button" onClick={() => setShowOtp(false)}
+                className="w-full text-[10px] font-black text-[var(--brand-blue)] uppercase tracking-widest hover:underline text-center mt-2">
                 Back to Registration
               </button>
             </div>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4">
+              {/* Name fields */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-2">
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                    First Name
-                  </label>
-                  <input
-                    name="firstName"
-                    value={form.firstName}
-                    onChange={handleChange}
-                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
-                    placeholder="First"
-                    required
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                    Middle Name
-                  </label>
-                  <input
-                    name="middleName"
-                    value={form.middleName}
-                    onChange={handleChange}
-                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
-                    placeholder="(Opt)"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                    Last Name
-                  </label>
-                  <input
-                    name="lastName"
-                    value={form.lastName}
-                    onChange={handleChange}
-                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner"
-                    placeholder="Last"
-                    required
-                  />
-                </div>
+                {[["firstName", "First"], ["middleName", "(Opt)"], ["lastName", "Last"]].map(([name, ph]) => (
+                  <div key={name} className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">{name === "middleName" ? "Middle Name" : name === "firstName" ? "First Name" : "Last Name"}</label>
+                    <input name={name} value={form[name]} onChange={handleChange} placeholder={ph} required={name !== "middleName"}
+                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3 px-4 text-xs font-bold focus:border-[var(--brand-blue)] outline-none transition-all shadow-inner" />
+                  </div>
+                ))}
               </div>
 
+              {/* DOB + Gender + Marital */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    name="dateOfBirth"
-                    value={form.dateOfBirth}
-                    onChange={handleChange}
-                    max={new Date().toISOString().split('T')[0]}
-                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                    required
-                  />
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">Date of Birth</label>
+                  <input type="date" name="dateOfBirth" value={form.dateOfBirth} onChange={handleChange} max={new Date().toISOString().split("T")[0]} required
+                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner" />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                      Gender
-                    </label>
-                    <select
-                      name="gender"
-                      value={form.gender}
-                      onChange={handleChange}
-                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
-                    >
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="OTHER">Other</option>
-                      <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-0">
-                      Marital Status
-                    </label>
-                    <select
-                      name="maritalStatus"
-                      value={form.maritalStatus}
-                      onChange={handleChange}
-                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
-                    >
-                      <option value="SINGLE">Single</option>
-                      <option value="MARRIED">Married</option>
-                    </select>
-                  </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {[["gender", ["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"], ["Male", "Female", "Other", "Prefer not to say"]],
+                    ["maritalStatus", ["SINGLE", "MARRIED"], ["Single", "Married"]]].map(([field, vals, labels]) => (
+                    <div key={field} className="space-y-1.5">
+                      <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">{field === "gender" ? "Gender" : "Marital"}</label>
+                      <select name={field} value={form[field]} onChange={handleChange}
+                        className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 px-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none">
+                        {vals.map((v, i) => <option key={v} value={v}>{labels[i]}</option>)}
+                      </select>
+                    </div>
+                  ))}
                 </div>
               </div>
 
+              {/* Email */}
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  Email Address
-                </label>
+                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">Email Address</label>
                 <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
-                    <FiMail />
-                  </div>
-                  <input
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                    placeholder=" "
-                    required
-                  />
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all"><FiMail /></div>
+                  <input type="email" name="email" value={form.email} onChange={handleChange} placeholder=" " required
+                    className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner" />
                 </div>
               </div>
 
+              {/* Passwords */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                    Password
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
-                      <FiLock />
+                {[["password", "••••••••"], ["confirmPassword", "••••••••"]].map(([field, ph]) => (
+                  <div key={field} className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">{field === "password" ? "Password" : "Confirm Password"}</label>
+                    <div className="relative group">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all"><FiLock /></div>
+                      <input type={showPassword ? "text" : "password"} name={field} value={form[field]} onChange={handleChange} placeholder={ph} required minLength={6}
+                        className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-12 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner" />
+                      {field === "confirmPassword" && (
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
+                          {showPassword ? <FiEyeOff /> : <FiEye />}
+                        </button>
+                      )}
                     </div>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={form.password}
-                      onChange={handleChange}
-                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-12 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                      placeholder="••••••••"
-                      minLength={6}
-                      required
-                    />
                   </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                    Confirm Password
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--brand-green)] transition-all">
-                      <FiLock />
-                    </div>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      value={form.confirmPassword}
-                      onChange={handleChange}
-                      className="w-full bg-[var(--bg-main)] border border-[var(--border)] rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]"
-                    >
-                      {showPassword ? <FiEyeOff /> : <FiEye />}
-                    </button>
-                  </div>
-                </div>
+                ))}
               </div>
 
+              {/* Role selector */}
               <div className="space-y-2">
-                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                  I am a...
-                </label>
+                <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">I am a...</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    {
-                      id: "PATIENT",
-                      label: "PATIENT",
-                      color: "var(--brand-orange)",
-                    },
-                    {
-                      id: "DOCTOR",
-                      label: "DOCTOR",
-                      color: "var(--brand-green)",
-                    },
-                    {
-                      id: "PHARMACY",
-                      label: "PHARMACIST",
-                      color: "var(--brand-blue)",
-                    },
-                  ].map((role) => (
-                    <button
-                      key={role.id}
-                      type="button"
-                      onClick={() => setForm((f) => ({ ...f, role: role.id }))}
-                      className={`py-3 rounded-2xl border-2 text-[9px] font-black uppercase tracking-widest transition-all ${
-                        form.role === role.id
-                          ? `bg-white text-black shadow-xl`
-                          : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--text-main)]"
-                      }`}
-                      style={form.role === role.id ? { borderColor: role.color } : {}}
-                    >
+                  {[{ id: "PATIENT", label: "PATIENT", color: "var(--brand-orange)" },
+                    { id: "DOCTOR", label: "DOCTOR", color: "var(--brand-green)" },
+                    { id: "PHARMACY", label: "PHARMACIST", color: "var(--brand-blue)" }].map((role) => (
+                    <button key={role.id} type="button" onClick={() => setForm((f) => ({ ...f, role: role.id }))}
+                      className={`py-3 rounded-2xl border-2 text-[9px] font-black uppercase tracking-widest transition-all ${form.role === role.id ? "bg-white text-black shadow-xl" : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--text-main)]"}`}
+                      style={form.role === role.id ? { borderColor: role.color } : {}}>
                       {role.label}
                     </button>
                   ))}
                 </div>
               </div>
 
+              {/* Doctor specialization */}
               {form.role === "DOCTOR" && (
                 <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2">
-                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">
-                    Medical Specialization
-                  </label>
+                  <label className="text-[9px] font-black uppercase tracking-[0.3em] text-[var(--brand-green)] ml-1">Medical Specialization</label>
                   <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]">
-                      <FaStethoscope />
-                    </div>
-                    <select
-                      name="specialization"
-                      value={form.specialization}
-                      onChange={handleChange}
-                      className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none"
-                      required
-                    >
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]"><FaStethoscope /></div>
+                    <select name="specialization" value={form.specialization} onChange={handleChange} required
+                      className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner appearance-none">
                       <option value="">Select Specialization</option>
-                      <option value="General Medicine">General Medicine</option>
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Dermatology">Dermatology</option>
-                      <option value="Neurology">Neurology</option>
-                      <option value="Pediatrics">Pediatrics</option>
-                      <option value="Psychiatry">Psychiatry</option>
-                      <option value="Orthopedics">Orthopedics</option>
-                      <option value="Gynecology">Gynecology</option>
-                      <option value="Ophthalmology">Ophthalmology</option>
-                      <option value="Dentistry">Dentistry</option>
-                      <option value="ENT">ENT</option>
-                      <option value="Urology">Urology</option>
-                      <option value="Oncology">Oncology</option>
-                      <option value="Other">Other</option>
+                      {["General Medicine","Cardiology","Dermatology","Neurology","Pediatrics","Psychiatry","Orthopedics","Gynecology","Ophthalmology","Dentistry","ENT","Urology","Oncology","Other"].map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
-
                   {form.specialization === "Other" && (
                     <div className="relative group mt-3 animate-in fade-in slide-in-from-top-1">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]">
-                        <FaStethoscope />
-                      </div>
-                      <input
-                        name="customProfession"
-                        value={form.customProfession || ""}
-                        onChange={handleChange}
-                        className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner"
-                        placeholder="Specify your profession..."
-                        required
-                      />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--brand-green)]"><FaStethoscope /></div>
+                      <input name="customProfession" value={form.customProfession || ""} onChange={handleChange} placeholder="Specify your profession..." required
+                        className="w-full bg-[var(--bg-main)] border border-[var(--brand-green)]/30 rounded-2xl py-3.5 pl-12 pr-4 text-xs font-bold focus:border-[var(--brand-green)] outline-none transition-all shadow-inner" />
                     </div>
                   )}
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="btn btn-secondary w-full !py-4.5 !rounded-2xl text-xs flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 mt-4 group"
-              >
-                {submitting ? (
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    Submit{" "}
-                    <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
+              {/* Approval notice for Doctor/Pharmacy */}
+              {needsApproval && (
+                <div className="p-3 rounded-xl border border-[var(--brand-blue)]/30 bg-[var(--brand-blue)]/5">
+                  <p className="text-[10px] font-bold text-[var(--brand-blue)] uppercase tracking-widest">
+                    ⚠️ Account Review Required — You will need to upload your license/certificate on the next step and wait for admin approval before accessing the dashboard.
+                  </p>
+                </div>
+              )}
+
+              <button type="submit" disabled={submitting}
+                className="btn btn-secondary w-full !py-4.5 !rounded-2xl text-xs flex items-center justify-center gap-3 shadow-2xl disabled:opacity-70 mt-4 group">
+                {submitting ? <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  : <> Submit <FaArrowRight className="group-hover:translate-x-1 transition-transform" /></>}
               </button>
             </form>
           )}
@@ -548,21 +390,12 @@ export default function Register() {
           <footer className="mt-8 text-center border-t border-[var(--border)] pt-8">
             <p className="text-xs font-bold text-[var(--text-soft)] uppercase tracking-widest">
               Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-[var(--brand-orange)] font-black hover:underline ml-1"
-              >
-                Login
-              </Link>
+              <Link to="/login" className="text-[var(--brand-orange)] font-black hover:underline ml-1">Login</Link>
             </p>
           </footer>
         </div>
       </div>
-      <ToastContainer
-        position="top-right"
-        autoClose={2500}
-        theme={theme === "dark" ? "dark" : "light"}
-      />
+      <ToastContainer position="top-right" autoClose={2500} theme={theme === "dark" ? "dark" : "light"} />
     </div>
   );
 }

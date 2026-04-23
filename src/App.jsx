@@ -44,6 +44,7 @@ const AdminSubscribersStats = lazy(() => import("./pages/admin/subscribers/Stats
 const AdminSubscribedDoctors = lazy(() => import("./pages/admin/subscribers/Doctor"));
 const AdminSubscribedPatients = lazy(() => import("./pages/admin/subscribers/Patients"));
 const AdminSubscribedPharmacy = lazy(() => import("./pages/admin/subscribers/Pharmacy"));
+const AdminRegistrationRequests = lazy(() => import("./pages/admin/RegistrationRequests"));
 
 /* ================================
    DOCTOR
@@ -115,6 +116,8 @@ const Register = lazy(() => import("./pages/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Home = lazy(() => import("./pages/Home"));
+const PendingApproval = lazy(() => import("./pages/PendingApproval"));
+const RegistrationRejected = lazy(() => import("./pages/RegistrationRejected"));
 import Chatbot from "./components/Chatbot";
 
 /* ================================
@@ -131,6 +134,16 @@ const RequireRole = ({ role, children }) => {
   const currentRole = localStorage.getItem("role") || localStorage.getItem("userRole") || "";
   if (!role || currentRole === role) return children;
   return <Navigate to="/" replace />;
+};
+
+// Guard: redirect DOCTOR/PHARMACY with PENDING approvalStatus to /pending-approval
+const RequireApproved = ({ children }) => {
+  const approvalStatus = localStorage.getItem("approvalStatus") || "NOT_REQUIRED";
+  const role = localStorage.getItem("role") || "";
+  const requiresApproval = ["DOCTOR", "PHARMACY"].includes(role);
+  if (requiresApproval && approvalStatus === "PENDING") return <Navigate to="/pending-approval" replace />;
+  if (requiresApproval && approvalStatus === "REJECTED") return <Navigate to="/registration-rejected" replace />;
+  return children;
 };
 
 export default function App() {
@@ -159,6 +172,8 @@ export default function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/pending-approval" element={<PendingApproval />} />
+            <Route path="/registration-rejected" element={<RegistrationRejected />} />
 
             {/* Video shared */}
             <Route path="/video/lobby" element={<VideoLobby />} />
@@ -375,23 +390,11 @@ export default function App() {
               }
             />
 
-            <Route
-              path="/admin/profile"
-              element={
-                <RequireRole role="ADMIN">
-                  <UserProfile />
-                </RequireRole>
-              }
-            />
+            <Route path="/admin/profile" element={<RequireRole role="ADMIN"><UserProfile /></RequireRole>} />
+            {/* Admin: Registration Requests */}
+            <Route path="/admin/registration-requests" element={<RequireRole role="ADMIN"><AdminRegistrationRequests /></RequireRole>} />
             {/* ================= DOCTOR ================= */}
-            <Route
-              path="/doctor/dashboard"
-              element={
-                <RequireRole role="DOCTOR">
-                  <DoctorDashboard />
-                </RequireRole>
-              }
-            />
+            <Route path="/doctor/dashboard" element={<RequireRole role="DOCTOR"><RequireApproved><DoctorDashboard /></RequireApproved></RequireRole>} />
             <Route
               path="/doctor/appointments"
               element={
@@ -612,14 +615,7 @@ export default function App() {
             />
 
             {/*================== PHARMACY ==================*/}
-            <Route
-              path="/pharmacy/dashboard"
-              element={
-                <RequireRole role="PHARMACY">
-                  <PharmacyDashboard />
-                </RequireRole>
-              }
-            />
+            <Route path="/pharmacy/dashboard" element={<RequireRole role="PHARMACY"><RequireApproved><PharmacyDashboard /></RequireApproved></RequireRole>} />
             <Route
               path="/pharmacy/profile"
               element={

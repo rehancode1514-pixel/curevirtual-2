@@ -268,6 +268,7 @@ router.post("/login-sync", async (req, res) => {
         role: account.role,
         email: account.email,
         type: "USER",
+        approvalStatus: account.approvalStatus ?? "NOT_REQUIRED",
       },
     });
   } catch (err) {

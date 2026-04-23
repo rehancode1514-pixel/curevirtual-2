@@ -196,6 +196,10 @@ model User {
   transactions    Transaction[]
   notifications   Notification[]
 
+  // Registration approval workflow (DOCTOR/PHARMACY only)
+  approvalStatus      String  @default("NOT_REQUIRED") // NOT_REQUIRED | PENDING | APPROVED | REJECTED
+  registrationRequest RegistrationRequest?
+
   @@map("User")
   @@index([organizationId])
 
@@ -1035,3 +1039,28 @@ model SystemMetric {
 
 // VideoConsultation model - Add:
 //   videoSession    VideoSession?
+
+// ============================================
+// REGISTRATION APPROVAL WORKFLOW
+// ============================================
+
+model RegistrationRequest {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  role            String    // "DOCTOR" or "PHARMACY"
+  status          String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  rejectionReason String?
+  licenseImageUrl String    // Supabase Storage signed URL (refreshed on read)
+  licenseFilePath String    // Stable storage path for signed URL regeneration
+  submittedData   Json      // Full registration form data snapshot
+  reviewedBy      String?   // Admin user ID who reviewed
+  reviewedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([role])
+  @@map("RegistrationRequest")
+}
