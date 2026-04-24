@@ -90,7 +90,7 @@ router.post(
       console.log('📄 Registration Submit: Received file:', req.file ? req.file.originalname : 'NONE');
       
       const { role, submittedData, userId: bodyUserId } = req.body;
-      const licenseFile = req.file;
+      const licenseFile = req.file || (req.files && req.files.length > 0 ? req.files[0] : null);
       const userId = bodyUserId || req.user?.id;
 
       // ── 1. Validate inputs ──────────────────────────────────────────────────

@@ -162,11 +162,17 @@ export default function Register() {
         // Append file LAST
         formData.append("licenseFile", licenseFile);
 
-        await api.post("/registration-requests/submit", formData, {
-          headers: {
-            // Let Axios set the correct Content-Type with boundary for FormData
-          },
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || "https://curevirtual-2-production-ee33.up.railway.app/api";
+        const response = await fetch(`${baseUrl}/registration-requests/submit`, {
+          method: "POST",
+          body: formData,
+          // Native fetch automatically sets the correct Content-Type with boundary for FormData
         });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `Upload failed with status: ${response.status}`);
+        }
 
         toast.success("Account created! Pending admin review.");
         setTimeout(() => navigate("/pending-approval"), 1500);
