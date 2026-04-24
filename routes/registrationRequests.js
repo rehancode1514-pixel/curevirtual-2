@@ -93,17 +93,22 @@ router.post(
       const licenseFile = req.file;
       const userId = bodyUserId || req.user?.id;
 
-      if (!userId) {
-        return res.status(400).json({ error: 'User ID is required for submission.' });
-      }
-
       // ── 1. Validate inputs ──────────────────────────────────────────────────
+      if (!userId) {
+        return res.status(400).json({ error: 'Missing User ID (userId). Please ensure you are logged in.' });
+      }
       if (!licenseFile) {
-        return res.status(400).json({ error: 'License document file is required.' });
+        return res.status(400).json({ error: 'Missing License Document (licenseFile). Please upload your certificate.' });
+      }
+      if (!role) {
+        return res.status(400).json({ error: 'Missing Account Role (role). Please select Doctor or Pharmacy.' });
       }
       if (!['DOCTOR', 'PHARMACY'].includes(role)) {
         console.warn(`⚠️ Registration Submit: Invalid role received: "${role}"`);
-        return res.status(400).json({ error: 'role must be DOCTOR or PHARMACY.' });
+        return res.status(400).json({ error: `Invalid role: "${role}". Must be DOCTOR or PHARMACY.` });
+      }
+      if (!submittedData) {
+        return res.status(400).json({ error: 'Missing Registration Data (submittedData).' });
       }
 
       let parsedFormData;
@@ -111,8 +116,9 @@ router.post(
         parsedFormData = typeof submittedData === 'string'
           ? JSON.parse(submittedData)
           : submittedData;
-      } catch {
-        return res.status(400).json({ error: 'submittedData must be valid JSON.' });
+      } catch (e) {
+        console.error('❌ Registration Submit: JSON parse failed for submittedData:', e.message);
+        return res.status(400).json({ error: 'Registration data (submittedData) must be valid JSON.' });
       }
 
       // ── 2. Check for duplicate submission ─────────────────────────────────

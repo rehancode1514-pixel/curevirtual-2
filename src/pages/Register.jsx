@@ -147,9 +147,9 @@ export default function Register() {
         toast.info("Setting up your account...");
 
         const formData = new FormData();
-        formData.append("licenseFile", licenseFile);
+        // Append text fields FIRST so multer populates req.body before processing the file
+        formData.append("userId", data.user.id); 
         formData.append("role", form.role);
-        formData.append("userId", data.user.id); // Explicitly pass userId
         formData.append("submittedData", JSON.stringify({
           firstName: toTitleCase(form.firstName.trim()),
           middleName: form.middleName ? toTitleCase(form.middleName.trim()) : null,
@@ -159,6 +159,8 @@ export default function Register() {
           gender: form.gender, maritalStatus: form.maritalStatus,
           specialization: form.specialization === "Other" ? form.customProfession : form.specialization,
         }));
+        // Append file LAST
+        formData.append("licenseFile", licenseFile);
 
         await api.post("/registration-requests/submit", formData, {
           headers: {
