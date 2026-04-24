@@ -327,18 +327,21 @@ export default function RegistrationRequests() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="w-full max-w-3xl card !p-0 overflow-hidden shadow-2xl border border-[var(--border)] animate-in zoom-in-95 duration-300">
             {/* Modal Header */}
-            <div className="p-8 border-b border-[var(--border)] flex items-center justify-between bg-gradient-to-r from-[var(--bg-card)] to-transparent">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-2xl bg-[var(--brand-blue)]/10 flex items-center justify-center text-[var(--brand-blue)] text-xl border border-[var(--brand-blue)]/20">
+            <div className="p-8 border-b border-[var(--border)] flex items-center justify-between bg-gradient-to-r from-[var(--bg-card)] to-[var(--bg-main)]">
+              <div className="flex items-center gap-6">
+                <div className="h-14 w-14 rounded-2xl gradient-primary flex items-center justify-center text-white text-2xl shadow-lg shadow-blue-500/20">
                   {selected.role === "DOCTOR" ? <FaUserMd /> : <FaClinicMedical />}
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-[var(--text-main)] uppercase tracking-tighter">
+                  <h2 className="text-2xl font-black text-[var(--text-main)] uppercase tracking-tighter">
                     {selected.user?.firstName} {selected.user?.lastName}
                   </h2>
-                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em]">
-                    {selected.role} Verification Request
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-blue)] animate-pulse" />
+                    <p className="text-[10px] font-black text-[var(--brand-blue)] uppercase tracking-[0.3em]">
+                      {selected.role} VERIFICATION
+                    </p>
+                  </div>
                 </div>
               </div>
               <button
@@ -428,28 +431,28 @@ export default function RegistrationRequests() {
             </div>
 
             {/* Modal Actions */}
-            <div className="p-8 bg-[var(--bg-card)] border-t border-[var(--border)]">
+            <div className="p-8 bg-[var(--bg-main)]/50 border-t border-[var(--border)]">
               {selected.status === "PENDING" ? (
                 !rejecting ? (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-6">
                     <button
                       onClick={() => submitReview("APPROVED")}
                       disabled={actionLoading}
-                      className="btn btn-secondary !py-4 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] shadow-emerald-500/10"
+                      className="btn btn-primary !py-5 shadow-emerald-500/10"
                     >
                       {actionLoading ? (
-                        <div className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        <div className="h-5 w-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                       ) : (
                         <>
-                          <FiCheck /> Approve Provider
+                          <FiCheck className="text-lg" /> Approve Provider
                         </>
                       )}
                     </button>
                     <button
                       onClick={() => setRejecting(true)}
-                      className="btn btn-glass !py-4 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] text-red-400 hover:bg-red-500/5"
+                      className="btn btn-glass !py-5 border-red-500/20 text-red-400 hover:bg-red-500/10"
                     >
-                      <FiX /> Reject Application
+                      <FiX className="text-lg" /> Reject Application
                     </button>
                   </div>
                 ) : (

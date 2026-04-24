@@ -35,106 +35,107 @@ export default function PendingApproval() {
   const roleLabel = role === "DOCTOR" ? "Doctor" : "Pharmacy";
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)" }}>
-      {/* Atmospheric glows */}
-      <div className="absolute top-0 right-0 w-96 h-96 rounded-full blur-[120px] opacity-20"
-        style={{ background: "radial-gradient(circle, #3b82f6, transparent)" }} />
-      <div className="absolute bottom-0 left-0 w-96 h-96 rounded-full blur-[120px] opacity-20"
-        style={{ background: "radial-gradient(circle, #10b981, transparent)" }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-[100px] opacity-10"
-        style={{ background: "radial-gradient(circle, #8b5cf6, transparent)" }} />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[var(--bg-main)]">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-20 bg-[var(--brand-blue)]" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-20 bg-[var(--brand-green)]" />
+      <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full blur-[100px] opacity-10 bg-[var(--brand-purple)]" />
 
       <div className="relative z-10 w-full max-w-lg">
         {/* Glassmorphic Card */}
-        <div className="rounded-3xl border border-white/10 p-8 md:p-12 text-center"
-          style={{ background: "rgba(30,41,59,0.7)", backdropFilter: "blur(24px)" }}>
-
-          {/* Animated Clock Icon */}
-          <div className="flex justify-center mb-8">
+        <div className="glass-panel p-8 md:p-12 text-center animate-in fade-in zoom-in duration-1000">
+          
+          {/* Animated Status Icon */}
+          <div className="flex justify-center mb-10">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full flex items-center justify-center animate-pulse"
-                style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2))", border: "2px solid rgba(99,179,237,0.3)" }}>
-                <FiClock className="text-4xl text-blue-400" />
+              <div className="w-24 h-24 rounded-full flex items-center justify-center animate-pulse-soft"
+                style={{ 
+                  background: "linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(139, 92, 246, 0.15))", 
+                  border: "2px solid var(--brand-blue)",
+                  boxShadow: "0 0 40px rgba(14, 165, 233, 0.2)"
+                }}>
+                <FiClock className="text-4xl text-[var(--brand-blue)]" />
               </div>
-              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center">
-                <span className="text-xs font-black text-black">!</span>
+              <div className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-amber-400 flex items-center justify-center shadow-lg shadow-amber-400/20 border-4 border-[var(--bg-card)]">
+                <span className="text-[10px] font-black text-black">!</span>
               </div>
             </div>
           </div>
 
           {/* Logo */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <img src="/images/logo/Asset3.png" alt="Logo" className="w-8 h-8" onError={(e) => { e.target.style.display = "none"; }} />
-            <span className="text-lg font-black tracking-tighter text-white uppercase">
-              CURE<span className="text-emerald-400">VIRTUAL</span>
+          <div className="flex items-center justify-center gap-3 mb-8">
+            <img src="/images/logo/Asset3.png" alt="Logo" className="w-10 h-10" onError={(e) => { e.target.style.display = "none"; }} />
+            <span className="text-xl font-black tracking-tighter text-[var(--text-main)] uppercase">
+              CURE<span className="text-[var(--brand-green)]">VIRTUAL</span>
             </span>
           </div>
 
-          <h1 className="text-3xl font-black text-white tracking-tight mb-3">Account Under Review</h1>
-          <p className="text-slate-400 text-sm leading-relaxed mb-8">
+          <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[var(--brand-blue)] to-[var(--brand-purple)] tracking-tighter mb-4 uppercase">
+            Account Under Review
+          </h1>
+          <p className="text-[var(--text-soft)] text-sm leading-relaxed mb-10">
             Our admin team is reviewing your credentials. You will receive an email once approved.
-            This usually takes <strong className="text-white">24–48 hours</strong>.
+            This usually takes <strong className="text-[var(--text-main)]">24–48 hours</strong>.
           </p>
 
           {/* Submitted Info Summary */}
-          <div className="rounded-2xl p-5 mb-8 text-left space-y-3"
-            style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.2)" }}>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400 mb-4">Submission Summary</p>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(16,185,129,0.2)" }}>
-                <FiCheckCircle className="text-emerald-400 text-sm" />
+          <div className="bg-[var(--bg-main)]/40 border border-[var(--border)] rounded-[2rem] p-6 mb-10 text-left space-y-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--brand-blue)] mb-2">Submission Summary</p>
+            
+            <div className="flex items-center gap-4 group">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-[var(--brand-green)]/10 border border-[var(--brand-green)]/20 transition-all duration-300 group-hover:scale-110">
+                <FiCheckCircle className="text-[var(--brand-green)] text-lg" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Full Name</p>
-                <p className="text-sm font-bold text-white">{userName}</p>
+                <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-black">Full Name</p>
+                <p className="text-sm font-black text-[var(--text-main)]">{userName}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(139,92,246,0.2)" }}>
-                <FiCheckCircle className="text-violet-400 text-sm" />
+
+            <div className="flex items-center gap-4 group">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-[var(--brand-purple)]/10 border border-[var(--brand-purple)]/20 transition-all duration-300 group-hover:scale-110">
+                <FiCheckCircle className="text-[var(--brand-purple)] text-lg" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Role</p>
-                <p className="text-sm font-bold text-white">{roleLabel}</p>
+                <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-black">Role</p>
+                <p className="text-sm font-black text-[var(--text-main)]">{roleLabel}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(59,130,246,0.2)" }}>
-                <FiCheckCircle className="text-blue-400 text-sm" />
+
+            <div className="flex items-center gap-4 group">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-[var(--brand-blue)]/10 border border-[var(--brand-blue)]/20 transition-all duration-300 group-hover:scale-110">
+                <FiCheckCircle className="text-[var(--brand-blue)] text-lg" />
               </div>
               <div>
-                <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">License Document</p>
-                <p className="text-sm font-bold text-emerald-400">✓ Uploaded</p>
+                <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-black">License Document</p>
+                <p className="text-sm font-black text-[var(--brand-green)]">✓ Uploaded & Secured</p>
               </div>
             </div>
+
             {email && (
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "rgba(251,191,36,0.15)" }}>
-                  <FiMail className="text-amber-400 text-sm" />
+              <div className="flex items-center gap-4 group">
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-amber-400/10 border border-amber-400/20 transition-all duration-300 group-hover:scale-110">
+                  <FiMail className="text-amber-400 text-lg" />
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Notification Email</p>
-                  <p className="text-sm font-bold text-white">{email}</p>
+                  <p className="text-[9px] text-[var(--text-muted)] uppercase tracking-widest font-black">Notification Email</p>
+                  <p className="text-sm font-black text-[var(--text-main)]">{email}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <p className="text-slate-500 text-xs mb-8 leading-relaxed">
-            We'll notify you at <strong className="text-slate-300">{email || "your email"}</strong> once your account is reviewed.
-            Do not log in with another account in the meantime.
+          <p className="text-[var(--text-muted)] text-[10px] mb-10 leading-relaxed font-bold uppercase tracking-widest">
+            We'll notify you at <span className="text-[var(--brand-blue)]">{email || "your email"}</span> once your account is reviewed.
           </p>
 
           <button onClick={handleLogout}
-            className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all"
-            style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(239,68,68,0.2)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(239,68,68,0.1)"; }}>
-            <FiLogOut /> Logout
+            className="btn btn-glass w-full border-red-500/20 text-red-400 hover:bg-red-500/10 hover:border-red-500/40">
+            <FiLogOut /> Logout Securely
           </button>
         </div>
       </div>
     </div>
+
   );
 }
