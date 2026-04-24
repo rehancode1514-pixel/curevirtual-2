@@ -138,7 +138,7 @@ router.post(
       });
       if (!dbUser) {
         console.error(`❌ Registration Submit: User ${userId} not found in database.`);
-        return res.status(404).json({ error: 'Database account verification failed. Please try logging in again.' });
+        return res.status(404).json({ error: 'Account verification failed. Please try logging in again.' });
       }
 
       // ── 4. Upload license document to Supabase Storage ────────────────────
