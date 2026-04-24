@@ -171,7 +171,11 @@ export default function Register() {
       setTimeout(() => navigate("/pending-approval"), 1500);
     } catch (err) {
       console.error("❌ Registration Request Submit Error:", err);
-      throw new Error(err.response?.data?.error || err.message || "Failed to submit request");
+      const errorMsg = err.response?.data?.details 
+        ? `${err.response.data.error}: ${err.response.data.details}`
+        : (err.response?.data?.error || err.message || "Failed to submit request");
+      
+      throw new Error(errorMsg);
     } finally {
       setIsUploading(false);
     }

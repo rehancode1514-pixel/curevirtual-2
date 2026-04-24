@@ -156,6 +156,24 @@ router.post(
         return res.status(503).json({ error: 'Storage service unavailable.' });
       }
 
+      // Check if bucket exists, create if not
+      const { data: buckets, error: listError } = await supabaseAdmin.storage.listBuckets();
+      if (listError) {
+        console.error('❌ Error listing buckets:', listError);
+      } else {
+        const bucketExists = buckets.some(b => b.id === 'license-documents');
+        if (!bucketExists) {
+          console.log('📦 Bucket "license-documents" missing, creating now...');
+          const { error: createError } = await supabaseAdmin.storage.createBucket('license-documents', {
+            public: false,
+            fileSizeLimit: 10485760, // 10MB
+            allowedMimeTypes: ALLOWED_MIME_TYPES
+          });
+          if (createError) console.error('❌ Failed to create bucket:', createError);
+          else console.log('✅ Bucket "license-documents" created successfully');
+        }
+      }
+
       const storagePath = buildStoragePath(userId, role, licenseFile.originalname);
 
       const { error: uploadError } = await supabaseAdmin.storage
